@@ -142,7 +142,7 @@ export default function ApplicationForm() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <FileField label="CV (PDF or DOCX, max 8 MB)" name="cv" required accept=".pdf,.doc,.docx" />
-        <FileField label="Take-home test answer (optional, PDF/DOCX/ZIP, max 8 MB)" name="testAnswer" accept=".pdf,.doc,.docx,.zip" />
+        <FileField label="Take-home test answer (PDF/DOCX/ZIP, max 8 MB)" name="testAnswer" optional accept=".pdf,.doc,.docx,.zip" />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">
@@ -171,21 +171,35 @@ export default function ApplicationForm() {
   );
 }
 
+function LabelRow({ label, optional }: { label: string; optional?: boolean }) {
+  return (
+    <span className="flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
+      <span>{label}</span>
+      {optional && (
+        <span className="rounded-full border border-[var(--color-border)] px-1.5 py-px text-[0.55rem] tracking-[0.15em] text-ink-muted/80">
+          Optional
+        </span>
+      )}
+    </span>
+  );
+}
+
 type FieldProps = {
   label: string;
   name: string;
   type?: string;
   required?: boolean;
+  optional?: boolean;
   placeholder?: string;
   min?: number;
   max?: number;
   step?: number;
 };
 
-function Field({ label, name, type = 'text', required, placeholder, min, max, step }: FieldProps) {
+function Field({ label, name, type = 'text', required, optional, placeholder, min, max, step }: FieldProps) {
   return (
     <label className="block">
-      <span className="block font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">{label}</span>
+      <LabelRow label={label} optional={optional} />
       <input
         name={name}
         type={type}
@@ -200,10 +214,10 @@ function Field({ label, name, type = 'text', required, placeholder, min, max, st
   );
 }
 
-function TextArea({ label, name, required, minLength, maxLength, rows }: { label: string; name: string; required?: boolean; minLength?: number; maxLength?: number; rows?: number; }) {
+function TextArea({ label, name, required, optional, minLength, maxLength, rows }: { label: string; name: string; required?: boolean; optional?: boolean; minLength?: number; maxLength?: number; rows?: number; }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">{label}</span>
+      <LabelRow label={label} optional={optional} />
       <textarea
         name={name}
         required={required}
@@ -216,10 +230,10 @@ function TextArea({ label, name, required, minLength, maxLength, rows }: { label
   );
 }
 
-function FileField({ label, name, required, accept }: { label: string; name: string; required?: boolean; accept?: string }) {
+function FileField({ label, name, required, optional, accept }: { label: string; name: string; required?: boolean; optional?: boolean; accept?: string }) {
   return (
     <label className="block">
-      <span className="block font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">{label}</span>
+      <LabelRow label={label} optional={optional} />
       <input
         type="file"
         name={name}
