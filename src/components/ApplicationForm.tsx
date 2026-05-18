@@ -9,11 +9,7 @@ const CV_TYPES = [
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
-const TEST_TYPES = [
-  ...CV_TYPES,
-  'application/zip',
-  'application/x-zip-compressed',
-];
+const TEST_TYPES = ['application/pdf'];
 
 type FilePayload = { field: 'cv' | 'testAnswer'; filename: string; contentType: string; base64: string };
 
@@ -62,7 +58,7 @@ export default function ApplicationForm() {
         throw new Error('Please attach your completed Technical Assessment answer.');
       }
       if (!TEST_TYPES.includes(testFile.type)) {
-        throw new Error('Test answer must be PDF, Word, or ZIP.');
+        throw new Error('Test answer must be a PDF.');
       }
       if (testFile.size > PER_FILE_MAX) {
         throw new Error('Test answer exceeds 8 MB.');
@@ -135,7 +131,7 @@ export default function ApplicationForm() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
-        <FileField label="Technical Assessment answer" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" hint="PDF, DOCX, or ZIP · max 8 MB" />
+        <FileField label="Technical Assessment answer" name="testAnswer" required accept="application/pdf,.pdf" hint="PDF only · max 8 MB" />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">
