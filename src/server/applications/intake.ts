@@ -81,6 +81,8 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   if (!Number.isFinite(yearsExperience) || yearsExperience < 0 || yearsExperience > 60) {
     return { ok: false, error: 'Years of experience must be a number between 0 and 60' };
   }
+  if (expectedSalary.length < 1) return { ok: false, error: 'Expected salary is required' };
+  if (noticePeriod.length < 1) return { ok: false, error: 'Notice period is required' };
   if (!consent) return { ok: false, error: 'GDPR consent is required' };
 
   const rawFiles = Array.isArray(b.files) ? b.files : [];
