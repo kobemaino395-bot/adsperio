@@ -15,17 +15,17 @@ export const team: TeamMember[] = [
     image: '/images/team/maya-tan.jpg',
   },
   {
-    slug: 'daniel-chen',
-    name: 'Daniel Chen',
+    slug: 'serena-lim',
+    name: 'Serena Lim',
     role: 'Head of Paid Media',
     bio: 'Manages portfolio strategy across Google, Meta, and LinkedIn. Previously scaled DTC brands from $1M to $20M in annual revenue.',
-    image: '/images/team/daniel-chen.jpg',
+    image: '/images/team/serena-lim.jpg',
   },
   {
-    slug: 'priya-anand',
-    name: 'Priya Anand',
+    slug: 'arjun-mehta',
+    name: 'Arjun Mehta',
     role: 'Lead Growth Strategist',
     bio: 'Specialises in attribution modelling, LTV-aware bidding, and creative testing systems for high-velocity teams.',
-    image: '/images/team/priya-anand.jpg',
+    image: '/images/team/arjun-mehta.jpg',
   },
 ];
