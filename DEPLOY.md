@@ -176,7 +176,9 @@ If `ADMIN_PASSWORD_HASH` is unset or invalid the panel returns `503 Admin disabl
 
 ---
 
-## Part 5 — Nginx
+## Part 5 — Nginx (bootstrap on port 80)
+
+Start with **port 80 only**. Certbot will add the `listen 443 ssl` block and the http→https redirect in Part 6 — if you put them here first, nginx fails to start with `no "ssl_certificate" is defined` because the cert files don't exist yet.
 
 `/etc/nginx/sites-available/adnovara`:
 
@@ -187,18 +189,9 @@ limit_req_zone $binary_remote_addr zone=applications:10m rate=10r/m;
 server {
     listen 80;
     server_name adnovara.com www.adnovara.com;
-    return 301 https://adnovara.com$request_uri;
-}
-
-server {
-    listen 443 ssl http2;
-    server_name adnovara.com;
-
-    # ssl_certificate / ssl_certificate_key managed by certbot (see Part 6)
 
     client_max_body_size 22m;
 
-    # Rate-limited endpoints
     location = /admin/login/submit {
         limit_req zone=admin_login burst=2 nodelay;
         proxy_pass http://127.0.0.1:8080;
