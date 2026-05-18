@@ -19,7 +19,25 @@ export type SlotMeta = {
   contentType: string;
   uploadedAt: string;
   size: number;
+  uploadedBy?: string;
 };
+
+const ZIP_MAGIC = [
+  [0x50, 0x4b, 0x03, 0x04],
+  [0x50, 0x4b, 0x05, 0x06],
+  [0x50, 0x4b, 0x07, 0x08],
+];
+
+export function looksLikeZip(buf: Buffer): boolean {
+  if (buf.length < 4) return false;
+  return ZIP_MAGIC.some((sig) => sig.every((b, i) => buf[i] === b));
+}
+
+export function shouldEnforceZip(filename: string, contentType: string): boolean {
+  if (/\.zip$/i.test(filename)) return true;
+  if (/zip/i.test(contentType)) return true;
+  return false;
+}
 
 export type SlotStatus = {
   slug: string;
@@ -135,10 +153,17 @@ export async function replaceSlotFile(
   buf: Buffer,
   originalFilename: string,
   contentType: string,
+  uploadedBy?: string,
 ): Promise<ReplaceResult> {
   if (buf.length === 0) return { ok: false, reason: 'Empty file' };
   if (buf.length > slot.maxBytes) {
     return { ok: false, reason: `File exceeds ${Math.round(slot.maxBytes / (1024 * 1024))} MB limit` };
+  }
+  const slotExpectsZip = /zip/i.test(slot.publicMimeType) || /\.zip$/i.test(slot.publicFilename);
+  if (slotExpectsZip || shouldEnforceZip(originalFilename, contentType)) {
+    if (!looksLikeZip(buf)) {
+      return { ok: false, reason: 'File is not a valid ZIP archive (magic bytes check failed)' };
+    }
   }
 
   await maybeMigrateTakeHome(slot.slug);
@@ -161,6 +186,7 @@ export async function replaceSlotFile(
     contentType: contentType || 'application/octet-stream',
     uploadedAt: new Date().toISOString(),
     size: buf.length,
+    uploadedBy: uploadedBy?.slice(0, 80),
   };
   await writeSlotMeta(slot.slug, meta);
 

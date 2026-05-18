@@ -49,7 +49,7 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
   }
 
   const buf = Buffer.from(await file.arrayBuffer());
-  const result = await replaceSlotFile(slot, buf, file.name, file.type);
+  const result = await replaceSlotFile(slot, buf, file.name, file.type, session.username);
   if (!result.ok) {
     audit({ kind: 'upload.reject', username: session.username, ip, reason: `${slug}: ${result.reason}` });
     return adminRedirect(backTo(slug, 'error=' + encodeURIComponent(result.reason)));

@@ -4,7 +4,7 @@ import { readClientIp } from '@/server/admin/security';
 
 export const dynamic = 'force-dynamic';
 
-const MAX_JSON_BYTES = 20 * 1024 * 1024;
+const MAX_JSON_BYTES = 30 * 1024 * 1024;
 
 export async function POST(request: NextRequest): Promise<Response> {
   const len = Number(request.headers.get('content-length') ?? '0');

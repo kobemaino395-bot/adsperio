@@ -5,6 +5,9 @@ const nextConfig: NextConfig = {
   images: { unoptimized: true },
   reactStrictMode: true,
   allowedDevOrigins: ['127.0.0.1', '103.82.23.180'],
+  experimental: {
+    proxyClientMaxBodySize: '30mb',
+  },
   async redirects() {
     return [
       // Legacy take-home URL -> active download endpoint

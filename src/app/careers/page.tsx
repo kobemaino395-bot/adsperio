@@ -2,22 +2,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
+import { listPositions } from '@/server/content/positions';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Careers — Join Adnovara',
   description:
-    'We\'re hiring growth marketers, performance creatives, and engineers. Remote-first, outcome-driven, and obsessed with helping brands bloom.',
+    "We're hiring growth marketers, performance creatives, and engineers. Remote-first, outcome-driven, and obsessed with helping brands bloom.",
   keywords: ['marketing careers', 'growth marketing jobs', 'remote marketing jobs', 'Adnovara careers'],
   alternates: { canonical: '/careers/' },
 };
-
-const openings = [
-  { title: 'Senior Performance Marketing Manager', team: 'Paid Media', location: 'Remote (US/EU)',  type: 'Full-time' },
-  { title: 'Technical SEO Lead',                    team: 'SEO',        location: 'Singapore / Remote', type: 'Full-time' },
-  { title: 'Senior Frontend Engineer',              team: 'Web',        location: 'Remote (Global)',  type: 'Full-time' },
-  { title: 'Creative Strategist — Paid Social',     team: 'Creative',   location: 'Remote (US/EU)',   type: 'Full-time' },
-  { title: 'Growth Analyst',                        team: 'Analytics',  location: 'Remote (Global)',  type: 'Full-time' },
-];
 
 const benefits = [
   { title: 'Remote-first',        desc: 'Work from anywhere. Quarterly team offsites for the parts that are better in person.' },
@@ -26,7 +21,9 @@ const benefits = [
   { title: 'Real equity',          desc: 'Meaningful stake in the agency for all full-time team members after year one.' },
 ];
 
-export default function CareersPage() {
+export default async function CareersPage() {
+  const openings = await listPositions({ visibleOnly: true });
+
   return (
     <main>
       <section className="relative overflow-hidden">
@@ -60,32 +57,51 @@ export default function CareersPage() {
         <Reveal>
           <div className="mb-10 flex items-baseline justify-between border-b-2 border-ink pb-4">
             <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Open roles</h2>
-            <span className="text-sm text-ink-muted">{openings.length} positions</span>
+            <span className="text-sm text-ink-muted">
+              {openings.length} position{openings.length === 1 ? '' : 's'}
+            </span>
           </div>
         </Reveal>
 
-        <div>
-          {openings.map((r, i) => (
-            <Reveal key={r.title} delay={i * 80}>
-            <a
-              href={`mailto:hiring@adnovara.com?subject=Application: ${encodeURIComponent(r.title)}`}
-              className="group grid grid-cols-1 items-center gap-4 border-b border-[var(--color-border)] py-8 transition hover:pl-4 md:grid-cols-[2fr_1fr_1fr_auto]"
-            >
-              <div>
-                <h3 className="text-xl font-semibold md:text-2xl">{r.title}</h3>
-                <div className="mt-1 text-sm text-ink-muted md:hidden">
-                  {r.team} · {r.location} · {r.type}
-                </div>
-              </div>
-              <div className="hidden text-sm text-ink-muted md:block">{r.team}</div>
-              <div className="hidden text-sm text-ink-muted md:block">{r.location}</div>
-              <span className="inline-flex items-center gap-1.5 text-sm font-medium text-zest-400 transition group-hover:gap-3">
-                Apply <ArrowUpRight size={14} />
-              </span>
-            </a>
-            </Reveal>
-          ))}
-        </div>
+        {openings.length === 0 ? (
+          <p className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 text-center text-sm text-ink-muted">
+            No open roles right now. Want to introduce yourself anyway?{' '}
+            <a href="mailto:hiring@adnovara.com" className="text-zest-400 hover:underline">hiring@adnovara.com</a>
+          </p>
+        ) : (
+          <div>
+            {openings.map((r, i) => {
+              const team = r.statCards.find((c) => /team/i.test(c.key))?.value ?? '';
+              const location = r.statCards.find((c) => /location/i.test(c.key))?.value ?? '';
+              const type = r.statCards.find((c) => /type/i.test(c.key))?.value ?? '';
+              return (
+                <Reveal key={r.slug} delay={i * 80}>
+                  <Link
+                    href={`/careers/${r.slug}/`}
+                    className="group grid grid-cols-1 items-center gap-4 border-b border-[var(--color-border)] py-8 transition hover:pl-4 md:grid-cols-[2fr_1fr_1fr_auto]"
+                  >
+                    <div>
+                      <h3 className="text-xl font-semibold md:text-2xl">
+                        {r.title}
+                        {r.subtitle && (
+                          <span className="ml-2 italic text-ink-muted">{r.subtitle}</span>
+                        )}
+                      </h3>
+                      <div className="mt-1 text-sm text-ink-muted md:hidden">
+                        {[team, location, type].filter(Boolean).join(' · ')}
+                      </div>
+                    </div>
+                    <div className="hidden text-sm text-ink-muted md:block">{team}</div>
+                    <div className="hidden text-sm text-ink-muted md:block">{location}</div>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-zest-400 transition group-hover:gap-3">
+                      Apply <ArrowUpRight size={14} />
+                    </span>
+                  </Link>
+                </Reveal>
+              );
+            })}
+          </div>
+        )}
       </section>
 
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24">
