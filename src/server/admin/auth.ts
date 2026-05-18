@@ -152,23 +152,6 @@ export function isAdminConfigured(): boolean {
   return Boolean(process.env.ADMIN_USERNAME && process.env.ADMIN_PASSWORD_HASH);
 }
 
-export async function ensurePreAuthCsrf(): Promise<string> {
-  const jar = await cookies();
-  const existing = jar.get(PREAUTH_CSRF_COOKIE)?.value;
-  if (existing && /^[a-f0-9]{64}$/i.test(existing)) return existing;
-  const token = randomBytes(32).toString('hex');
-  jar.set({
-    name: PREAUTH_CSRF_COOKIE,
-    value: token,
-    httpOnly: true,
-    secure: isProd,
-    sameSite: 'strict',
-    path: '/admin',
-    maxAge: 60 * 30,
-  });
-  return token;
-}
-
 export async function verifyPreAuthCsrf(submitted: string): Promise<boolean> {
   const jar = await cookies();
   const cookie = jar.get(PREAUTH_CSRF_COOKIE)?.value ?? '';

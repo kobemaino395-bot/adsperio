@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { ensurePreAuthCsrf, readSessionFromCookies } from '@/server/admin/auth';
+import { headers } from 'next/headers';
+import { readSessionFromCookies } from '@/server/admin/auth';
 import { esc } from '@/server/admin/security';
 
 export const dynamic = 'force-dynamic';
@@ -11,7 +12,8 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
   if (session) redirect('/admin/dashboard');
 
   const { error } = await searchParams;
-  const csrf = await ensurePreAuthCsrf();
+  const h = await headers();
+  const csrf = h.get('x-adn-pcsrf') ?? '';
 
   return (
     <div className="mx-auto mt-12 max-w-sm rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">

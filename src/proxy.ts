@@ -2,6 +2,14 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ADMIN_SECURITY_HEADERS } from '@/server/admin/security';
 
+const PREAUTH_CSRF_COOKIE = 'adn_admin_pcsrf';
+const PREAUTH_CSRF_RE = /^[a-f0-9]{64}$/i;
+const isProd = process.env.NODE_ENV === 'production';
+
+function newCsrfToken(): string {
+  return crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
+}
+
 function adminCsp(nonce: string): string {
   const isDev = process.env.NODE_ENV === 'development';
   return [
@@ -42,11 +50,31 @@ export function proxy(request: NextRequest): NextResponse {
   const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
   requestHeaders.set('x-nonce', nonce);
 
+  let pcsrfToSet: string | null = null;
+  if (pathname === '/admin/login' || pathname === '/admin/login/') {
+    const existing = request.cookies.get(PREAUTH_CSRF_COOKIE)?.value;
+    const token = existing && PREAUTH_CSRF_RE.test(existing) ? existing : newCsrfToken();
+    if (token !== existing) pcsrfToSet = token;
+    requestHeaders.set('x-adn-pcsrf', token);
+  }
+
   const res = NextResponse.next({ request: { headers: requestHeaders } });
   for (const [k, v] of Object.entries(ADMIN_SECURITY_HEADERS)) {
     res.headers.set(k, v);
   }
   res.headers.set('Content-Security-Policy', adminCsp(nonce));
+
+  if (pcsrfToSet) {
+    res.cookies.set({
+      name: PREAUTH_CSRF_COOKIE,
+      value: pcsrfToSet,
+      httpOnly: true,
+      secure: isProd,
+      sameSite: 'strict',
+      path: '/admin',
+      maxAge: 60 * 30,
+    });
+  }
   return res;
 }
 
