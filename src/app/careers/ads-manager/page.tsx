@@ -101,16 +101,9 @@ export default function AdsManagerPage() {
                 Apply now
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
-              <a
-                href="/api/downloads/take-home"
-                className="group inline-flex items-center gap-2 border-2 border-[var(--color-ink-warm)] px-7 py-[14px] text-sm font-medium text-[var(--color-ink-warm)] transition hover:bg-[var(--color-ink-warm)] hover:text-[var(--color-bg)]"
-              >
-                <span aria-hidden>↓</span>
-                Download take-home test
-              </a>
             </div>
             <p className="mt-3 text-xs text-ink-muted">
-              Strategy assignment · 2-day completion · PDF or DOCX submission via the form below.
+              Includes a short Technical Assessment · PDF, DOCX, or ZIP · submitted via the form below.
             </p>
           </Reveal>
         </div>
@@ -155,9 +148,9 @@ export default function AdsManagerPage() {
             <Reveal delay={120}>
               <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
                 <div className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]" style={{ boxShadow: 'var(--shadow-brutal)' }}>
-                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Take-home test</div>
+                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Technical Assessment</div>
                   <p className="mt-3 text-sm leading-relaxed text-white/70">
-                    Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF or DOCX accepted.
+                    Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.
                   </p>
                   <a
                     href="/api/downloads/take-home"
@@ -171,10 +164,11 @@ export default function AdsManagerPage() {
                 <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
                   <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Process</div>
                   <ol className="mt-4 space-y-3 text-sm leading-relaxed text-ink-muted">
-                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">01</span><span>Submit the form (CV optional + cover note).</span></li>
-                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">02</span><span>Complete and upload the take-home within 2 days.</span></li>
-                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">03</span><span>30-minute call with the team.</span></li>
-                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">04</span><span>Offer.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">01</span><span>Download the Technical Assessment from the panel above.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">02</span><span>Complete it within 2 days.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">03</span><span>Submit the form with your CV and completed assessment.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">04</span><span>30-minute call with the team.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">05</span><span>Offer.</span></li>
                   </ol>
                 </div>
 

@@ -58,7 +58,7 @@ export default function ApplicationForm() {
         throw new Error('CV exceeds 8 MB.');
       }
       if (!testFile || testFile.size === 0) {
-        throw new Error('Please attach your completed take-home test answer.');
+        throw new Error('Please attach your completed Technical Assessment answer.');
       }
       if (!TEST_TYPES.includes(testFile.type)) {
         throw new Error('Test answer must be PDF, Word, or ZIP.');
@@ -108,7 +108,7 @@ export default function ApplicationForm() {
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
         <h3 className="font-serif text-2xl font-medium tracking-tight">Thanks — we&apos;ve received your application.</h3>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          We review every submission and your take-home answer carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
+          We review every submission and your Technical Assessment carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
     );
@@ -134,7 +134,7 @@ export default function ApplicationForm() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
-        <FileField label="Take-home test answer" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" hint="PDF, DOCX, or ZIP · max 8 MB" />
+        <FileField label="Technical Assessment answer" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" hint="PDF, DOCX, or ZIP · max 8 MB" />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">
