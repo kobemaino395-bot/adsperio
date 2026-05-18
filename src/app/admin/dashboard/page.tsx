@@ -3,7 +3,9 @@ import { headers } from 'next/headers';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSheetData } from '@/server/applications/sheet';
-import { fileMeta, readStats, takeHomePath } from '@/server/storage';
+import { readStats } from '@/server/storage';
+import { getFileSlot } from '@/content/files';
+import { readSlotStatus } from '@/server/files';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,11 +16,15 @@ export default async function DashboardPage() {
   const h = await headers();
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/dashboard' });
 
-  const [sheet, stats, asset] = await Promise.all([
+  const takeHomeSlot = getFileSlot('take-home');
+  const [sheet, stats, takeHomeStatus] = await Promise.all([
     getSheetData(),
     readStats(),
-    fileMeta(takeHomePath()),
+    takeHomeSlot ? readSlotStatus(takeHomeSlot) : Promise.resolve(null),
   ]);
+  const asset = takeHomeStatus?.hasFile
+    ? { size: takeHomeStatus.size, mtimeMs: takeHomeStatus.mtimeMs }
+    : null;
 
   const total = sheet.rows.length;
   const recent = sheet.rows.slice(Math.max(0, sheet.rows.length - 5)).reverse();

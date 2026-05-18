@@ -124,7 +124,7 @@ export default function ApplicationForm() {
         <Field label="Country" name="country" required />
         <Field label="Phone" name="phone" optional />
         <Field label="Portfolio / LinkedIn URL" name="portfolioUrl" type="url" optional placeholder="https://" />
-        <Field label="Current company" name="currentCompany" optional />
+        <Field label="Most recent company" name="currentCompany" optional />
         <Field label="Years of paid-media experience" name="yearsExperience" type="number" min={0} max={60} step={1} required />
         <Field label="Expected salary (USD/year)" name="expectedSalary" required placeholder="e.g. 90,000" />
         <Field label="Notice period" name="noticePeriod" required placeholder="e.g. 4 weeks" />

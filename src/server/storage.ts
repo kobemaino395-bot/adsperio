@@ -17,36 +17,6 @@ export function takeHomePath(): string {
   return path.join(downloadsDir(), 'take-home');
 }
 
-export function takeHomeBackupPath(): string {
-  return path.join(downloadsDir(), 'take-home.bak');
-}
-
-export function takeHomeMetaPath(): string {
-  return path.join(downloadsDir(), 'take-home.meta.json');
-}
-
-export type TakeHomeMeta = {
-  filename: string;
-  contentType: string;
-  uploadedAt: string;
-  size: number;
-};
-
-export async function readTakeHomeMeta(): Promise<TakeHomeMeta | null> {
-  try {
-    const raw = await fs.readFile(takeHomeMetaPath(), 'utf8');
-    return JSON.parse(raw) as TakeHomeMeta;
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null;
-    throw err;
-  }
-}
-
-export async function writeTakeHomeMeta(meta: TakeHomeMeta): Promise<void> {
-  ensureDataDirs();
-  await fs.writeFile(takeHomeMetaPath(), JSON.stringify(meta), 'utf8');
-}
-
 export function sanitizeFilename(name: string): string {
   const base = name.replace(/.*[\\/]/, '');
   const cleaned = base.replace(/[^a-zA-Z0-9._-]+/g, '_').replace(/^_+|_+$/g, '');
