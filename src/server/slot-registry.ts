@@ -159,6 +159,37 @@ export async function createSlot(input: CreateSlotInput): Promise<{ ok: true; sl
   return { ok: true, slot: rec };
 }
 
+export type UpdateSlotInput = {
+  title?: string;
+  description?: string;
+  publicFilename?: string;
+  publicMimeType?: string;
+  maxBytes?: number;
+};
+
+export async function updateSlot(
+  slug: string,
+  input: UpdateSlotInput,
+): Promise<{ ok: true; slot: SlotRecord } | { ok: false; reason: string }> {
+  const list = await load();
+  const idx = list.findIndex((s) => s.slug === slug);
+  if (idx < 0) return { ok: false, reason: 'Slot not found' };
+  const current = list[idx]!;
+
+  const next: SlotRecord = {
+    ...current,
+    title: input.title !== undefined ? input.title.trim().slice(0, 120) || current.title : current.title,
+    description: input.description !== undefined ? input.description.trim().slice(0, 500) : current.description,
+    publicFilename: input.publicFilename !== undefined ? input.publicFilename.trim().slice(0, 200) : current.publicFilename,
+    publicMimeType: input.publicMimeType !== undefined ? input.publicMimeType.trim().slice(0, 100) : current.publicMimeType,
+    maxBytes: input.maxBytes && input.maxBytes > 0 ? Math.min(input.maxBytes, 500 * 1024 * 1024) : current.maxBytes,
+  };
+
+  list[idx] = next;
+  await save(list);
+  return { ok: true, slot: next };
+}
+
 export async function deleteSlot(slug: string): Promise<{ ok: true } | { ok: false; reason: string }> {
   const list = await load();
   const rec = list.find((s) => s.slug === slug);

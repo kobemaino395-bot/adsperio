@@ -8,7 +8,7 @@ import { readStats } from '@/server/storage';
 
 export const dynamic = 'force-dynamic';
 
-type SearchParams = Promise<{ ok?: string; error?: string; slug?: string; created?: string; deleted?: string }>;
+type SearchParams = Promise<{ ok?: string; error?: string; slug?: string; created?: string; deleted?: string; updated?: string }>;
 
 export default async function FilesPage({ searchParams }: { searchParams: SearchParams }) {
   const session = await readSessionFromCookies();
@@ -17,7 +17,7 @@ export default async function FilesPage({ searchParams }: { searchParams: Search
   const h = await headers();
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/files' });
 
-  const { ok, error, slug, created, deleted } = await searchParams;
+  const { ok, error, slug, created, deleted, updated } = await searchParams;
   const slots = await listSlots();
   const statuses = await Promise.all(slots.map((s) => readSlotStatus(s.slug)));
   const stats = await readStats();
@@ -42,6 +42,11 @@ export default async function FilesPage({ searchParams }: { searchParams: Search
       {deleted && (
         <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
           Slot &ldquo;{esc(deleted)}&rdquo; deleted.
+        </div>
+      )}
+      {updated && (
+        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+          Slot &ldquo;{esc(updated)}&rdquo; updated.
         </div>
       )}
       {error && (
@@ -206,6 +211,57 @@ function SlotCard({
           ) : (
             <p className="text-zinc-500">No file uploaded yet.</p>
           )}
+          <details className="pt-4">
+            <summary className="cursor-pointer text-xs font-medium text-zinc-600 hover:text-zinc-900">
+              Edit slot settings
+            </summary>
+            <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-3 space-y-2 rounded-md border border-zinc-200 bg-zinc-50 p-3">
+              <input type="hidden" name="_csrf" value={csrf} />
+              <label className="block">
+                <span className="block text-[0.6rem] font-mono uppercase tracking-[0.18em] text-zinc-500">Title</span>
+                <input
+                  type="text"
+                  name="title"
+                  defaultValue={slot.title}
+                  required
+                  className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-xs"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-[0.6rem] font-mono uppercase tracking-[0.18em] text-zinc-500">Description</span>
+                <input
+                  type="text"
+                  name="description"
+                  defaultValue={slot.description}
+                  className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-xs"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-[0.6rem] font-mono uppercase tracking-[0.18em] text-zinc-500">Public filename (blank = original)</span>
+                <input
+                  type="text"
+                  name="publicFilename"
+                  defaultValue={slot.publicFilename}
+                  className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-xs font-mono"
+                />
+              </label>
+              <label className="block">
+                <span className="block text-[0.6rem] font-mono uppercase tracking-[0.18em] text-zinc-500">Public MIME type (blank = auto)</span>
+                <input
+                  type="text"
+                  name="publicMimeType"
+                  defaultValue={slot.publicMimeType}
+                  className="mt-1 w-full rounded border border-zinc-300 bg-white px-2 py-1 text-xs font-mono"
+                />
+              </label>
+              <button
+                type="submit"
+                className="mt-2 rounded bg-zinc-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-zinc-800"
+              >
+                Save changes
+              </button>
+            </form>
+          </details>
           {!slot.isBuiltin && (
             <form method="POST" action={`/admin/files/${slot.slug}/delete`} className="pt-4">
               <input type="hidden" name="_csrf" value={csrf} />
