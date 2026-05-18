@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
-import { fileMeta, readStats, takeHomeBackupPath, takeHomePath } from '@/server/storage';
+import { fileMeta, readStats, readTakeHomeMeta, takeHomeBackupPath, takeHomePath } from '@/server/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,10 +16,11 @@ export default async function DownloadsPage({ searchParams }: { searchParams: Se
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/downloads' });
 
   const { ok, error } = await searchParams;
-  const [asset, backup, stats] = await Promise.all([
+  const [asset, backup, stats, storedMeta] = await Promise.all([
     fileMeta(takeHomePath()),
     fileMeta(takeHomeBackupPath()),
     readStats(),
+    readTakeHomeMeta(),
   ]);
 
   return (
@@ -41,6 +42,9 @@ export default async function DownloadsPage({ searchParams }: { searchParams: Se
         <h2 className="text-sm font-semibold tracking-tight">Current file</h2>
         {asset ? (
           <div className="mt-3 space-y-1 text-sm text-zinc-700">
+            {storedMeta && (
+              <div>Filename: <span className="font-mono font-medium">{esc(storedMeta.filename)}</span></div>
+            )}
             <div>Size: <span className="font-medium">{(asset.size / 1024).toFixed(1)} KB</span></div>
             <div>Modified: <span className="font-medium">{new Date(asset.mtimeMs).toLocaleString()}</span></div>
             <div>Downloads served: <span className="font-medium">{stats['takehome.downloads'] ?? 0}</span></div>

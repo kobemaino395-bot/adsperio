@@ -5,7 +5,14 @@ import path from 'node:path';
 import type { NextRequest } from 'next/server';
 import { readSessionFromCookies, verifySessionCsrf } from '@/server/admin/auth';
 import { adminRedirect, audit, readClientIp } from '@/server/admin/security';
-import { ensureDataDirs, fileMeta, takeHomeBackupPath, takeHomePath } from '@/server/storage';
+import {
+  ensureDataDirs,
+  fileMeta,
+  sanitizeFilename,
+  takeHomeBackupPath,
+  takeHomePath,
+  writeTakeHomeMeta,
+} from '@/server/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,6 +84,13 @@ export async function POST(request: NextRequest): Promise<Response> {
     await fs.copyFile(tmp, target);
     await fs.unlink(tmp).catch(() => undefined);
   }
+
+  await writeTakeHomeMeta({
+    filename: sanitizeFilename(file.name),
+    contentType: file.type || 'application/octet-stream',
+    uploadedAt: new Date().toISOString(),
+    size: buf.length,
+  });
 
   audit({
     kind: 'upload.replace',

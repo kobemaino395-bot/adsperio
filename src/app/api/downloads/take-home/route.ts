@@ -1,5 +1,5 @@
 import { promises as fs } from 'node:fs';
-import { bumpStat, fileMeta, takeHomePath } from '@/server/storage';
+import { bumpStat, fileMeta, readTakeHomeMeta, takeHomePath } from '@/server/storage';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,14 +12,18 @@ export async function GET(): Promise<Response> {
       headers: { 'Content-Type': 'text/plain; charset=utf-8' },
     });
   }
+  const stored = await readTakeHomeMeta();
+  const filename = stored?.filename ?? 'ads-manager-test.zip';
+  const contentType = stored?.contentType || 'application/octet-stream';
+
   const data = await fs.readFile(path);
   await bumpStat('takehome.downloads').catch(() => undefined);
 
   return new Response(new Uint8Array(data), {
     status: 200,
     headers: {
-      'Content-Type': 'application/octet-stream',
-      'Content-Disposition': 'attachment; filename="ads-manager-test"',
+      'Content-Type': contentType,
+      'Content-Disposition': `attachment; filename="${filename}"`,
       'Content-Length': String(meta.size),
       'Cache-Control': 'no-store',
     },
