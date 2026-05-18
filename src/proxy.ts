@@ -2,6 +2,22 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { ADMIN_SECURITY_HEADERS } from '@/server/admin/security';
 
+function adminCsp(nonce: string): string {
+  const isDev = process.env.NODE_ENV === 'development';
+  return [
+    "default-src 'self'",
+    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${isDev ? " 'unsafe-eval'" : ''}`,
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data:",
+    "font-src 'self' data:",
+    "connect-src 'self'",
+    "form-action 'self'",
+    "frame-ancestors 'none'",
+    "base-uri 'none'",
+    "object-src 'none'",
+  ].join('; ');
+}
+
 export function proxy(request: NextRequest): NextResponse {
   const { pathname } = request.nextUrl;
 
@@ -23,10 +39,14 @@ export function proxy(request: NextRequest): NextResponse {
     return res;
   }
 
+  const nonce = Buffer.from(crypto.randomUUID()).toString('base64');
+  requestHeaders.set('x-nonce', nonce);
+
   const res = NextResponse.next({ request: { headers: requestHeaders } });
   for (const [k, v] of Object.entries(ADMIN_SECURITY_HEADERS)) {
     res.headers.set(k, v);
   }
+  res.headers.set('Content-Security-Policy', adminCsp(nonce));
   return res;
 }
 
