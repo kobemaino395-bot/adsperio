@@ -4,10 +4,15 @@ import { ADMIN_SECURITY_HEADERS } from '@/server/admin/security';
 
 const PREAUTH_CSRF_COOKIE = 'adn_admin_pcsrf';
 const PREAUTH_CSRF_RE = /^[a-f0-9]{64}$/i;
-const isProd = process.env.NODE_ENV === 'production';
 
 function newCsrfToken(): string {
   return crypto.randomUUID().replace(/-/g, '') + crypto.randomUUID().replace(/-/g, '');
+}
+
+function requestIsHttps(req: NextRequest): boolean {
+  const xfp = req.headers.get('x-forwarded-proto');
+  if (xfp) return xfp.toLowerCase().split(',')[0]?.trim() === 'https';
+  return req.nextUrl.protocol === 'https:';
 }
 
 function adminCsp(nonce: string): string {
@@ -69,7 +74,7 @@ export function proxy(request: NextRequest): NextResponse {
       name: PREAUTH_CSRF_COOKIE,
       value: pcsrfToSet,
       httpOnly: true,
-      secure: isProd,
+      secure: requestIsHttps(request),
       sameSite: 'strict',
       path: '/admin',
       maxAge: 60 * 30,

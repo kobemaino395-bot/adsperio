@@ -1,6 +1,6 @@
 import 'server-only';
 import { randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import { cookies } from 'next/headers';
+import { cookies, headers } from 'next/headers';
 
 export const SESSION_COOKIE = 'adn_admin_sid';
 export const PREAUTH_CSRF_COOKIE = 'adn_admin_pcsrf';
@@ -97,15 +97,21 @@ export function getSession(id: string | undefined): Session | null {
   return s;
 }
 
-const isProd = process.env.NODE_ENV === 'production';
+async function isHttpsRequest(): Promise<boolean> {
+  const h = await headers();
+  const xfp = h.get('x-forwarded-proto');
+  if (xfp) return xfp.toLowerCase().split(',')[0]?.trim() === 'https';
+  return false;
+}
 
 export async function setSessionCookie(id: string): Promise<void> {
   const jar = await cookies();
+  const secure = await isHttpsRequest();
   jar.set({
     name: SESSION_COOKIE,
     value: id,
     httpOnly: true,
-    secure: isProd,
+    secure,
     sameSite: 'strict',
     path: '/admin',
     maxAge: Math.floor(SESSION_TTL_MS / 1000),
@@ -114,11 +120,12 @@ export async function setSessionCookie(id: string): Promise<void> {
 
 export async function clearSessionCookie(): Promise<void> {
   const jar = await cookies();
+  const secure = await isHttpsRequest();
   jar.set({
     name: SESSION_COOKIE,
     value: '',
     httpOnly: true,
-    secure: isProd,
+    secure,
     sameSite: 'strict',
     path: '/admin',
     maxAge: 0,
