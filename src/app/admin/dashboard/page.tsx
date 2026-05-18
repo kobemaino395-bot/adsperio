@@ -4,7 +4,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSheetData } from '@/server/applications/sheet';
 import { readStats } from '@/server/storage';
-import { getFileSlot } from '@/content/files';
+import { getSlot } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 
 export const dynamic = 'force-dynamic';
@@ -16,11 +16,11 @@ export default async function DashboardPage() {
   const h = await headers();
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/dashboard' });
 
-  const takeHomeSlot = getFileSlot('take-home');
+  const takeHomeSlot = await getSlot('take-home');
   const [sheet, stats, takeHomeStatus] = await Promise.all([
     getSheetData(),
     readStats(),
-    takeHomeSlot ? readSlotStatus(takeHomeSlot) : Promise.resolve(null),
+    takeHomeSlot ? readSlotStatus(takeHomeSlot.slug) : Promise.resolve(null),
   ]);
   const asset = takeHomeStatus?.hasFile
     ? { size: takeHomeStatus.size, mtimeMs: takeHomeStatus.mtimeMs }

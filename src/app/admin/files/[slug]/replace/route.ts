@@ -1,7 +1,7 @@
 import type { NextRequest } from 'next/server';
 import { readSessionFromCookies, verifySessionCsrf } from '@/server/admin/auth';
 import { adminRedirect, audit, readClientIp } from '@/server/admin/security';
-import { getFileSlot } from '@/content/files';
+import { getSlot } from '@/server/slot-registry';
 import { replaceSlotFile } from '@/server/files';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +18,7 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
   if (!session) return adminRedirect('/admin/login');
 
   const { slug } = await ctx.params;
-  const slot = getFileSlot(slug);
+  const slot = await getSlot(slug);
   if (!slot) {
     return adminRedirect('/admin/files?error=' + encodeURIComponent(`Unknown slot: ${slug}`));
   }

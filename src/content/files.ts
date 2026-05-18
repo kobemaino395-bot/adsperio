@@ -1,47 +1,38 @@
 /**
- * Adnovara admin file slots.
+ * Built-in file slots seeded on first run.
  *
- * Each entry defines a managed file that the admin can upload/replace via
- * /admin/files. Files are stored at data/files/<slug>/file.bin on disk.
+ * After the first request the live source of truth is
+ * data/files/slots.json (managed via /admin/files). Editing these
+ * defaults only affects fresh installs - existing servers keep their
+ * registry as-is.
  *
- * To add a new file slot, append an entry here and rebuild. No code changes
- * are required elsewhere.
+ * Built-in slugs are protected from deletion since the public site
+ * links to them by path.
  */
 
-export type FileSlot = {
+export type DefaultSlot = {
   slug: string;
   title: string;
   description: string;
   publicFilename: string;
   publicMimeType: string;
-  accept: string;
-  magicBytes: string[];
-  maxBytes: number;
 };
 
-export const fileSlots: FileSlot[] = [
+export const DEFAULT_SLOTS: DefaultSlot[] = [
   {
     slug: 'take-home',
     title: 'Ads Manager take-home test',
     description: 'Served at /api/downloads/take-home. Linked from /careers/ads-manager and /ads-manager-test.',
     publicFilename: 'Technical_Assessment.zip',
     publicMimeType: 'application/zip',
-    accept: '.zip,.docx,application/zip,application/x-zip-compressed,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    magicBytes: ['504b0304'],
-    maxBytes: 50 * 1024 * 1024,
   },
   {
     slug: 'remote-policy',
     title: 'Remote work policy',
-    description: 'PDF available at /api/downloads/remote-policy. Link to it from wherever you need.',
+    description: 'Available at /api/downloads/remote-policy.',
     publicFilename: 'Adnovara_Remote_Policy.pdf',
     publicMimeType: 'application/pdf',
-    accept: '.pdf,application/pdf',
-    magicBytes: ['25504446'],
-    maxBytes: 20 * 1024 * 1024,
   },
 ];
 
-export function getFileSlot(slug: string): FileSlot | undefined {
-  return fileSlots.find((s) => s.slug === slug);
-}
+export const BUILTIN_SLUGS = new Set(DEFAULT_SLOTS.map((s) => s.slug));
