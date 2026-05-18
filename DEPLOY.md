@@ -106,9 +106,11 @@ Save the output — you'll paste it into both the Apps Script and the systemd ov
 
 1. From the Sheet: **Extensions → Apps Script**.
 2. Replace the default `Code.gs` contents with [`scripts/apps-script.template.js`](scripts/apps-script.template.js) from this repo.
-3. Edit two constants at the top:
+3. Edit three constants at the top:
+   - `SHEET_ID` — the long ID in your Sheet URL between `/d/` and `/edit`.
    - `DRIVE_FOLDER_ID` — the Drive folder ID from 3.1.
    - `READ_SECRET` — the random string from 3.2.
+   Using `openById(SHEET_ID)` is more robust than `getActiveSpreadsheet()` and works whether the script is standalone or container-bound.
 4. Save. Then **Deploy → New deployment**:
    - Type: **Web app**
    - Execute as: **Me**

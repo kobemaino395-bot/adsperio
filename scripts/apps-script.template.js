@@ -5,11 +5,21 @@
  *   - "Execute as": Me (the Drive/Sheet owner)
  *   - "Who has access": Anyone
  *
- * Replace the two constants below before deploying.
+ * Replace the three constants below before deploying.
+ *
+ * SHEET_ID is the long ID in the spreadsheet URL between /d/ and /edit:
+ *   https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit
+ * Using openById works whether the script is standalone or container-bound.
  */
 
+const SHEET_ID = 'PASTE_SPREADSHEET_ID_HERE';
 const DRIVE_FOLDER_ID = 'PASTE_DRIVE_FOLDER_ID_HERE';
 const READ_SECRET = 'PASTE_LONG_RANDOM_STRING_HERE';
+
+function getSheet_() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  return ss.getSheets()[0];
+}
 
 const HEADERS = [
   'submittedAt', 'id', 'fullName', 'email', 'country', 'phone',
@@ -37,7 +47,7 @@ function doPost(e) {
       }
     }
 
-    const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+    const sheet = getSheet_();
     if (sheet.getLastRow() === 0) sheet.appendRow(HEADERS);
 
     sheet.appendRow([
@@ -58,7 +68,7 @@ function doGet(e) {
   if (!constantTimeEqual(secret, READ_SECRET)) {
     return jsonOut({ ok: false, error: 'forbidden' });
   }
-  const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  const sheet = getSheet_();
   const values = sheet.getDataRange().getValues();
   if (values.length === 0) return jsonOut({ headers: HEADERS, rows: [] });
   const headers = values[0].map(String);
