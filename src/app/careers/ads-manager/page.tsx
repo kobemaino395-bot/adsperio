@@ -92,7 +92,7 @@ export default function AdsManagerPage() {
             </p>
           </Reveal>
           <Reveal delay={400}>
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-10 flex flex-wrap items-center gap-4">
               <a
                 href="#apply"
                 className="group relative inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
@@ -101,7 +101,17 @@ export default function AdsManagerPage() {
                 Apply now
                 <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
+              <a
+                href="/api/downloads/take-home"
+                className="group inline-flex items-center gap-2 border-2 border-[var(--color-ink-warm)] px-7 py-[14px] text-sm font-medium text-[var(--color-ink-warm)] transition hover:bg-[var(--color-ink-warm)] hover:text-[var(--color-bg)]"
+              >
+                <span aria-hidden>↓</span>
+                Download take-home test
+              </a>
             </div>
+            <p className="mt-3 text-xs text-ink-muted">
+              Strategy assignment · 2-day completion · PDF or DOCX submission via the form below.
+            </p>
           </Reveal>
         </div>
       </section>
@@ -119,6 +129,67 @@ export default function AdsManagerPage() {
               ))}
             </dl>
           </Reveal>
+        </div>
+      </section>
+
+      {/* APPLY — prominent two-column section */}
+      <section id="apply" className="relative border-b border-[var(--color-border)] bg-[var(--color-bg)] py-24">
+        <div aria-hidden className="bg-dots absolute inset-0 opacity-30" />
+        <div className="container-zest relative">
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.4fr_1fr]">
+            <Reveal>
+              <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8 md:p-10" style={{ boxShadow: 'var(--shadow-md)' }}>
+                <SectionLabel>Apply for this role</SectionLabel>
+                <h2 className="mt-4 font-serif text-3xl font-medium tracking-tight md:text-4xl">
+                  Tell us about yourself.
+                </h2>
+                <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">
+                  Submissions go straight to the hiring team. We review every one and reply within 5 business days.
+                </p>
+                <div className="mt-8">
+                  <ApplicationForm />
+                </div>
+              </div>
+            </Reveal>
+
+            <Reveal delay={120}>
+              <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
+                <div className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]" style={{ boxShadow: 'var(--shadow-brutal)' }}>
+                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Take-home test</div>
+                  <p className="mt-3 text-sm leading-relaxed text-white/70">
+                    Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF or DOCX accepted.
+                  </p>
+                  <a
+                    href="/api/downloads/take-home"
+                    className="mt-6 flex items-center justify-between gap-2 border border-white/20 px-5 py-3 text-sm font-medium transition hover:bg-white/10"
+                  >
+                    Download assignment
+                    <span aria-hidden>↓</span>
+                  </a>
+                </div>
+
+                <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
+                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Process</div>
+                  <ol className="mt-4 space-y-3 text-sm leading-relaxed text-ink-muted">
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">01</span><span>Submit the form (CV optional + cover note).</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">02</span><span>Complete and upload the take-home within 2 days.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">03</span><span>30-minute call with the team.</span></li>
+                    <li className="flex gap-3"><span className="font-mono text-xs text-[var(--color-accent)]">04</span><span>Offer.</span></li>
+                  </ol>
+                </div>
+
+                <div className="rounded-2xl border border-[var(--color-border)] p-8">
+                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Questions?</div>
+                  <a
+                    href="mailto:hiring@adnovara.com?subject=Question about Ads Manager role"
+                    className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                  >
+                    hiring@adnovara.com
+                  </a>
+                </div>
+              </aside>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -239,25 +310,6 @@ export default function AdsManagerPage() {
               </div>
             </Reveal>
           </aside>
-        </div>
-      </section>
-
-      {/* APPLICATION FORM */}
-      <section id="apply" className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-24">
-        <div className="container-zest max-w-3xl">
-          <Reveal>
-            <SectionLabel>Apply for this role</SectionLabel>
-            <h2 className="mt-4 font-serif text-4xl font-medium tracking-tight md:text-5xl">
-              Tell us about yourself.
-            </h2>
-            <p className="mt-4 text-base leading-relaxed text-ink-muted">
-              Submissions go straight to the hiring team. We review every one and reply within 5 business days.
-              Your data is processed only for this role and stored for up to 12 months.
-            </p>
-          </Reveal>
-          <div className="mt-12">
-            <ApplicationForm />
-          </div>
         </div>
       </section>
 
