@@ -8,24 +8,24 @@ export type TeamMember = {
 
 export const team: TeamMember[] = [
   {
-    slug: 'maya-tan',
-    name: 'Maya Tan',
+    slug: 'rachel-tan',
+    name: 'Rachel Tan',
     role: 'Founder & Managing Director',
     bio: 'Built Adnovara in 2020 after a decade leading paid media at consumer and SaaS brands across Singapore and Sydney.',
-    image: '/images/team/maya-tan.jpg',
+    image: '/images/team/rachel-tan.jpg',
   },
   {
-    slug: 'serena-lim',
-    name: 'Serena Lim',
+    slug: 'wang-xinyi',
+    name: 'Wang Xinyi',
     role: 'Head of Paid Media',
     bio: 'Manages portfolio strategy across Google, Meta, and LinkedIn. Previously scaled DTC brands from $1M to $20M in annual revenue.',
-    image: '/images/team/serena-lim.jpg',
+    image: '/images/team/wang-xinyi.jpg',
   },
   {
-    slug: 'arjun-mehta',
-    name: 'Arjun Mehta',
+    slug: 'adrian-goh',
+    name: 'Adrian Goh',
     role: 'Lead Growth Strategist',
     bio: 'Specialises in attribution modelling, LTV-aware bidding, and creative testing systems for high-velocity teams.',
-    image: '/images/team/arjun-mehta.jpg',
+    image: '/images/team/adrian-goh.jpg',
   },
 ];
