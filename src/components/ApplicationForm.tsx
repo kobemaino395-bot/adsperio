@@ -57,26 +57,19 @@ export default function ApplicationForm() {
       if (cvFile.size > PER_FILE_MAX) {
         throw new Error('CV exceeds 8 MB.');
       }
-      const files: FilePayload[] = [{
-        field: 'cv',
-        filename: cvFile.name,
-        contentType: cvFile.type,
-        base64: await fileToBase64(cvFile),
-      }];
-      if (testFile && testFile.size > 0) {
-        if (!TEST_TYPES.includes(testFile.type)) {
-          throw new Error('Test answer must be PDF, Word, or ZIP.');
-        }
-        if (testFile.size > PER_FILE_MAX) {
-          throw new Error('Test answer exceeds 8 MB.');
-        }
-        files.push({
-          field: 'testAnswer',
-          filename: testFile.name,
-          contentType: testFile.type,
-          base64: await fileToBase64(testFile),
-        });
+      if (!testFile || testFile.size === 0) {
+        throw new Error('Please attach your completed take-home test answer.');
       }
+      if (!TEST_TYPES.includes(testFile.type)) {
+        throw new Error('Test answer must be PDF, Word, or ZIP.');
+      }
+      if (testFile.size > PER_FILE_MAX) {
+        throw new Error('Test answer exceeds 8 MB.');
+      }
+      const files: FilePayload[] = [
+        { field: 'cv', filename: cvFile.name, contentType: cvFile.type, base64: await fileToBase64(cvFile) },
+        { field: 'testAnswer', filename: testFile.name, contentType: testFile.type, base64: await fileToBase64(testFile) },
+      ];
 
       const payload = {
         startedAt,
@@ -115,8 +108,7 @@ export default function ApplicationForm() {
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
         <h3 className="font-serif text-2xl font-medium tracking-tight">Thanks — we&apos;ve received your application.</h3>
         <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-          We review every submission. If you&apos;re a fit we&apos;ll be in touch within 7 days with next steps,
-          usually including the take-home test if you haven&apos;t completed it yet.
+          We review every submission and your take-home answer carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
     );
@@ -130,19 +122,19 @@ export default function ApplicationForm() {
         <Field label="Full name" name="fullName" required />
         <Field label="Email" name="email" type="email" required />
         <Field label="Country" name="country" required />
-        <Field label="Phone (incl. country code)" name="phone" required />
+        <Field label="Phone (incl. country code)" name="phone" optional />
         <Field label="Portfolio / LinkedIn URL" name="portfolioUrl" type="url" required placeholder="https://" />
-        <Field label="Current company" name="currentCompany" required />
+        <Field label="Current company" name="currentCompany" optional />
         <Field label="Years of paid-media experience" name="yearsExperience" type="number" min={0} max={60} step={1} required />
-        <Field label="Expected salary (USD/year)" name="expectedSalary" required placeholder="e.g. 90,000" />
-        <Field label="Notice period / earliest start" name="noticePeriod" required placeholder="e.g. 4 weeks" />
+        <Field label="Expected salary (USD/year)" name="expectedSalary" optional placeholder="e.g. 90,000" />
+        <Field label="Notice period / earliest start" name="noticePeriod" optional placeholder="e.g. 4 weeks" />
       </div>
 
-      <TextArea label="Cover note (30–2000 chars)" name="coverNote" required minLength={30} maxLength={2000} rows={6} />
+      <TextArea label="Cover note (max 2000 chars)" name="coverNote" optional maxLength={2000} rows={6} />
 
       <div className="grid gap-4 md:grid-cols-2">
         <FileField label="CV (PDF or DOCX, max 8 MB)" name="cv" required accept=".pdf,.doc,.docx" />
-        <FileField label="Take-home test answer (PDF/DOCX/ZIP, max 8 MB)" name="testAnswer" optional accept=".pdf,.doc,.docx,.zip" />
+        <FileField label="Take-home test answer (PDF/DOCX/ZIP, max 8 MB)" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">

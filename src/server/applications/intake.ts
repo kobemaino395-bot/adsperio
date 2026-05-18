@@ -41,7 +41,7 @@ const MAX_NOTE = 2000;
 const PER_FILE_MAX = 8 * 1024 * 1024;
 const ALLOWED_FILES: Record<IncomingFile['field'], { required: boolean; mimes: RegExp }> = {
   cv: { required: true, mimes: /^(application\/pdf|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
-  testAnswer: { required: false, mimes: /^(application\/pdf|application\/zip|application\/x-zip-compressed|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
+  testAnswer: { required: true, mimes: /^(application\/pdf|application\/zip|application\/x-zip-compressed|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
 };
 
 function s(v: unknown, max = MAX_STR): string {
@@ -77,15 +77,10 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   if (fullName.length < 2) return { ok: false, error: 'Full name is required' };
   if (!EMAIL_RE.test(email)) return { ok: false, error: 'Valid email is required' };
   if (country.length < 2) return { ok: false, error: 'Country is required' };
-  if (phone.length < 4) return { ok: false, error: 'Phone is required' };
   if (!URL_RE.test(portfolioUrl)) return { ok: false, error: 'Portfolio URL must start with http(s)://' };
-  if (currentCompany.length < 1) return { ok: false, error: 'Current company is required' };
   if (!Number.isFinite(yearsExperience) || yearsExperience < 0 || yearsExperience > 60) {
     return { ok: false, error: 'Years of experience must be a number between 0 and 60' };
   }
-  if (expectedSalary.length < 1) return { ok: false, error: 'Expected salary is required' };
-  if (noticePeriod.length < 1) return { ok: false, error: 'Notice period is required' };
-  if (coverNote.length < 30) return { ok: false, error: 'Cover note must be at least 30 characters' };
   if (!consent) return { ok: false, error: 'GDPR consent is required' };
 
   const rawFiles = Array.isArray(b.files) ? b.files : [];
@@ -117,6 +112,9 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
 
   if (ALLOWED_FILES.cv.required && !seen.has('cv')) {
     return { ok: false, error: 'CV file is required' };
+  }
+  if (ALLOWED_FILES.testAnswer.required && !seen.has('testAnswer')) {
+    return { ok: false, error: 'Take-home test answer is required' };
   }
 
   return {
