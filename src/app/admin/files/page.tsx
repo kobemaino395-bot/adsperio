@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { DEFAULT_MAX_BYTES, listSlots, type SlotRecord } from '@/server/slot-registry';
-import { readSlotStatus, type SlotStatus } from '@/server/files';
+import { effectivePublicDownload, readSlotStatus, type SlotStatus } from '@/server/files';
 import { readStats } from '@/server/storage';
 
 export const dynamic = 'force-dynamic';
@@ -122,17 +122,23 @@ function CreateSlotCard({ csrf }: { csrf: string }) {
             placeholder="e.g. Adnovara_Handbook.pdf"
             className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
           />
-          <p className="mt-1 text-xs text-zinc-500">If blank, visitors get the original uploaded filename.</p>
+          <p className="mt-1 text-xs text-zinc-500">
+            Used as a brand-name override. The extension always follows whatever you upload
+            (e.g. <span className="font-mono">Adnovara_Handbook</span> + upload a .zip → served as <span className="font-mono">Adnovara_Handbook.zip</span>).
+            Blank = use the original uploaded filename as-is.
+          </p>
         </div>
         <div>
-          <label className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public MIME type (optional)</label>
+          <label className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public MIME type (optional override)</label>
           <input
             type="text"
             name="publicMimeType"
-            placeholder="e.g. application/pdf"
+            placeholder="(usually leave blank)"
             className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
           />
-          <p className="mt-1 text-xs text-zinc-500">If blank, uses the uploaded file&apos;s detected type.</p>
+          <p className="mt-1 text-xs text-zinc-500">
+            Rarely needed. Blank = use the type detected from the uploaded file.
+          </p>
         </div>
         <div className="md:col-span-2">
           <button
@@ -188,7 +194,7 @@ function SlotCard({
               <div>
                 Public filename:{' '}
                 <span className="font-mono font-medium">
-                  {esc(slot.publicFilename || status.meta?.originalFilename || `${slot.slug}.bin`)}
+                  {esc(effectivePublicDownload(slot, status.meta).filename)}
                 </span>
               </div>
               <div>Size: <span className="font-medium">{(status.size / 1024).toFixed(1)} KB</span></div>

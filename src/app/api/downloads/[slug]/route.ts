@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getSlot } from '@/server/slot-registry';
-import { readSlotBytes, readSlotStatus } from '@/server/files';
+import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server/files';
 import { bumpStat } from '@/server/storage';
 import type { NextRequest } from 'next/server';
 
@@ -22,8 +22,7 @@ export async function GET(_req: NextRequest, ctx: Ctx): Promise<Response> {
 
   await bumpStat(`files.${slug}.downloads`).catch(() => undefined);
 
-  const filename = slot.publicFilename || status.meta?.originalFilename || `${slot.slug}.bin`;
-  const contentType = slot.publicMimeType || status.meta?.contentType || 'application/octet-stream';
+  const { filename, contentType } = effectivePublicDownload(slot, status.meta);
 
   return new Response(new Uint8Array(data), {
     status: 200,

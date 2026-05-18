@@ -171,3 +171,32 @@ export async function deleteSlotFiles(slug: string): Promise<void> {
   const p = slotPaths(slug);
   await fs.rm(p.dir, { recursive: true, force: true });
 }
+
+/**
+ * Resolve the filename + Content-Type to serve publicly for a slot.
+ *
+ * Rule: the uploaded file's extension and MIME type always win.
+ * - slot.publicFilename is a brand-name override: we strip its
+ *   extension and append the upload's actual extension
+ * - slot.publicMimeType is an explicit MIME override (rarely needed);
+ *   blank means use the upload's recorded contentType
+ */
+export function effectivePublicDownload(
+  slot: { slug: string; publicFilename: string; publicMimeType: string },
+  meta: SlotMeta | null,
+): { filename: string; contentType: string } {
+  const uploaded = meta?.originalFilename ?? '';
+  const uploadedType = meta?.contentType || 'application/octet-stream';
+  const extMatch = uploaded.match(/\.[^.]+$/);
+  const uploadedExt = extMatch ? extMatch[0].toLowerCase() : '';
+
+  let filename: string;
+  if (slot.publicFilename.trim()) {
+    const brand = slot.publicFilename.replace(/\.[^.]+$/, '');
+    filename = brand + uploadedExt;
+  } else {
+    filename = uploaded || `${slot.slug}.bin`;
+  }
+  const contentType = slot.publicMimeType.trim() || uploadedType;
+  return { filename, contentType };
+}
