@@ -74,7 +74,8 @@ export default async function PositionsPage({ searchParams }: { searchParams: Se
         {positions.length === 0 ? (
           <p className="px-6 py-10 text-center text-sm text-zinc-500">No positions yet.</p>
         ) : (
-          <table className="w-full text-sm">
+          <div className="overflow-x-auto">
+          <table className="w-full min-w-[820px] text-sm">
             <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wider text-zinc-500">
               <tr>
                 <th className="px-5 py-2">Title</th>
@@ -110,7 +111,7 @@ export default async function PositionsPage({ searchParams }: { searchParams: Se
                     {new Date(p.updatedAt).toLocaleString()}
                   </td>
                   <td className="px-5 py-3 text-right">
-                    <div className="flex justify-end gap-2">
+                    <div className="flex flex-wrap justify-end gap-1.5">
                       <Link
                         href={`/admin/content/positions/${p.slug}`}
                         className="rounded border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-50"
@@ -150,6 +151,7 @@ export default async function PositionsPage({ searchParams }: { searchParams: Se
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>

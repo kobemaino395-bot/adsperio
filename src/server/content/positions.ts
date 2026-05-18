@@ -368,9 +368,12 @@ export async function updatePosition(slug: string, input: Partial<Position>): Pr
   if (idx < 0) return { ok: false, reason: 'Position not found' };
   const current = list[idx]!;
 
-  // Slug is locked once a download slot is associated
+  // Slug is locked once a download slot is associated.
+  // Treat empty/missing slug as "no change" so a disabled UI field doesn't
+  // get interpreted as an attempted rename.
   let nextSlug = current.slug;
-  const requestedSlug = typeof input.slug === 'string' ? input.slug.trim().toLowerCase() : current.slug;
+  const submitted = typeof input.slug === 'string' ? input.slug.trim().toLowerCase() : '';
+  const requestedSlug = submitted || current.slug;
   if (requestedSlug !== current.slug) {
     if (current.downloadSlotSlug) {
       return { ok: false, reason: 'Slug is locked because a downloadable file is linked to this position' };

@@ -22,6 +22,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
   return (
     <form method="POST" action={action} className="space-y-8">
       <input type="hidden" name="_csrf" value={csrf} />
+      {slugLocked && <input type="hidden" name="slug" value={position.slug} />}
 
       <Section title="Identity">
         <div className="grid gap-4 md:grid-cols-2">
