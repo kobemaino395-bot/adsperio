@@ -122,8 +122,8 @@ export default function ApplicationForm() {
         <Field label="Full name" name="fullName" required />
         <Field label="Email" name="email" type="email" required />
         <Field label="Country" name="country" required />
-        <Field label="Phone (incl. country code)" name="phone" optional />
-        <Field label="Portfolio / LinkedIn URL" name="portfolioUrl" type="url" required placeholder="https://" />
+        <Field label="Phone" name="phone" optional />
+        <Field label="Portfolio / LinkedIn URL" name="portfolioUrl" type="url" optional placeholder="https://" />
         <Field label="Current company" name="currentCompany" optional />
         <Field label="Years of paid-media experience" name="yearsExperience" type="number" min={0} max={60} step={1} required />
         <Field label="Expected salary (USD/year)" name="expectedSalary" required placeholder="e.g. 90,000" />
@@ -133,8 +133,8 @@ export default function ApplicationForm() {
       <TextArea label="Cover note (max 2000 chars)" name="coverNote" optional maxLength={2000} rows={6} />
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FileField label="CV (PDF or DOCX, max 8 MB)" name="cv" required accept=".pdf,.doc,.docx" />
-        <FileField label="Take-home test answer (PDF/DOCX/ZIP, max 8 MB)" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" />
+        <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
+        <FileField label="Take-home test answer" name="testAnswer" required accept=".pdf,.doc,.docx,.zip" hint="PDF, DOCX, or ZIP · max 8 MB" />
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">
@@ -225,10 +225,15 @@ function TextArea({ label, name, required, optional, minLength, maxLength, rows 
   );
 }
 
-function FileField({ label, name, required, optional, accept }: { label: string; name: string; required?: boolean; optional?: boolean; accept?: string }) {
+function FileField({ label, name, required, optional, accept, hint }: { label: string; name: string; required?: boolean; optional?: boolean; accept?: string; hint?: string }) {
   return (
     <label className="block">
       <LabelRow label={label} optional={optional} />
+      {hint && (
+        <span className="mt-1 block font-mono text-[0.55rem] uppercase tracking-[0.2em] text-ink-muted/70">
+          {hint}
+        </span>
+      )}
       <input
         type="file"
         name={name}

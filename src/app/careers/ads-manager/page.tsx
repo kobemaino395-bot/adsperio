@@ -259,26 +259,6 @@ export default function AdsManagerPage() {
 
           {/* SIDEBAR */}
           <aside className="space-y-5">
-            {/* Apply CTA */}
-            <Reveal>
-              <div
-                className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]"
-                style={{ boxShadow: 'var(--shadow-brutal)' }}
-              >
-                <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Ready to apply?</div>
-                <p className="mt-3 text-sm leading-relaxed text-white/70">
-                  Fill in our short application form. We read every submission and reply within 5 business days.
-                </p>
-                <a
-                  href="#apply"
-                  className="mt-6 flex items-center justify-between gap-2 border border-white/20 px-5 py-3 text-sm font-medium transition hover:bg-white/10"
-                >
-                  Open application form
-                  <span>→</span>
-                </a>
-              </div>
-            </Reveal>
-
             {/* Benefits */}
             <Reveal delay={80}>
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">

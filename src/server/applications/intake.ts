@@ -77,7 +77,9 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   if (fullName.length < 2) return { ok: false, error: 'Full name is required' };
   if (!EMAIL_RE.test(email)) return { ok: false, error: 'Valid email is required' };
   if (country.length < 2) return { ok: false, error: 'Country is required' };
-  if (!URL_RE.test(portfolioUrl)) return { ok: false, error: 'Portfolio URL must start with http(s)://' };
+  if (portfolioUrl.length > 0 && !URL_RE.test(portfolioUrl)) {
+    return { ok: false, error: 'Portfolio URL must start with http(s)://' };
+  }
   if (!Number.isFinite(yearsExperience) || yearsExperience < 0 || yearsExperience > 60) {
     return { ok: false, error: 'Years of experience must be a number between 0 and 60' };
   }
