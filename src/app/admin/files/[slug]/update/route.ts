@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 type Ctx = { params: Promise<{ slug: string }> };
 
 function backTo(slug: string, qs: string): string {
-  return `/admin/files?slug=${encodeURIComponent(slug)}&${qs}`;
+  return `/admin/content/files/${encodeURIComponent(slug)}?${qs}`;
 }
 
 export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {

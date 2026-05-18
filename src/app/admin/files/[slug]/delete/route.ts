@@ -19,21 +19,21 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
   try {
     form = await request.formData();
   } catch {
-    return adminRedirect('/admin/files?error=' + encodeURIComponent('Invalid form data'));
+    return adminRedirect('/admin/content/files?error=' + encodeURIComponent('Invalid form data'));
   }
 
   const submittedCsrf = String(form.get('_csrf') ?? '');
   if (!verifySessionCsrf(session, submittedCsrf)) {
     audit({ kind: 'upload.reject', username: session.username, ip, reason: `slot-delete: csrf` });
-    return adminRedirect('/admin/files?error=' + encodeURIComponent('CSRF check failed'));
+    return adminRedirect('/admin/content/files?error=' + encodeURIComponent('CSRF check failed'));
   }
 
   const result = await deleteSlot(slug);
   if (!result.ok) {
-    return adminRedirect('/admin/files?error=' + encodeURIComponent(result.reason));
+    return adminRedirect(`/admin/content/files/${encodeURIComponent(slug)}?error=` + encodeURIComponent(result.reason));
   }
   await deleteSlotFiles(slug).catch(() => undefined);
 
   audit({ kind: 'admin.access', username: session.username, ip, path: `slot.delete:${slug}` });
-  return adminRedirect('/admin/files?deleted=' + encodeURIComponent(slug));
+  return adminRedirect('/admin/content/files?deleted=' + encodeURIComponent(slug));
 }

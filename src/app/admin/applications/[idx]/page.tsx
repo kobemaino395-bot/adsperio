@@ -3,10 +3,14 @@ import { headers } from 'next/headers';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSheetData } from '@/server/applications/sheet';
+import LocalTime from '@/components/admin/LocalTime';
 
 export const dynamic = 'force-dynamic';
 
 type Params = Promise<{ idx: string }>;
+
+const ISO_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/;
+const DATE_COL_RE = /(submittedAt|at$|At$|date|Date)/;
 
 function looksLikeUrl(v: string): boolean {
   return /^https?:\/\/\S+$/i.test(v);
@@ -38,11 +42,14 @@ export default async function ApplicationDetail({ params }: { params: Params }) 
         <dl className="divide-y divide-zinc-100">
           {sheet.headers.map((header, i) => {
             const value = row[i] ?? '';
+            const isDate = DATE_COL_RE.test(header) && ISO_RE.test(value);
             return (
               <div key={header} className="grid grid-cols-1 gap-2 px-5 py-3 sm:grid-cols-[14rem_1fr]">
                 <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">{esc(header)}</dt>
                 <dd className="whitespace-pre-wrap break-words text-sm text-zinc-800">
-                  {looksLikeUrl(value) ? (
+                  {isDate ? (
+                    <LocalTime iso={value} />
+                  ) : looksLikeUrl(value) ? (
                     <a href={value} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
                       {esc(value)}
                     </a>

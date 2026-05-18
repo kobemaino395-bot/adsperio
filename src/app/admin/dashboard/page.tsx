@@ -7,6 +7,7 @@ import { readStats } from '@/server/storage';
 import { getSlot } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
+import LocalTime from '@/components/admin/LocalTime';
 
 export const dynamic = 'force-dynamic';
 
@@ -29,7 +30,7 @@ export default async function DashboardPage() {
     : null;
 
   const total = sheet.rows.length;
-  const recent = sheet.rows.slice(Math.max(0, sheet.rows.length - 5)).reverse();
+  const recent = sheet.rows.slice(Math.max(0, sheet.rows.length - 20)).reverse();
   const headerIdx = (name: string) => sheet.headers.indexOf(name);
 
   return (
@@ -47,12 +48,13 @@ export default async function DashboardPage() {
         <Stat
           label="Take-home downloads"
           value={String(takeHomeStats?.downloads ?? stats['takehome.downloads'] ?? 0)}
-          sub={takeHomeStats?.lastDownloadedAt ? `Last: ${new Date(takeHomeStats.lastDownloadedAt).toLocaleString()}` : ''}
+          subIso={takeHomeStats?.lastDownloadedAt ?? null}
+          subPrefix="Last: "
         />
         <Stat
           label="Take-home asset"
           value={asset ? `${(asset.size / 1024).toFixed(1)} KB` : 'Not uploaded'}
-          sub={asset ? new Date(asset.mtimeMs).toLocaleString() : ''}
+          subIso={asset ? new Date(asset.mtimeMs).toISOString() : null}
         />
       </section>
 
@@ -79,7 +81,9 @@ export default async function DashboardPage() {
                 const realIdx = sheet.rows.length - 1 - i;
                 return (
                   <tr key={realIdx} className="border-t border-zinc-100">
-                    <td className="px-5 py-2 text-zinc-500">{esc(row[headerIdx('submittedAt')] ?? '')}</td>
+                    <td className="px-5 py-2 text-zinc-500">
+                      <LocalTime iso={row[headerIdx('submittedAt')] ?? ''} />
+                    </td>
                     <td className="px-5 py-2 font-medium">{esc(row[headerIdx('fullName')] ?? '')}</td>
                     <td className="px-5 py-2 text-zinc-600">{esc(row[headerIdx('email')] ?? '')}</td>
                     <td className="px-5 py-2 text-zinc-600">{esc(row[headerIdx('country')] ?? '')}</td>
@@ -99,12 +103,18 @@ export default async function DashboardPage() {
   );
 }
 
-function Stat({ label, value, sub }: { label: string; value: string; sub?: string }) {
+function Stat({
+  label, value, subIso, subPrefix,
+}: { label: string; value: string; subIso?: string | null; subPrefix?: string }) {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-5">
       <div className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</div>
       <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
-      {sub && <div className="mt-1 text-xs text-zinc-500">{sub}</div>}
+      {subIso && (
+        <div className="mt-1 text-xs text-zinc-500">
+          {subPrefix ?? ''}<LocalTime iso={subIso} />
+        </div>
+      )}
     </div>
   );
 }

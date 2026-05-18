@@ -32,9 +32,9 @@ export async function POST(request: NextRequest): Promise<Response> {
   });
 
   if (!result.ok) {
-    return adminRedirect('/admin/files?error=' + encodeURIComponent(result.reason));
+    return adminRedirect('/admin/content/files?error=' + encodeURIComponent(result.reason));
   }
 
   audit({ kind: 'admin.access', username: session.username, ip, path: `slot.create:${result.slot.slug}` });
-  return adminRedirect('/admin/files?created=' + encodeURIComponent(result.slot.slug));
+  return adminRedirect('/admin/content/files?created=' + encodeURIComponent(result.slot.slug));
 }

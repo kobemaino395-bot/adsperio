@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
+import { COUNTRIES } from '@/content/countries';
 
 const PER_FILE_MAX = 8 * 1024 * 1024;
 const CV_TYPES = [
@@ -121,7 +122,7 @@ export default function ApplicationForm() {
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Full name" name="fullName" required />
         <Field label="Email" name="email" type="email" required />
-        <Field label="Country" name="country" required />
+        <CountryField label="Country" name="country" required />
         <Field label="Phone" name="phone" optional />
         <Field label="Portfolio / LinkedIn URL" name="portfolioUrl" type="url" optional placeholder="https://" />
         <Field label="Current / Most recent company" name="currentCompany" optional />
@@ -221,6 +222,25 @@ function TextArea({ label, name, required, optional, minLength, maxLength, rows 
         rows={rows}
         className="mt-2 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
       />
+    </label>
+  );
+}
+
+function CountryField({ label, name, required }: { label: string; name: string; required?: boolean }) {
+  return (
+    <label className="block">
+      <LabelRow label={label} />
+      <select
+        name={name}
+        required={required}
+        defaultValue=""
+        className="mt-2 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+      >
+        <option value="" disabled>Select your country…</option>
+        {COUNTRIES.map((c) => (
+          <option key={c} value={c}>{c}</option>
+        ))}
+      </select>
     </label>
   );
 }
