@@ -1,0 +1,153 @@
+import type { Metadata } from 'next';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { site } from '@/content/site';
+import Reveal from '@/components/ui/Reveal';
+
+export const metadata: Metadata = {
+  title: 'Contact — Let\'s Build Your Growth Engine',
+  description:
+    'Get in touch with Adnovara. Free 30-minute strategy call, no commitment. Response within one business day, guaranteed.',
+  keywords: ['contact Adnovara', 'advertising growth company contact', 'book a growth consultation'],
+  alternates: { canonical: '/contact/' },
+};
+
+export default function ContactPage() {
+  return (
+    <main>
+      <section className="relative overflow-hidden">
+        <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
+        <div className="container-zest relative pt-40 pb-16 text-center">
+          <Reveal>
+            <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
+              Let&apos;s{' '}
+              <span className="relative inline-block">
+                <span className="relative z-10">talk growth.</span>
+                <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
+              </span>
+            </h1>
+          </Reveal>
+          <Reveal delay={150}>
+            <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted md:text-xl">
+              Tell us where you are and where you want to be. We&apos;ll reply within one business day.
+            </p>
+          </Reveal>
+        </div>
+      </section>
+
+      <section className="container-zest pb-28">
+        <Reveal>
+        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[2fr_1fr]">
+          {/* FORM */}
+          <form
+            action="https://api.web3forms.com/submit"
+            method="POST"
+            className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8 md:p-12"
+          >
+            {/* Replace with your Web3Forms access key from https://web3forms.com */}
+            <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
+            <input type="hidden" name="subject" value="New contact from adnovara.com" />
+            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+
+            <div className="grid gap-6 md:grid-cols-2">
+              <Field label="Your name" name="name" required />
+              <Field label="Work email" name="email" type="email" required />
+              <Field label="Company" name="company" required />
+              <Field label="Website" name="website" type="url" placeholder="https://" />
+            </div>
+
+            <div className="mt-6">
+              <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
+                Monthly marketing budget
+              </label>
+              <select
+                name="budget"
+                required
+                className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+              >
+                <option value="">Select a range</option>
+                <option>Under $10K / month</option>
+                <option>$10K – $30K / month</option>
+                <option>$30K – $100K / month</option>
+                <option>$100K+ / month</option>
+              </select>
+            </div>
+
+            <div className="mt-6">
+              <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
+                What are you trying to solve?
+              </label>
+              <textarea
+                name="message"
+                rows={5}
+                required
+                className="w-full resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+                placeholder="Tell us about your goals, current marketing setup, and where you're feeling stuck."
+              />
+            </div>
+
+            <button type="submit" className="btn-primary mt-8 w-full md:w-auto">
+              Send message →
+            </button>
+
+            <p className="mt-4 text-xs text-ink-muted">
+              By submitting, you agree to our privacy policy. We&apos;ll never spam you or share your info.
+            </p>
+          </form>
+
+          {/* SIDEBAR */}
+          <aside className="space-y-6">
+            <ContactCard icon={<Mail size={16} />} label="Email" value={site.contact.email} href={`mailto:${site.contact.email}`} />
+            <ContactCard icon={<Phone size={16} />} label="Phone" value={site.contact.phone} href={`tel:${site.contact.phone.replace(/\s/g, '')}`} />
+            <ContactCard icon={<MapPin size={16} />} label="Based in" value="Singapore" />
+
+            <div className="rounded-3xl border border-[var(--color-border)] bg-ink p-8 text-white">
+              <div className="text-xs uppercase tracking-widest text-neutral-500">Response time</div>
+              <div className="mt-3 text-3xl font-semibold tracking-tight">&lt; 24 hours</div>
+              <p className="mt-2 text-sm text-neutral-400">
+                Every inquiry gets a real reply from a senior strategist — not a sales bot.
+              </p>
+            </div>
+          </aside>
+        </div>
+        </Reveal>
+      </section>
+    </main>
+  );
+}
+
+function Field({
+  label, name, type = 'text', required = false, placeholder,
+}: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
+  return (
+    <div>
+      <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
+        {label} {required && <span className="text-zest-400">*</span>}
+      </label>
+      <input
+        type={type}
+        name={name}
+        required={required}
+        placeholder={placeholder}
+        className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+      />
+    </div>
+  );
+}
+
+function ContactCard({
+  icon, label, value, href,
+}: { icon: React.ReactNode; label: string; value: string; href?: string }) {
+  const content = (
+    <>
+      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink-muted">
+        {icon} {label}
+      </div>
+      <div className="mt-2 text-lg font-medium">{value}</div>
+    </>
+  );
+  return (
+    <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 transition hover:border-zest-300">
+      {href ? <a href={href} className="block">{content}</a> : content}
+    </div>
+  );
+}
