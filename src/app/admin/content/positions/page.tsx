@@ -88,13 +88,13 @@ export default async function PositionsPage({ searchParams }: { searchParams: Se
             <tbody>
               {positions.map((p) => (
                 <tr key={p.slug} className="border-t border-zinc-100 align-top">
-                  <td className="px-5 py-3">
-                    <div className="font-medium">
+                  <td className="max-w-[14rem] px-5 py-3">
+                    <div className="truncate font-medium" title={`${p.title}${p.subtitle ? ' ' + p.subtitle : ''}`}>
                       {esc(p.title)}
                       {p.subtitle && <span className="ml-1 italic text-zinc-500">{esc(p.subtitle)}</span>}
                     </div>
                     {p.tagline && (
-                      <div className="mt-0.5 max-w-xl truncate text-xs text-zinc-500" title={p.tagline}>
+                      <div className="mt-0.5 truncate text-xs text-zinc-500" title={p.tagline}>
                         {esc(p.tagline)}
                       </div>
                     )}
@@ -110,8 +110,8 @@ export default async function PositionsPage({ searchParams }: { searchParams: Se
                   <td className="px-5 py-3 text-xs text-zinc-500">
                     {new Date(p.updatedAt).toLocaleString()}
                   </td>
-                  <td className="px-5 py-3 text-right">
-                    <div className="flex flex-wrap justify-end gap-1.5">
+                  <td className="whitespace-nowrap px-5 py-3 text-right">
+                    <div className="flex justify-end gap-1.5">
                       <Link
                         href={`/admin/content/positions/${p.slug}`}
                         className="rounded border border-zinc-300 px-2 py-1 text-xs hover:bg-zinc-50"
