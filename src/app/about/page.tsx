@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { site } from '@/content/site';
+import { team } from '@/content/team';
 import Reveal from '@/components/ui/Reveal';
 
 export const metadata: Metadata = {
@@ -116,6 +117,45 @@ export default function AboutPage() {
               </article>
             </Reveal>
           ))}
+        </div>
+      </section>
+
+      {/* TEAM */}
+      <section className="border-t border-[var(--color-border)] bg-[var(--color-bg)] py-28">
+        <div className="container-zest">
+          <Reveal>
+            <div className="mb-16 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
+              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
+                The team
+              </div>
+              <h2 className="max-w-2xl text-4xl font-semibold tracking-tight md:text-5xl">
+                The operators behind the work.
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {team.map((m, i) => (
+              <Reveal key={m.slug} delay={i * 100} className="h-full">
+                <article
+                  className="flex h-full flex-col overflow-hidden bg-[var(--color-bg)]"
+                  style={{ border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}
+                >
+                  <div className="photo-tinted relative aspect-[4/5]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={m.image} alt={`${m.name} portrait`} className="photo-tinted-img" loading="lazy" />
+                  </div>
+                  <div className="flex flex-1 flex-col p-7">
+                    <h3 className="text-xl font-semibold tracking-tight">{m.name}</h3>
+                    <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
+                      {m.role}
+                    </div>
+                    <p className="mt-4 text-sm leading-relaxed text-ink-muted">{m.bio}</p>
+                  </div>
+                </article>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 

@@ -5,6 +5,7 @@ import Highlight from '@/components/ui/Highlight';
 import TiltCard from '@/components/effects/TiltCard';
 import { site } from '@/content/site';
 import { services } from '@/content/services';
+import { testimonials } from '@/content/testimonials';
 
 export const metadata: Metadata = {
   title: 'Where Brands Bloom.',
@@ -189,12 +190,53 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* TESTIMONIALS */}
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)] py-32">
+        <div className="container-zest">
+          <Reveal>
+            <div className="mb-20 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
+              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
+                § 03 / Voices
+              </div>
+              <h2 className="max-w-2xl font-serif text-5xl font-medium leading-[1.05] tracking-tight md:text-6xl">
+                What clients <span className="italic text-ink-muted">actually say.</span>
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {testimonials.map((t, i) => (
+              <Reveal key={t.slug} delay={i * 100} className="h-full">
+                <figure
+                  className="flex h-full flex-col justify-between bg-[var(--color-bg)] p-8 md:p-10"
+                  style={{ boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}
+                >
+                  <blockquote className="font-serif text-lg leading-relaxed text-[var(--color-fg)]">
+                    &ldquo;{t.quote}&rdquo;
+                  </blockquote>
+                  <figcaption className="mt-8 flex items-center gap-4 border-t border-[var(--color-border)] pt-6">
+                    <div className="photo-tinted relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={t.image} alt={`${t.author} portrait`} className="photo-tinted-img" loading="lazy" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-semibold text-[var(--color-fg)]">{t.author}</div>
+                      <div className="text-xs text-ink-muted">{t.role} · {t.company}</div>
+                    </div>
+                  </figcaption>
+                </figure>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* FINAL CTA — oversized, brutalist */}
       <section className="relative overflow-hidden bg-[var(--color-accent)] py-32">
         <div className="container-zest relative text-center">
           <Reveal>
             <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-[var(--color-ink-warm)]/70">
-              § 03 / Start here
+              § 04 / Start here
             </div>
           </Reveal>
           <Reveal delay={100}>
