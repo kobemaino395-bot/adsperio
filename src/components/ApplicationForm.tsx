@@ -165,12 +165,15 @@ export default function ApplicationForm() {
 
 function LabelRow({ label, optional }: { label: string; optional?: boolean }) {
   return (
-    <span className="flex items-start gap-2 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
-      <span className="flex-1 leading-snug">{label}</span>
+    <span className="block font-mono text-[0.65rem] uppercase leading-snug tracking-[0.2em] text-ink-muted">
+      {label}
       {optional && (
-        <span className="mt-px shrink-0 rounded-full border border-[var(--color-border)] px-1.5 py-px text-[0.55rem] tracking-[0.15em] text-ink-muted/80">
-          Optional
-        </span>
+        <>
+          {' '}
+          <span className="ml-1 inline-block translate-y-[-1px] rounded-full border border-[var(--color-border)] px-1.5 py-px align-middle text-[0.55rem] tracking-[0.15em] text-ink-muted/80">
+            Optional
+          </span>
+        </>
       )}
     </span>
   );
