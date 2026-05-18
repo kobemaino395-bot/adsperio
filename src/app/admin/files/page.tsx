@@ -4,7 +4,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { DEFAULT_MAX_BYTES, listSlots, type SlotRecord } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotStatus, type SlotStatus } from '@/server/files';
-import { readStats } from '@/server/storage';
+import { readSlotStats, type SlotStats } from '@/server/slot-stats';
 
 export const dynamic = 'force-dynamic';
 
@@ -19,8 +19,10 @@ export default async function FilesPage({ searchParams }: { searchParams: Search
 
   const { ok, error, slug, created, deleted, updated } = await searchParams;
   const slots = await listSlots();
-  const statuses = await Promise.all(slots.map((s) => readSlotStatus(s.slug)));
-  const stats = await readStats();
+  const [statuses, slotStats] = await Promise.all([
+    Promise.all(slots.map((s) => readSlotStatus(s.slug))),
+    Promise.all(slots.map((s) => readSlotStats(s.slug))),
+  ]);
 
   return (
     <div className="space-y-8">
@@ -63,7 +65,7 @@ export default async function FilesPage({ searchParams }: { searchParams: Search
             key={s.slug}
             slot={s}
             status={statuses[i] as SlotStatus}
-            downloadsServed={stats[`files.${s.slug}.downloads`] ?? (s.slug === 'take-home' ? (stats['takehome.downloads'] ?? 0) : 0)}
+            stats={slotStats[i] as SlotStats}
             csrf={session.csrf}
           />
         ))}
@@ -157,12 +159,12 @@ function CreateSlotCard({ csrf }: { csrf: string }) {
 function SlotCard({
   slot,
   status,
-  downloadsServed,
+  stats,
   csrf,
 }: {
   slot: SlotRecord;
   status: SlotStatus;
-  downloadsServed: number;
+  stats: SlotStats;
   csrf: string;
 }) {
   return (
@@ -199,7 +201,18 @@ function SlotCard({
               </div>
               <div>Size: <span className="font-medium">{(status.size / 1024).toFixed(1)} KB</span></div>
               <div>Modified: <span className="font-medium">{new Date(status.mtimeMs).toLocaleString()}</span></div>
-              <div>Downloads served: <span className="font-medium">{downloadsServed}</span></div>
+              <div>Downloads served: <span className="font-medium">{stats.downloads}</span></div>
+              <div className="text-xs text-zinc-500">
+                Last download:{' '}
+                {stats.lastDownloadedAt ? (
+                  <>
+                    {new Date(stats.lastDownloadedAt).toLocaleString()}
+                    {stats.lastDownloadIp && <> · <span className="font-mono">{esc(stats.lastDownloadIp)}</span></>}
+                  </>
+                ) : (
+                  <span className="text-zinc-400">never</span>
+                )}
+              </div>
               {status.backupSize > 0 && (
                 <div className="text-xs text-zinc-500">
                   Backup: {(status.backupSize / 1024).toFixed(1)} KB

@@ -6,6 +6,7 @@ import { getSheetData } from '@/server/applications/sheet';
 import { readStats } from '@/server/storage';
 import { getSlot } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
+import { readSlotStats } from '@/server/slot-stats';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,10 +18,11 @@ export default async function DashboardPage() {
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/dashboard' });
 
   const takeHomeSlot = await getSlot('take-home');
-  const [sheet, stats, takeHomeStatus] = await Promise.all([
+  const [sheet, stats, takeHomeStatus, takeHomeStats] = await Promise.all([
     getSheetData(),
     readStats(),
     takeHomeSlot ? readSlotStatus(takeHomeSlot.slug) : Promise.resolve(null),
+    takeHomeSlot ? readSlotStats(takeHomeSlot.slug) : Promise.resolve(null),
   ]);
   const asset = takeHomeStatus?.hasFile
     ? { size: takeHomeStatus.size, mtimeMs: takeHomeStatus.mtimeMs }
@@ -42,7 +44,11 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 sm:grid-cols-3">
         <Stat label="Applications" value={String(total)} />
-        <Stat label="Take-home downloads" value={String(stats['takehome.downloads'] ?? 0)} />
+        <Stat
+          label="Take-home downloads"
+          value={String(takeHomeStats?.downloads ?? stats['takehome.downloads'] ?? 0)}
+          sub={takeHomeStats?.lastDownloadedAt ? `Last: ${new Date(takeHomeStats.lastDownloadedAt).toLocaleString()}` : ''}
+        />
         <Stat
           label="Take-home asset"
           value={asset ? `${(asset.size / 1024).toFixed(1)} KB` : 'Not uploaded'}

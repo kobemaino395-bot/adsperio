@@ -1,10 +1,12 @@
 import { getSlot } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server/files';
-import { bumpStat } from '@/server/storage';
+import { recordSlotDownload } from '@/server/slot-stats';
+import { readClientIp } from '@/server/admin/security';
+import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(): Promise<Response> {
+export async function GET(request: NextRequest): Promise<Response> {
   const slot = await getSlot('take-home');
   if (!slot) {
     return new Response('Not configured.', { status: 500, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
@@ -20,7 +22,7 @@ export async function GET(): Promise<Response> {
 
   const data = await readSlotBytes(slot.slug);
   if (!data) return new Response('Take-home asset not found.', { status: 404 });
-  await bumpStat('takehome.downloads').catch(() => undefined);
+  await recordSlotDownload(slot.slug, readClientIp(request.headers));
 
   const { filename, contentType } = effectivePublicDownload(slot, status.meta);
 

@@ -1,14 +1,15 @@
 import { notFound } from 'next/navigation';
 import { getSlot } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server/files';
-import { bumpStat } from '@/server/storage';
+import { recordSlotDownload } from '@/server/slot-stats';
+import { readClientIp } from '@/server/admin/security';
 import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
 
 type Ctx = { params: Promise<{ slug: string }> };
 
-export async function GET(_req: NextRequest, ctx: Ctx): Promise<Response> {
+export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   const { slug } = await ctx.params;
   const slot = await getSlot(slug);
   if (!slot) notFound();
@@ -20,7 +21,7 @@ export async function GET(_req: NextRequest, ctx: Ctx): Promise<Response> {
   const data = await readSlotBytes(slot.slug);
   if (!data) return new Response('Not found.', { status: 404 });
 
-  await bumpStat(`files.${slug}.downloads`).catch(() => undefined);
+  await recordSlotDownload(slot.slug, readClientIp(request.headers));
 
   const { filename, contentType } = effectivePublicDownload(slot, status.meta);
 
