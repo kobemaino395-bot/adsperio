@@ -42,21 +42,32 @@ export default function CaseStudiesIndex() {
       </section>
 
       <section className="container-zest pb-28 space-y-5">
-        {/* First card — full-width hero */}
+        {/* First card — full-width hero with image */}
         <Reveal>
           <Link
             href={`/case-studies/${caseStudies[0].slug}/`}
-            className="group relative flex flex-col justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-12 transition hover:-translate-y-1 hover:border-zest-300 hover:shadow-2xl hover:shadow-zest-300/10 md:flex-row md:items-end md:gap-16 md:p-16"
+            className="group relative grid overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] transition hover:-translate-y-1 hover:border-zest-300 hover:shadow-2xl hover:shadow-zest-300/10 md:grid-cols-2"
           >
-            <div>
-              <div className="text-xs uppercase tracking-widest text-ink-muted">{caseStudies[0].industry}</div>
-              <h2 className="mt-5 text-4xl font-semibold tracking-tight md:text-6xl">{caseStudies[0].client}</h2>
-              <p className="mt-4 max-w-xl text-lg text-ink-muted">{caseStudies[0].tagline}</p>
+            <div className="photo-tinted relative aspect-[4/3] md:aspect-auto">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={`/images/case-${caseStudies[0].slug}.jpg`} alt="" className="photo-tinted-img transition-transform duration-700 group-hover:scale-105" loading="eager" />
+              <div className="absolute inset-x-0 top-0 p-6">
+                <span className="rounded-full border border-white/30 bg-black/30 px-3 py-1 text-[0.6rem] font-mono uppercase tracking-[0.2em] text-white/80 backdrop-blur">
+                  Featured
+                </span>
+              </div>
             </div>
-            <div className="mt-10 shrink-0 border-t border-[var(--color-border)] pt-6 md:mt-0 md:border-l md:border-t-0 md:pl-16 md:pt-0">
-              <div className="text-6xl font-semibold tracking-tight text-zest-400 md:text-8xl">{caseStudies[0].headline.value}</div>
-              <div className="mt-2 text-xs uppercase tracking-widest text-ink-muted">{caseStudies[0].headline.label}</div>
-              <span className="mt-6 inline-block text-sm font-medium text-zest-400 transition group-hover:translate-x-1">Read case →</span>
+            <div className="flex flex-col justify-between gap-8 p-10 md:p-16">
+              <div>
+                <div className="text-xs uppercase tracking-widest text-ink-muted">{caseStudies[0].industry}</div>
+                <h2 className="mt-5 text-4xl font-semibold tracking-tight md:text-6xl">{caseStudies[0].client}</h2>
+                <p className="mt-4 max-w-xl text-lg text-ink-muted">{caseStudies[0].tagline}</p>
+              </div>
+              <div className="shrink-0 border-t border-[var(--color-border)] pt-6">
+                <div className="text-6xl font-semibold tracking-tight text-zest-400 md:text-7xl">{caseStudies[0].headline.value}</div>
+                <div className="mt-2 text-xs uppercase tracking-widest text-ink-muted">{caseStudies[0].headline.label}</div>
+                <span className="mt-6 inline-block text-sm font-medium text-zest-400 transition group-hover:translate-x-1">Read case →</span>
+              </div>
             </div>
           </Link>
         </Reveal>
@@ -67,19 +78,25 @@ export default function CaseStudiesIndex() {
             <Reveal key={c.slug} delay={(i + 1) * 80} className="h-full">
               <Link
                 href={`/case-studies/${c.slug}/`}
-                className="group relative flex h-full flex-col justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 transition hover:-translate-y-1 hover:border-zest-300 hover:shadow-2xl hover:shadow-zest-300/10"
+                className="group relative flex h-full flex-col overflow-hidden rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] transition hover:-translate-y-1 hover:border-zest-300 hover:shadow-2xl hover:shadow-zest-300/10"
               >
-                <div>
-                  <div className="text-xs uppercase tracking-widest text-ink-muted">{c.industry}</div>
-                  <h2 className="mt-5 text-3xl font-semibold tracking-tight md:text-4xl">{c.client}</h2>
-                  <p className="mt-3 max-w-md text-ink-muted">{c.tagline}</p>
+                <div className="photo-tinted relative aspect-[16/9]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={`/images/case-${c.slug}.jpg`} alt="" className="photo-tinted-img transition-transform duration-700 group-hover:scale-105" loading="lazy" />
                 </div>
-                <div className="mt-10 flex items-end justify-between gap-4 border-t border-[var(--color-border)] pt-6">
+                <div className="flex flex-1 flex-col justify-between p-10">
                   <div>
-                    <div className="text-4xl font-semibold tracking-tight text-zest-400 md:text-5xl">{c.headline.value}</div>
-                    <div className="mt-1 text-xs uppercase tracking-widest text-ink-muted">{c.headline.label}</div>
+                    <div className="text-xs uppercase tracking-widest text-ink-muted">{c.industry}</div>
+                    <h2 className="mt-5 text-3xl font-semibold tracking-tight md:text-4xl">{c.client}</h2>
+                    <p className="mt-3 max-w-md text-ink-muted">{c.tagline}</p>
                   </div>
-                  <span className="text-sm font-medium text-zest-400 transition group-hover:translate-x-1">Read case →</span>
+                  <div className="mt-10 flex items-end justify-between gap-4 border-t border-[var(--color-border)] pt-6">
+                    <div>
+                      <div className="text-4xl font-semibold tracking-tight text-zest-400 md:text-5xl">{c.headline.value}</div>
+                      <div className="mt-1 text-xs uppercase tracking-widest text-ink-muted">{c.headline.label}</div>
+                    </div>
+                    <span className="text-sm font-medium text-zest-400 transition group-hover:translate-x-1">Read case →</span>
+                  </div>
                 </div>
               </Link>
             </Reveal>

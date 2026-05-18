@@ -30,28 +30,40 @@ export default function AboutPage() {
     <main>
       <section className="relative overflow-hidden">
         <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
-        <div aria-hidden className="animate-orb-float absolute -top-48 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-zest-300/25 blur-3xl" />
 
-        <div className="container-zest relative pt-40 pb-24 text-center">
-          <Reveal>
-            <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
-              About {site.shortName}
-            </span>
-          </Reveal>
-          <Reveal delay={100}>
-            <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-7xl">
-              Where{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">brands bloom.</span>
-                <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
-              </span>
-            </h1>
-          </Reveal>
-          <Reveal delay={250}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted md:text-xl">
-              We&apos;re a modern advertising growth company based in Singapore. Simple approach: find your audience, speak their language, and scale what works.
-            </p>
-          </Reveal>
+        <div className="container-zest relative pt-40 pb-24">
+          <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_1fr]">
+            <div>
+              <Reveal>
+                <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
+                  About {site.shortName}
+                </span>
+              </Reveal>
+              <Reveal delay={100}>
+                <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-7xl">
+                  Where{' '}
+                  <span className="relative inline-block">
+                    <span className="relative z-10">brands bloom.</span>
+                    <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
+                  </span>
+                </h1>
+              </Reveal>
+              <Reveal delay={250}>
+                <p className="mt-6 max-w-xl text-lg text-ink-muted md:text-xl">
+                  We&apos;re a modern advertising growth company based in Singapore. Simple approach: find your audience, speak their language, and scale what works.
+                </p>
+              </Reveal>
+            </div>
+            <Reveal delay={300}>
+              <div className="relative">
+                <div aria-hidden className="absolute -right-4 -top-4 h-20 w-20 bg-[var(--color-accent)]" />
+                <div className="photo-tinted relative aspect-[5/6] w-full" style={{ boxShadow: 'var(--shadow-brutal)' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/about-hero.jpg" alt="" className="photo-tinted-img" loading="eager" />
+                </div>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 

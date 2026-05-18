@@ -1,0 +1,16 @@
+{
+  "_note": "Seeded Picsum URLs - free, CC0-licensed photos with stable per-seed identity. Swap any 'url' field with a specific Unsplash photo URL (https://images.unsplash.com/photo-<id>?w=1600&q=80) and rerun the download script to replace.",
+  "images": [
+    { "url": "https://picsum.photos/seed/adnovara-hero/1600/1000",     "path": "public/images/hero.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-seo/1200/900",       "path": "public/images/service-seo.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-ppc/1200/900",       "path": "public/images/service-ppc.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-social/1200/900",    "path": "public/images/service-social-advertising.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-web/1200/900",       "path": "public/images/service-web.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-aura/1400/900",      "path": "public/images/case-aura-wellness.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-edutech/1400/900",   "path": "public/images/case-edutech-academy.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-finova/1400/900",    "path": "public/images/case-finova.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-lumiere/1400/900",   "path": "public/images/case-lumiere-tech.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-nexus/1400/900",     "path": "public/images/case-nexus-health.jpg" },
+    { "url": "https://picsum.photos/seed/adnovara-about/1600/1000",    "path": "public/images/about-hero.jpg" }
+  ]
+}

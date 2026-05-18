@@ -33,45 +33,63 @@ export default function HomePage() {
         <div aria-hidden className="absolute left-0 right-0 top-24 h-8 bg-[var(--color-accent)]" />
 
         <div className="container-zest relative pt-48 pb-28">
-          <Reveal>
-            <div className="flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-              <span className="h-2 w-2 animate-blink rounded-full bg-[var(--color-accent)]" />
-              Now booking Q3 partnerships
+          <div className="grid items-start gap-16 lg:grid-cols-[1.5fr_1fr]">
+            <div>
+              <Reveal>
+                <div className="flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
+                  <span className="h-2 w-2 animate-blink rounded-full bg-[var(--color-accent)]" />
+                  Now booking Q3 partnerships
+                </div>
+              </Reveal>
+
+              <Reveal delay={100}>
+                <h1 className="mt-8 max-w-5xl text-[3rem] font-medium leading-[0.95] tracking-[-0.03em] md:text-[6rem]">
+                  Grow revenue
+                  <br />
+                  faster.{' '}
+                  <span className="relative inline-block">
+                    <span className="relative z-10">Predictably.</span>
+                    <span
+                      aria-hidden
+                      className="absolute bottom-1 left-0 right-0 -z-0 h-[0.4em] bg-[var(--color-accent)]"
+                    />
+                  </span>
+                </h1>
+              </Reveal>
+
+              <Reveal delay={250}>
+                <p className="mt-10 max-w-xl text-xl leading-relaxed text-ink-muted">
+                  Partner with an award-winning team to deliver guaranteed results in 90 days. Proven strategies. Measurable outcomes. Zero fluff.
+                </p>
+              </Reveal>
+
+              <Reveal delay={400}>
+                <div className="mt-12 flex flex-wrap items-center gap-4">
+                  <Link href="/contact/" className="group relative inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5" style={{ boxShadow: 'var(--shadow-brutal)' }}>
+                    Book a consultation
+                    <span className="transition-transform group-hover:translate-x-1">→</span>
+                  </Link>
+                  <Link href="#solutions" className="text-sm font-medium underline decoration-2 underline-offset-8 hover:decoration-[var(--color-accent)]">
+                    Explore solutions
+                  </Link>
+                </div>
+              </Reveal>
             </div>
-          </Reveal>
 
-          <Reveal delay={100}>
-            <h1 className="mt-8 max-w-5xl text-[3rem] font-medium leading-[0.95] tracking-[-0.03em] md:text-[7rem]">
-              Grow revenue
-              <br />
-              faster.{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">Predictably.</span>
-                <span
-                  aria-hidden
-                  className="absolute bottom-1 left-0 right-0 -z-0 h-[0.4em] bg-[var(--color-accent)]"
-                />
-              </span>
-            </h1>
-          </Reveal>
-
-          <Reveal delay={250}>
-            <p className="mt-10 max-w-xl text-xl leading-relaxed text-ink-muted">
-              Partner with an award-winning team to deliver guaranteed results in 90 days. Proven strategies. Measurable outcomes. Zero fluff.
-            </p>
-          </Reveal>
-
-          <Reveal delay={400}>
-            <div className="mt-12 flex flex-wrap items-center gap-4">
-              <Link href="/contact/" className="group relative inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5" style={{ boxShadow: 'var(--shadow-brutal)' }}>
-                Book a consultation
-                <span className="transition-transform group-hover:translate-x-1">→</span>
-              </Link>
-              <Link href="#solutions" className="text-sm font-medium underline decoration-2 underline-offset-8 hover:decoration-[var(--color-accent)]">
-                Explore solutions
-              </Link>
-            </div>
-          </Reveal>
+            <Reveal delay={300} className="hidden lg:block">
+              <div className="relative">
+                <div aria-hidden className="absolute -left-4 -top-4 h-16 w-16 bg-[var(--color-accent)]" />
+                <div className="photo-tinted relative aspect-[4/5] w-full" style={{ boxShadow: 'var(--shadow-brutal)' }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/images/hero.jpg" alt="" className="photo-tinted-img" loading="eager" />
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 p-6 text-white">
+                    <div className="font-mono text-[0.6rem] uppercase tracking-[0.25em] text-white/60">§ 00 / In motion</div>
+                    <div className="mt-2 font-serif text-2xl leading-tight">Where ambitious brands compound their growth.</div>
+                  </div>
+                </div>
+              </div>
+            </Reveal>
+          </div>
         </div>
       </section>
 
@@ -138,23 +156,29 @@ export default function HomePage() {
                 <TiltCard className="h-full">
                   <Link href={`/services/${s.slug}/`} className="group block h-full">
                     <article
-                      className="relative flex h-full flex-col justify-between bg-[var(--color-bg)] p-10 md:p-12"
+                      className="relative flex h-full flex-col bg-[var(--color-bg)]"
                       style={{ boxShadow: 'var(--shadow-md)', border: '1px solid var(--color-border)' }}
                     >
-                      <div className="flex items-start justify-between">
-                        <span className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">
-                          {String(i + 1).padStart(2, '0')}
-                        </span>
-                        <span aria-hidden className="inline-block h-3 w-3 rounded-full bg-[var(--color-accent)]" />
+                      <div className="photo-tinted relative aspect-[16/9] w-full overflow-hidden">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={`/images/service-${s.slug}.jpg`} alt="" className="photo-tinted-img transition-transform duration-700 group-hover:scale-105" loading="lazy" />
+                        <div className="absolute inset-x-0 top-0 flex items-start justify-between p-6">
+                          <span className="font-mono text-xs uppercase tracking-[0.2em] text-white/60">
+                            {String(i + 1).padStart(2, '0')}
+                          </span>
+                          <span aria-hidden className="inline-block h-3 w-3 rounded-full bg-[var(--color-accent)]" />
+                        </div>
                       </div>
-                      <div className="mt-16">
-                        <h3 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl">
-                          {s.navTitle}
-                        </h3>
-                        <p className="mt-4 text-base leading-relaxed text-ink-muted">{s.metaDescription}</p>
-                      </div>
-                      <div className="mt-12 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-[var(--color-fg)] transition-[gap] group-hover:gap-4">
-                        Learn more <span aria-hidden>→</span>
+                      <div className="flex flex-1 flex-col justify-between p-10 md:p-12">
+                        <div>
+                          <h3 className="font-serif text-3xl font-medium leading-tight tracking-tight md:text-4xl">
+                            {s.navTitle}
+                          </h3>
+                          <p className="mt-4 text-base leading-relaxed text-ink-muted">{s.metaDescription}</p>
+                        </div>
+                        <div className="mt-12 inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.15em] text-[var(--color-fg)] transition-[gap] group-hover:gap-4">
+                          Learn more <span aria-hidden>→</span>
+                        </div>
                       </div>
                     </article>
                   </Link>
