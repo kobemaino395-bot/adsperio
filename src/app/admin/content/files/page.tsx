@@ -85,28 +85,11 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
             />
           </label>
           <label className="block md:col-span-2">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Description (optional)</span>
-            <input
-              type="text"
-              name="description"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="block">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
             <input
               type="text"
               name="publicFilename"
               placeholder="e.g. Adnovara_Handbook.zip"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
-            />
-          </label>
-          <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public MIME type (optional)</span>
-            <input
-              type="text"
-              name="publicMimeType"
-              placeholder="(usually leave blank)"
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
             />
           </label>

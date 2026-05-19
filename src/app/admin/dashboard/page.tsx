@@ -5,7 +5,6 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSheetData } from '@/server/applications/sheet';
 import { readStats } from '@/server/storage';
 import { getSlot } from '@/server/slot-registry';
-import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import LocalTime from '@/components/admin/LocalTime';
 
@@ -19,19 +18,29 @@ export default async function DashboardPage() {
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/dashboard' });
 
   const takeHomeSlot = await getSlot('take-home');
-  const [sheet, stats, takeHomeStatus, takeHomeStats] = await Promise.all([
+  const [sheet, stats, takeHomeStats] = await Promise.all([
     getSheetData(),
     readStats(),
-    takeHomeSlot ? readSlotStatus(takeHomeSlot.slug) : Promise.resolve(null),
     takeHomeSlot ? readSlotStats(takeHomeSlot.slug) : Promise.resolve(null),
   ]);
-  const asset = takeHomeStatus?.hasFile
-    ? { size: takeHomeStatus.size, mtimeMs: takeHomeStatus.mtimeMs }
-    : null;
 
   const total = sheet.rows.length;
   const recent = sheet.rows.slice(Math.max(0, sheet.rows.length - 20)).reverse();
   const headerIdx = (name: string) => sheet.headers.indexOf(name);
+
+  const submittedCol = headerIdx('submittedAt');
+  const since = Date.now() - 24 * 60 * 60 * 1000;
+  const last24h = submittedCol >= 0
+    ? sheet.rows.reduce((n, row) => {
+        const t = Date.parse(row[submittedCol] ?? '');
+        return Number.isFinite(t) && t >= since ? n + 1 : n;
+      }, 0)
+    : 0;
+
+  const testDownloads = takeHomeStats?.downloads ?? Number(stats['takehome.downloads'] ?? 0);
+  const conversion = testDownloads > 0
+    ? `${((total / testDownloads) * 100).toFixed(1)}%`
+    : '—';
 
   return (
     <div className="space-y-8">
@@ -43,19 +52,20 @@ export default async function DashboardPage() {
         </div>
       )}
 
-      <section className="grid gap-4 sm:grid-cols-3">
+      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Applications" value={String(total)} />
         <Stat
-          label="Take-home downloads"
-          value={String(takeHomeStats?.downloads ?? stats['takehome.downloads'] ?? 0)}
+          label="Test downloads"
+          value={String(testDownloads)}
           subIso={takeHomeStats?.lastDownloadedAt ?? null}
           subPrefix="Last: "
         />
         <Stat
-          label="Take-home asset"
-          value={asset ? `${(asset.size / 1024).toFixed(1)} KB` : 'Not uploaded'}
-          subIso={asset ? new Date(asset.mtimeMs).toISOString() : null}
+          label="Conversion"
+          value={conversion}
+          sub={testDownloads > 0 ? `${total} / ${testDownloads}` : 'No downloads yet'}
         />
+        <Stat label="Last 24h apps" value={String(last24h)} />
       </section>
 
       <section className="rounded-lg border border-zinc-200 bg-white">
@@ -104,17 +114,19 @@ export default async function DashboardPage() {
 }
 
 function Stat({
-  label, value, subIso, subPrefix,
-}: { label: string; value: string; subIso?: string | null; subPrefix?: string }) {
+  label, value, subIso, subPrefix, sub,
+}: { label: string; value: string; subIso?: string | null; subPrefix?: string; sub?: string }) {
   return (
     <div className="rounded-lg border border-zinc-200 bg-white p-5">
       <div className="text-xs font-medium uppercase tracking-wider text-zinc-500">{label}</div>
       <div className="mt-2 text-2xl font-semibold tracking-tight">{value}</div>
-      {subIso && (
+      {subIso ? (
         <div className="mt-1 text-xs text-zinc-500">
           {subPrefix ?? ''}<LocalTime iso={subIso} />
         </div>
-      )}
+      ) : sub ? (
+        <div className="mt-1 text-xs text-zinc-500">{sub}</div>
+      ) : null}
     </div>
   );
 }

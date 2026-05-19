@@ -156,16 +156,7 @@ export default async function FileDetailPage({
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
             />
           </label>
-          <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Description</span>
-            <input
-              type="text"
-              name="description"
-              defaultValue={slot.description}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            />
-          </label>
-          <label className="block">
+          <label className="block md:col-span-2">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
             <input
               type="text"
@@ -174,15 +165,6 @@ export default async function FileDetailPage({
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
             />
             <p className="mt-1 text-xs text-zinc-500">Blank = use the file as uploaded. Extension always follows the upload.</p>
-          </label>
-          <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public MIME type</span>
-            <input
-              type="text"
-              name="publicMimeType"
-              defaultValue={slot.publicMimeType}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
-            />
           </label>
           <div className="md:col-span-2">
             <button
