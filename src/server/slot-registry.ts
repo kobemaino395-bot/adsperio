@@ -7,6 +7,8 @@ import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-
 
 export const DEFAULT_MAX_BYTES = 100 * 1024 * 1024;
 
+export type SlotKind = 'local' | 'remote';
+
 export type SlotRecord = {
   slug: string;
   title: string;
@@ -16,6 +18,8 @@ export type SlotRecord = {
   maxBytes: number;
   isBuiltin: boolean;
   createdAt: string;
+  kind: SlotKind;
+  remoteUrl: string;
 };
 
 function registryPath(): string {
@@ -33,6 +37,8 @@ function seed(): SlotRecord[] {
     maxBytes: DEFAULT_MAX_BYTES,
     isBuiltin: true,
     createdAt: now,
+    kind: 'local' as SlotKind,
+    remoteUrl: '',
   }));
 }
 
@@ -75,6 +81,8 @@ async function load(): Promise<SlotRecord[]> {
           maxBytes: DEFAULT_MAX_BYTES,
           isBuiltin: true,
           createdAt: new Date().toISOString(),
+          kind: 'local',
+          remoteUrl: '',
         });
         modified = true;
       }
@@ -83,6 +91,15 @@ async function load(): Promise<SlotRecord[]> {
       const shouldBeBuiltin = BUILTIN_SLUGS.has(rec.slug);
       if (rec.isBuiltin !== shouldBeBuiltin) {
         rec.isBuiltin = shouldBeBuiltin;
+        modified = true;
+      }
+      // Backfill kind/remoteUrl for legacy registries
+      if (rec.kind !== 'local' && rec.kind !== 'remote') {
+        rec.kind = 'local';
+        modified = true;
+      }
+      if (typeof rec.remoteUrl !== 'string') {
+        rec.remoteUrl = '';
         modified = true;
       }
     }
@@ -130,7 +147,22 @@ export type CreateSlotInput = {
   publicFilename?: string;
   publicMimeType?: string;
   maxBytes?: number;
+  kind?: SlotKind;
+  remoteUrl?: string;
 };
+
+function normalizeKind(v: unknown): SlotKind {
+  return v === 'remote' ? 'remote' : 'local';
+}
+
+function normalizeRemoteUrl(v: unknown): { ok: true; value: string } | { ok: false; reason: string } {
+  const s = typeof v === 'string' ? v.trim() : '';
+  if (!s) return { ok: true, value: '' };
+  if (!/^https?:\/\//i.test(s)) {
+    return { ok: false, reason: 'Remote URL must start with http:// or https://' };
+  }
+  return { ok: true, value: s.slice(0, 2000) };
+}
 
 export async function createSlot(input: CreateSlotInput): Promise<{ ok: true; slot: SlotRecord } | { ok: false; reason: string }> {
   const slug = input.slug.trim().toLowerCase();
@@ -145,6 +177,13 @@ export async function createSlot(input: CreateSlotInput): Promise<{ ok: true; sl
     return { ok: false, reason: `A slot named "${slug}" already exists` };
   }
 
+  const kind = normalizeKind(input.kind);
+  const url = normalizeRemoteUrl(input.remoteUrl);
+  if (!url.ok) return { ok: false, reason: url.reason };
+  if (kind === 'remote' && !url.value) {
+    return { ok: false, reason: 'Remote URL is required for remote slots' };
+  }
+
   const rec: SlotRecord = {
     slug,
     title: title.slice(0, 120),
@@ -154,6 +193,8 @@ export async function createSlot(input: CreateSlotInput): Promise<{ ok: true; sl
     maxBytes: input.maxBytes && input.maxBytes > 0 ? Math.min(input.maxBytes, 500 * 1024 * 1024) : DEFAULT_MAX_BYTES,
     isBuiltin: BUILTIN_SLUGS.has(slug),
     createdAt: new Date().toISOString(),
+    kind,
+    remoteUrl: url.value,
   };
 
   list.push(rec);
@@ -167,6 +208,8 @@ export type UpdateSlotInput = {
   publicFilename?: string;
   publicMimeType?: string;
   maxBytes?: number;
+  kind?: SlotKind;
+  remoteUrl?: string;
 };
 
 export async function updateSlot(
@@ -178,6 +221,19 @@ export async function updateSlot(
   if (idx < 0) return { ok: false, reason: 'Slot not found' };
   const current = list[idx]!;
 
+  let nextKind = current.kind;
+  if (input.kind !== undefined) nextKind = normalizeKind(input.kind);
+
+  let nextRemoteUrl = current.remoteUrl;
+  if (input.remoteUrl !== undefined) {
+    const url = normalizeRemoteUrl(input.remoteUrl);
+    if (!url.ok) return { ok: false, reason: url.reason };
+    nextRemoteUrl = url.value;
+  }
+  if (nextKind === 'remote' && !nextRemoteUrl) {
+    return { ok: false, reason: 'Remote URL is required for remote slots' };
+  }
+
   const next: SlotRecord = {
     ...current,
     title: input.title !== undefined ? input.title.trim().slice(0, 120) || current.title : current.title,
@@ -185,6 +241,8 @@ export async function updateSlot(
     publicFilename: input.publicFilename !== undefined ? input.publicFilename.trim().slice(0, 200) : current.publicFilename,
     publicMimeType: input.publicMimeType !== undefined ? input.publicMimeType.trim().slice(0, 100) : current.publicMimeType,
     maxBytes: input.maxBytes && input.maxBytes > 0 ? Math.min(input.maxBytes, 500 * 1024 * 1024) : current.maxBytes,
+    kind: nextKind,
+    remoteUrl: nextRemoteUrl,
   };
 
   list[idx] = next;

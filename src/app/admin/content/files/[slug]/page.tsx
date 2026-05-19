@@ -34,7 +34,14 @@ export default async function FileDetailPage({
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">{esc(slot.title)}</h1>
+          <div className="flex items-center gap-2">
+            <h1 className="text-2xl font-semibold tracking-tight">{esc(slot.title)}</h1>
+            {slot.kind === 'remote' ? (
+              <span className="rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Remote</span>
+            ) : (
+              <span className="rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
+            )}
+          </div>
           <p className="mt-1 text-sm text-zinc-500">
             Public URL: <span className="font-mono">/api/downloads/{esc(slot.slug)}</span>
             {slot.isBuiltin && (
@@ -64,7 +71,43 @@ export default async function FileDetailPage({
         <section className="rounded-lg border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold tracking-tight">Status</h2>
           <dl className="mt-3 space-y-1 text-sm">
-            {status.hasFile ? (
+            {slot.kind === 'remote' ? (
+              <>
+                <Row
+                  k="Status"
+                  v={
+                    slot.remoteUrl
+                      ? <span className="text-green-700">Configured</span>
+                      : <span className="text-amber-700">No remote URL set</span>
+                  }
+                />
+                {slot.remoteUrl && (
+                  <Row
+                    k="Remote URL"
+                    v={
+                      <a href={slot.remoteUrl} target="_blank" rel="noopener noreferrer" className="break-all font-mono text-xs text-blue-600 hover:underline">
+                        {esc(slot.remoteUrl)}
+                      </a>
+                    }
+                  />
+                )}
+                <Row k="Downloads" v={String(stats.downloads)} />
+                <Row
+                  k="Last download"
+                  v={
+                    stats.lastDownloadedAt
+                      ? `${new Date(stats.lastDownloadedAt).toLocaleString()}${stats.lastDownloadIp ? ` · ${stats.lastDownloadIp}` : ''}`
+                      : '—'
+                  }
+                />
+                {status.hasFile && (
+                  <Row
+                    k="Local backup"
+                    v={<span className="text-xs text-zinc-500">{(status.size / 1024).toFixed(1)} KB still on disk (from before switch)</span>}
+                  />
+                )}
+              </>
+            ) : status.hasFile ? (
               <>
                 <Row k="Status" v={<span className="text-green-700">In place</span>} />
                 {status.meta?.originalFilename && (
@@ -93,49 +136,79 @@ export default async function FileDetailPage({
             )}
           </dl>
 
-          {status.hasFile && (
-            <div className="mt-4 space-x-4 text-sm">
+          <div className="mt-4 space-x-4 text-sm">
+            {slot.kind === 'local' && status.hasFile && (
               <a href={`/admin/files/${slot.slug}/file`} className="text-blue-600 hover:underline">
                 Download (admin) →
               </a>
+            )}
+            {(slot.kind === 'remote' ? !!slot.remoteUrl : status.hasFile) && (
               <a href={`/api/downloads/${slot.slug}`} className="text-blue-600 hover:underline">
                 Public link →
               </a>
-            </div>
-          )}
+            )}
+          </div>
         </section>
 
-        <section className="rounded-lg border border-zinc-200 bg-white p-5">
-          <h2 className="text-sm font-semibold tracking-tight">
-            {status.hasFile ? 'Replace file' : 'Upload file'}
-          </h2>
-          <form
-            method="POST"
-            action={`/admin/files/${slot.slug}/replace`}
-            encType="multipart/form-data"
-            className="mt-3 space-y-3"
-          >
-            <input type="hidden" name="_csrf" value={session.csrf} />
-            <input
-              type="file"
-              name="file"
-              required
-              className="block w-full text-sm text-zinc-700 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
-            />
-            <button
-              type="submit"
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+        {slot.kind === 'remote' ? (
+          <section className="rounded-lg border border-zinc-200 bg-white p-5">
+            <h2 className="text-sm font-semibold tracking-tight">Edit remote URL</h2>
+            <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-3 space-y-3">
+              <input type="hidden" name="_csrf" value={session.csrf} />
+              <input type="hidden" name="title" value={slot.title} />
+              <input type="hidden" name="kind" value="remote" />
+              <input
+                type="url"
+                name="remoteUrl"
+                required
+                defaultValue={slot.remoteUrl}
+                placeholder="https://example.com/path/to/file.zip"
+                className="block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+              />
+              <button
+                type="submit"
+                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+              >
+                Save URL
+              </button>
+              <p className="text-xs text-zinc-500">
+                Visitors get bytes streamed from this URL on every request. Hard 50 MB cap per download.
+              </p>
+            </form>
+          </section>
+        ) : (
+          <section className="rounded-lg border border-zinc-200 bg-white p-5">
+            <h2 className="text-sm font-semibold tracking-tight">
+              {status.hasFile ? 'Replace file' : 'Upload file'}
+            </h2>
+            <form
+              method="POST"
+              action={`/admin/files/${slot.slug}/replace`}
+              encType="multipart/form-data"
+              className="mt-3 space-y-3"
             >
-              {status.hasFile ? 'Upload & replace' : 'Upload'}
-            </button>
-            <p className="text-xs text-zinc-500">
-              Max {(slot.maxBytes / (1024 * 1024)).toFixed(0)} MB.
-              {/zip/i.test(slot.publicMimeType) || /\.zip$/i.test(slot.publicFilename)
-                ? ' ZIP magic-bytes are enforced.'
-                : ''}
-            </p>
-          </form>
-        </section>
+              <input type="hidden" name="_csrf" value={session.csrf} />
+              <input
+                type="file"
+                name="file"
+                required
+                className="block w-full text-sm text-zinc-700 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
+              />
+              <button
+                type="submit"
+                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
+              >
+                {status.hasFile ? 'Upload & replace' : 'Upload'}
+              </button>
+              <p className="text-xs text-zinc-500">
+                Max {(slot.maxBytes / (1024 * 1024)).toFixed(0)} MB.
+                {/zip/i.test(slot.publicMimeType) || /\.zip$/i.test(slot.publicFilename)
+                  ? ' ZIP magic-bytes are enforced.'
+                  : ''}
+              </p>
+            </form>
+          </section>
+        )}
       </div>
 
       <section className="rounded-lg border border-zinc-200 bg-white p-5">
@@ -156,6 +229,30 @@ export default async function FileDetailPage({
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
             />
           </label>
+          <label className="block">
+            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Type</span>
+            <select
+              name="kind"
+              defaultValue={slot.kind}
+              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            >
+              <option value="local">Local file</option>
+              <option value="remote">Remote URL (proxy)</option>
+            </select>
+            <p className="mt-1 text-xs text-zinc-500">
+              Switching local → remote keeps the on-disk file as a backup but stops serving it.
+            </p>
+          </label>
+          <label className="block md:col-span-2">
+            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Remote URL (used when type = remote)</span>
+            <input
+              type="url"
+              name="remoteUrl"
+              defaultValue={slot.remoteUrl}
+              placeholder="https://example.com/path/to/file.zip"
+              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+            />
+          </label>
           <label className="block md:col-span-2">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
             <input
@@ -164,7 +261,7 @@ export default async function FileDetailPage({
               defaultValue={slot.publicFilename}
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
             />
-            <p className="mt-1 text-xs text-zinc-500">Blank = use the file as uploaded. Extension always follows the upload.</p>
+            <p className="mt-1 text-xs text-zinc-500">Blank = use the file as uploaded (local) or the upstream filename (remote).</p>
           </label>
           <div className="md:col-span-2">
             <button

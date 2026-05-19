@@ -31,11 +31,14 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
     return adminRedirect(backTo(slug, 'error=' + encodeURIComponent('CSRF check failed')));
   }
 
+  const kindRaw = form.get('kind');
   const result = await updateSlot(slug, {
     title: String(form.get('title') ?? ''),
     description: String(form.get('description') ?? ''),
     publicFilename: String(form.get('publicFilename') ?? ''),
     publicMimeType: String(form.get('publicMimeType') ?? ''),
+    kind: kindRaw === 'remote' ? 'remote' : kindRaw === 'local' ? 'local' : undefined,
+    remoteUrl: form.get('remoteUrl') !== null ? String(form.get('remoteUrl') ?? '') : undefined,
   });
 
   if (!result.ok) {

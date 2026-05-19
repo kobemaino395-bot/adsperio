@@ -7,6 +7,7 @@ import { DEFAULT_MAX_BYTES, listSlots } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../ContentTabs';
+import FileTypeToggle from './FileTypeToggle';
 
 export const dynamic = 'force-dynamic';
 
@@ -62,6 +63,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
         </header>
         <form method="POST" action="/admin/files/create" className="grid gap-4 px-6 py-5 md:grid-cols-2">
           <input type="hidden" name="_csrf" value={session.csrf} />
+          <FileTypeToggle name="kind" />
           <label className="block">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">URL slug</span>
             <input
@@ -120,6 +122,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
               <tr>
                 <th className="px-5 py-2">Display name</th>
                 <th className="px-5 py-2">Slug</th>
+                <th className="px-5 py-2">Kind</th>
                 <th className="px-5 py-2">Status</th>
                 <th className="px-5 py-2">Size</th>
                 <th className="px-5 py-2">Modified</th>
@@ -145,17 +148,34 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                     </td>
                     <td className="px-5 py-3 font-mono text-xs text-zinc-600">{esc(s.slug)}</td>
                     <td className="px-5 py-3">
-                      {status.hasFile ? (
+                      {s.kind === 'remote' ? (
+                        <span className="inline-block rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Remote</span>
+                      ) : (
+                        <span className="inline-block rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3">
+                      {s.kind === 'remote' ? (
+                        s.remoteUrl ? (
+                          <span className="inline-block rounded-full bg-green-100 px-2 py-px text-xs text-green-700">Configured</span>
+                        ) : (
+                          <span className="inline-block rounded-full bg-amber-100 px-2 py-px text-xs text-amber-800">No URL</span>
+                        )
+                      ) : status.hasFile ? (
                         <span className="inline-block rounded-full bg-green-100 px-2 py-px text-xs text-green-700">In place</span>
                       ) : (
                         <span className="inline-block rounded-full bg-amber-100 px-2 py-px text-xs text-amber-800">No file</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-xs text-zinc-600">
-                      {status.hasFile ? `${(status.size / 1024).toFixed(1)} KB` : '—'}
+                      {s.kind === 'remote'
+                        ? '—'
+                        : status.hasFile ? `${(status.size / 1024).toFixed(1)} KB` : '—'}
                     </td>
                     <td className="px-5 py-3 text-xs text-zinc-500">
-                      {status.hasFile ? new Date(status.mtimeMs).toLocaleString() : '—'}
+                      {s.kind === 'remote'
+                        ? '—'
+                        : status.hasFile ? new Date(status.mtimeMs).toLocaleString() : '—'}
                     </td>
                     <td className="px-5 py-3 text-xs text-zinc-600">
                       {st.downloads}
