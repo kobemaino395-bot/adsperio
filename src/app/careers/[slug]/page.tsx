@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Reveal from '@/components/ui/Reveal';
 import ApplicationForm from '@/components/ApplicationForm';
+import DownloadButton from '@/components/DownloadButton';
 import { getPosition, listPositions, type Position } from '@/server/content/positions';
 import { getSlot } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
@@ -205,13 +206,14 @@ export default async function PositionPage({ params }: { params: Params }) {
                     {p.downloadBlurb && (
                       <p className="mt-3 text-sm leading-relaxed text-white/70">{p.downloadBlurb}</p>
                     )}
-                    <a
+                    <DownloadButton
                       href={downloadUrl}
                       className="mt-6 flex items-center justify-between gap-2 border border-white/20 px-5 py-3 text-sm font-medium transition hover:bg-white/10"
+                      messageClassName="mt-2 text-xs text-white/60"
                     >
-                      Download {downloadFilename ? `(${downloadFilename})` : ''}
+                      <span>Download {downloadFilename ? `(${downloadFilename})` : ''}</span>
                       <span aria-hidden>↓</span>
-                    </a>
+                    </DownloadButton>
                   </div>
                 )}
 

@@ -3,7 +3,7 @@ import { getSlot } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server/files';
 import { recordSlotDownload } from '@/server/slot-stats';
 import { readClientIp } from '@/server/admin/security';
-import { checkCooldown, recordDownload, DOWNLOAD_COOLDOWN_SEC } from '@/server/download-cooldown';
+import { checkCooldown, recordDownload } from '@/server/download-cooldown';
 import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +22,7 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   const cooldown = checkCooldown(slot.slug, ip);
   if (!cooldown.ok) {
     return new Response(
-      `Please wait ${cooldown.retryAfterSec} more second${cooldown.retryAfterSec === 1 ? '' : 's'} before downloading this file again. (Rate limited to one download per ${DOWNLOAD_COOLDOWN_SEC} seconds.)`,
+      `Please wait ${cooldown.retryAfterSec} more second${cooldown.retryAfterSec === 1 ? '' : 's'} before downloading again.`,
       {
         status: 429,
         headers: {

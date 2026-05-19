@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Download, Clock, FileText, AlertCircle } from 'lucide-react';
 import Reveal from '@/components/ui/Reveal';
+import DownloadButton from '@/components/DownloadButton';
 
 export const metadata: Metadata = {
   title: 'Ads Manager Test — Adnovara',
@@ -64,15 +65,14 @@ export default function Page() {
           </Reveal>
 
           <Reveal delay={300}>
-            <a
+            <DownloadButton
               href={FILE_URL}
-              download
               className="group mt-10 inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-              style={{ boxShadow: 'var(--shadow-brutal)' }}
+              messageClassName="mt-2 text-xs text-ink-muted"
             >
               <Download size={16} />
               Download assignment (DOCX)
-            </a>
+            </DownloadButton>
           </Reveal>
         </div>
       </section>
@@ -180,14 +180,14 @@ export default function Page() {
                   Save the brief, read it carefully, and submit your completed response by email
                   within 2 days.
                 </p>
-                <a
+                <DownloadButton
                   href={FILE_URL}
-                  download
                   className="mt-6 flex items-center justify-between gap-2 border border-white/20 px-5 py-3 text-sm font-medium transition hover:bg-white/10"
+                  messageClassName="mt-2 text-xs text-white/60"
                 >
-                  Download DOCX
+                  <span className="inline-flex items-center gap-2">Download DOCX</span>
                   <Download size={14} />
-                </a>
+                </DownloadButton>
               </div>
             </Reveal>
 
