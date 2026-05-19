@@ -1,8 +1,8 @@
 import 'server-only';
-import { promises as fs } from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { dataDir } from '@/server/storage';
+import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export const HERO_TINTS = ['accent', 'ink', 'sky', 'rose', 'lime'] as const;
 export type HeroTint = (typeof HERO_TINTS)[number];
@@ -162,28 +162,30 @@ async function load(): Promise<Position[]> {
   const dir = path.dirname(file);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
-  let records: Position[];
-  try {
-    const raw = await fs.readFile(file, 'utf8');
-    records = JSON.parse(raw) as Position[];
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
-      records = seed();
-      await fs.writeFile(file, JSON.stringify(records, null, 2), 'utf8');
+  return withFileLock(file, async () => {
+    const cached2 = globalAny[CACHE_KEY];
+    if (cached2) return cached2;
+    const parsed = await readJsonResilient<Position[] | null>(file, null);
+    let records: Position[];
+    if (Array.isArray(parsed)) {
+      records = parsed;
     } else {
-      throw err;
+      records = seed();
+      await writeJsonAtomic(file, records, { pretty: true });
     }
-  }
-  globalAny[CACHE_KEY] = records;
-  return records;
+    globalAny[CACHE_KEY] = records;
+    return records;
+  });
 }
 
 async function save(records: Position[]): Promise<void> {
   const file = positionsPath();
   const dir = path.dirname(file);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  await fs.writeFile(file, JSON.stringify(records, null, 2), 'utf8');
-  globalAny[CACHE_KEY] = records;
+  await withFileLock(file, async () => {
+    await writeJsonAtomic(file, records, { pretty: true });
+    globalAny[CACHE_KEY] = records;
+  });
 }
 
 export function invalidatePositionsCache(): void {

@@ -2,6 +2,7 @@ import 'server-only';
 import { promises as fs } from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
+import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export function dataDir(): string {
   const env = process.env.ADNOVARA_DATA_DIR;
@@ -72,18 +73,15 @@ export async function fileMeta(p: string): Promise<{ size: number; mtimeMs: numb
 }
 
 export async function readStats(): Promise<Record<string, number>> {
-  try {
-    const raw = await fs.readFile(statsFilePath(), 'utf8');
-    return JSON.parse(raw) as Record<string, number>;
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return {};
-    throw err;
-  }
+  return readJsonResilient<Record<string, number>>(statsFilePath(), {});
 }
 
 export async function bumpStat(key: string, by = 1): Promise<void> {
   ensureDataDirs();
-  const current = await readStats();
-  current[key] = (current[key] ?? 0) + by;
-  await fs.writeFile(statsFilePath(), JSON.stringify(current), 'utf8');
+  const file = statsFilePath();
+  await withFileLock(file, async () => {
+    const current = await readJsonResilient<Record<string, number>>(file, {});
+    current[key] = (current[key] ?? 0) + by;
+    await writeJsonAtomic(file, current);
+  });
 }

@@ -1,9 +1,9 @@
 import 'server-only';
-import { promises as fs } from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { BUILTIN_SLUGS, DEFAULT_SLOTS } from '@/content/files';
 import { dataDir } from '@/server/storage';
+import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export const DEFAULT_MAX_BYTES = 100 * 1024 * 1024;
 
@@ -48,61 +48,63 @@ async function load(): Promise<SlotRecord[]> {
   const dir = path.dirname(file);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
-  let records: SlotRecord[];
-  try {
-    const raw = await fs.readFile(file, 'utf8');
-    records = JSON.parse(raw) as SlotRecord[];
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
-      records = seed();
-      await fs.writeFile(file, JSON.stringify(records, null, 2), 'utf8');
+  return withFileLock(file, async () => {
+    const cached2 = globalAny[CACHE_KEY];
+    if (cached2) return cached2;
+
+    const parsed = await readJsonResilient<SlotRecord[] | null>(file, null);
+    let records: SlotRecord[];
+    if (Array.isArray(parsed)) {
+      records = parsed;
     } else {
-      throw err;
+      records = seed();
+      await writeJsonAtomic(file, records, { pretty: true });
     }
-  }
 
-  // Re-seed any missing builtins (in case a fresh builtin was added to source)
-  const knownSlugs = new Set(records.map((r) => r.slug));
-  let modified = false;
-  for (const def of DEFAULT_SLOTS) {
-    if (!knownSlugs.has(def.slug)) {
-      records.push({
-        slug: def.slug,
-        title: def.title,
-        description: def.description,
-        publicFilename: def.publicFilename,
-        publicMimeType: def.publicMimeType,
-        maxBytes: DEFAULT_MAX_BYTES,
-        isBuiltin: true,
-        createdAt: new Date().toISOString(),
-      });
-      modified = true;
+    // Re-seed any missing builtins (in case a fresh builtin was added to source)
+    const knownSlugs = new Set(records.map((r) => r.slug));
+    let modified = false;
+    for (const def of DEFAULT_SLOTS) {
+      if (!knownSlugs.has(def.slug)) {
+        records.push({
+          slug: def.slug,
+          title: def.title,
+          description: def.description,
+          publicFilename: def.publicFilename,
+          publicMimeType: def.publicMimeType,
+          maxBytes: DEFAULT_MAX_BYTES,
+          isBuiltin: true,
+          createdAt: new Date().toISOString(),
+        });
+        modified = true;
+      }
     }
-  }
-  // Make sure builtin flags are correct
-  for (const rec of records) {
-    const shouldBeBuiltin = BUILTIN_SLUGS.has(rec.slug);
-    if (rec.isBuiltin !== shouldBeBuiltin) {
-      rec.isBuiltin = shouldBeBuiltin;
-      modified = true;
+    for (const rec of records) {
+      const shouldBeBuiltin = BUILTIN_SLUGS.has(rec.slug);
+      if (rec.isBuiltin !== shouldBeBuiltin) {
+        rec.isBuiltin = shouldBeBuiltin;
+        modified = true;
+      }
     }
-  }
-  if (modified) {
-    await fs.writeFile(file, JSON.stringify(records, null, 2), 'utf8');
-  }
+    if (modified) {
+      await writeJsonAtomic(file, records, { pretty: true });
+    }
 
-  globalAny[CACHE_KEY] = records;
-  cache = records;
-  return records;
+    globalAny[CACHE_KEY] = records;
+    cache = records;
+    return records;
+  });
 }
 
 async function save(records: SlotRecord[]): Promise<void> {
   const file = registryPath();
   const dir = path.dirname(file);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
-  await fs.writeFile(file, JSON.stringify(records, null, 2), 'utf8');
-  globalAny[CACHE_KEY] = records;
-  cache = records;
+  await withFileLock(file, async () => {
+    await writeJsonAtomic(file, records, { pretty: true });
+    globalAny[CACHE_KEY] = records;
+    cache = records;
+  });
 }
 
 export function invalidateRegistryCache(): void {

@@ -1,8 +1,8 @@
 import 'server-only';
-import { promises as fs } from 'node:fs';
 import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { dataDir } from '@/server/storage';
+import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export type BannerConfig = {
   enabled: boolean;
@@ -35,28 +35,26 @@ export async function readBanner(): Promise<BannerConfig> {
   const dir = path.dirname(file);
   if (!existsSync(dir)) mkdirSync(dir, { recursive: true });
 
-  let cfg: BannerConfig;
-  try {
-    const raw = await fs.readFile(file, 'utf8');
-    const parsed = JSON.parse(raw) as Partial<BannerConfig>;
-    cfg = {
-      enabled: typeof parsed.enabled === 'boolean' ? parsed.enabled : DEFAULT_BANNER.enabled,
-      badge: typeof parsed.badge === 'string' ? parsed.badge : DEFAULT_BANNER.badge,
-      message: typeof parsed.message === 'string' ? parsed.message : DEFAULT_BANNER.message,
-      ctaText: typeof parsed.ctaText === 'string' ? parsed.ctaText : DEFAULT_BANNER.ctaText,
-      ctaUrl: typeof parsed.ctaUrl === 'string' ? parsed.ctaUrl : DEFAULT_BANNER.ctaUrl,
-    };
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') {
-      cfg = { ...DEFAULT_BANNER };
-      await fs.writeFile(file, JSON.stringify(cfg, null, 2), 'utf8');
+  return withFileLock(file, async () => {
+    const cached2 = globalAny[CACHE_KEY];
+    if (cached2) return cached2;
+    const parsed = await readJsonResilient<Partial<BannerConfig> | null>(file, null);
+    let cfg: BannerConfig;
+    if (parsed) {
+      cfg = {
+        enabled: typeof parsed.enabled === 'boolean' ? parsed.enabled : DEFAULT_BANNER.enabled,
+        badge: typeof parsed.badge === 'string' ? parsed.badge : DEFAULT_BANNER.badge,
+        message: typeof parsed.message === 'string' ? parsed.message : DEFAULT_BANNER.message,
+        ctaText: typeof parsed.ctaText === 'string' ? parsed.ctaText : DEFAULT_BANNER.ctaText,
+        ctaUrl: typeof parsed.ctaUrl === 'string' ? parsed.ctaUrl : DEFAULT_BANNER.ctaUrl,
+      };
     } else {
-      throw err;
+      cfg = { ...DEFAULT_BANNER };
+      await writeJsonAtomic(file, cfg, { pretty: true });
     }
-  }
-
-  globalAny[CACHE_KEY] = cfg;
-  return cfg;
+    globalAny[CACHE_KEY] = cfg;
+    return cfg;
+  });
 }
 
 export async function writeBanner(next: BannerConfig): Promise<BannerConfig> {
@@ -71,8 +69,10 @@ export async function writeBanner(next: BannerConfig): Promise<BannerConfig> {
     ctaText: String(next.ctaText ?? '').trim().slice(0, 80),
     ctaUrl: String(next.ctaUrl ?? '').trim().slice(0, 500),
   };
-  await fs.writeFile(file, JSON.stringify(sanitized, null, 2), 'utf8');
-  globalAny[CACHE_KEY] = sanitized;
+  await withFileLock(file, async () => {
+    await writeJsonAtomic(file, sanitized, { pretty: true });
+    globalAny[CACHE_KEY] = sanitized;
+  });
   return sanitized;
 }
 

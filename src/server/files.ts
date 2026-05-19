@@ -6,6 +6,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { dataDir, fileMeta, sanitizeFilename } from '@/server/storage';
 import type { SlotRecord } from '@/server/slot-registry';
+import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export type SlotPaths = {
   dir: string;
@@ -83,15 +84,14 @@ async function maybeMigrateTakeHome(slug: string): Promise<void> {
   try { if (existsSync(legacyBackup) && !existsSync(p.backup)) await fs.rename(legacyBackup, p.backup); } catch {}
   try {
     if (existsSync(legacyMeta) && !existsSync(p.meta)) {
-      const raw = await fs.readFile(legacyMeta, 'utf8');
-      const parsed = JSON.parse(raw) as { filename?: string; contentType?: string; uploadedAt?: string; size?: number };
+      const parsed = await readJsonResilient<{ filename?: string; contentType?: string; uploadedAt?: string; size?: number } | null>(legacyMeta, null);
       const migrated: SlotMeta = {
-        originalFilename: parsed.filename ?? 'take-home',
-        contentType: parsed.contentType ?? 'application/octet-stream',
-        uploadedAt: parsed.uploadedAt ?? new Date().toISOString(),
-        size: parsed.size ?? 0,
+        originalFilename: parsed?.filename ?? 'take-home',
+        contentType: parsed?.contentType ?? 'application/octet-stream',
+        uploadedAt: parsed?.uploadedAt ?? new Date().toISOString(),
+        size: parsed?.size ?? 0,
       };
-      await fs.writeFile(p.meta, JSON.stringify(migrated), 'utf8');
+      await writeJsonAtomic(p.meta, migrated);
       await fs.unlink(legacyMeta).catch(() => undefined);
     }
   } catch {}
@@ -100,19 +100,13 @@ async function maybeMigrateTakeHome(slug: string): Promise<void> {
 export async function readSlotMeta(slug: string): Promise<SlotMeta | null> {
   await maybeMigrateTakeHome(slug);
   const p = slotPaths(slug);
-  try {
-    const raw = await fs.readFile(p.meta, 'utf8');
-    return JSON.parse(raw) as SlotMeta;
-  } catch (err) {
-    if ((err as NodeJS.ErrnoException).code === 'ENOENT') return null;
-    throw err;
-  }
+  return readJsonResilient<SlotMeta | null>(p.meta, null);
 }
 
 export async function writeSlotMeta(slug: string, meta: SlotMeta): Promise<void> {
   ensureSlotDir(slug);
   const p = slotPaths(slug);
-  await fs.writeFile(p.meta, JSON.stringify(meta), 'utf8');
+  await withFileLock(p.meta, () => writeJsonAtomic(p.meta, meta));
 }
 
 export async function readSlotStatus(slug: string): Promise<SlotStatus> {
