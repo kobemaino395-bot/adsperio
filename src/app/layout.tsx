@@ -1,29 +1,39 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { site } from '@/content/site';
-import { Fraunces, JetBrains_Mono } from 'next/font/google';
+import { Bricolage_Grotesque, Hanken_Grotesk, Space_Mono } from 'next/font/google';
 import { headers } from 'next/headers';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HiringBanner from '@/components/layout/HiringBanner';
 
-const serif = Fraunces({
+// Display — characterful editorial grotesque (repoints every `font-serif` heading)
+const display = Bricolage_Grotesque({
   subsets: ['latin'],
   variable: '--font-serif',
   display: 'swap',
-  axes: ['opsz', 'SOFT'],
+  weight: ['400', '500', '600', '700', '800'],
 });
 
-const mono = JetBrains_Mono({
+// Body — clean, warm grotesk
+const sans = Hanken_Grotesk({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+// Technical labels / eyebrows
+const mono = Space_Mono({
   subsets: ['latin'],
   variable: '--font-mono',
   display: 'swap',
+  weight: ['400', '700'],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
   title: {
-    default: `${site.name} — Performance Marketing That Scales`,
+    default: `${site.name} — ${site.tagline}`,
     template: `%s | ${site.name}`,
   },
   description: site.description,
@@ -37,7 +47,7 @@ export const metadata: Metadata = {
     locale: site.locale,
     url: site.url,
     siteName: site.name,
-    title: `${site.name} — Performance Marketing That Scales`,
+    title: `${site.name} — ${site.tagline}`,
     description: site.description,
     images: [{ url: site.ogImage, width: 1200, height: 630, alt: site.name }],
   },
@@ -45,7 +55,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     site: site.twitter,
     creator: site.twitter,
-    title: `${site.name} — Performance Marketing That Scales`,
+    title: `${site.name} — ${site.tagline}`,
     description: site.description,
     images: [site.ogImage],
   },
@@ -66,8 +76,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
-    { media: '(prefers-color-scheme: dark)',  color: '#0a0a0a' },
+    { media: '(prefers-color-scheme: light)', color: '#f5f2ea' },
+    { media: '(prefers-color-scheme: dark)',  color: '#0e241b' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -91,7 +101,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <html lang="en" className={`${serif.variable} ${mono.variable}`}>
+    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
       <body className="min-h-screen font-sans antialiased">
         {!isAdmin && (
           <script

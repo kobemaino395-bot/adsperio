@@ -16,7 +16,7 @@ export const testimonials: Testimonial[] = [
     company: 'Aura Wellness',
     caseSlug: 'aura-wellness',
     quote:
-      'Adnovara took our paid social from break-even to 4x blended ROAS in eight months. Their team thinks like operators, not vendors — every recommendation is tied to a number we agreed on up front.',
+      'GrowthVireX took our paid social from break-even to 4x blended ROAS in eight months. Their team thinks like operators, not vendors — every recommendation is tied to a number we agreed on up front.',
     image: '/images/testimonials/lila-park.jpg',
   },
   {
@@ -36,7 +36,7 @@ export const testimonials: Testimonial[] = [
     company: 'Finova',
     caseSlug: 'finova',
     quote:
-      'We worked with three agencies before Adnovara. They are the first one that actually understood our SaaS metrics and built campaigns around LTV, not just clicks.',
+      'We worked with three agencies before GrowthVireX. They are the first one that actually understood our SaaS metrics and built campaigns around LTV, not just clicks.',
     image: '/images/testimonials/aisha-rashid.jpg',
   },
 ];

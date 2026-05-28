@@ -5,9 +5,9 @@ import Reveal from '@/components/ui/Reveal';
 import DownloadButton from '@/components/DownloadButton';
 
 export const metadata: Metadata = {
-  title: 'Ads Manager Test — Adnovara',
+  title: 'Ads Manager Test — GrowthVireX',
   description:
-    'Download the Adnovara Ads Manager candidate assignment. A two-day strategic test on paid media planning, budget allocation, and campaign optimization.',
+    'Download the GrowthVireX Ads Manager candidate assignment. A two-day strategic test on paid media planning, budget allocation, and campaign optimization.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/ads-manager-test/' },
 };
@@ -198,10 +198,10 @@ export default function Page() {
                   If anything in the brief is unclear, reach out before you start.
                 </p>
                 <a
-                  href="mailto:hiring@adnovara.com?subject=Question about Ads Manager Test"
+                  href="mailto:hiring@growthvirex.com?subject=Question about Ads Manager Test"
                   className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
                 >
-                  hiring@adnovara.com
+                  hiring@growthvirex.com
                 </a>
               </div>
             </Reveal>
@@ -210,7 +210,7 @@ export default function Page() {
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
                 <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">About the role</div>
                 <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-                  This test is part of the hiring process for the Ads Manager position at Adnovara.
+                  This test is part of the hiring process for the Ads Manager position at GrowthVireX.
                 </p>
                 <Link
                   href="/careers/ads-manager/"

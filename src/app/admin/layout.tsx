@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: 'Admin · Adnovara',
+  title: 'Admin · GrowthVireX',
   robots: { index: false, follow: false, googleBot: { index: false, follow: false } },
 };
 
@@ -24,7 +24,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
             <div className="flex items-center gap-6">
               <a href="/admin/dashboard" className="text-sm font-semibold tracking-tight">
-                Adnovara · Admin
+                GrowthVireX · Admin
               </a>
               <nav className="flex gap-4 text-sm text-zinc-600">
                 <a href="/admin/dashboard" className="hover:text-zinc-900">Dashboard</a>

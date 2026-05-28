@@ -81,7 +81,7 @@ function seed(): Position[] {
         'Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.',
       aboutHeading: 'About the role',
       aboutParagraphs: [
-        "Adnovara manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a senior Ads Manager who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a senior Ads Manager who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
         "This is not a coordinator role. You'll be the lead strategist on your accounts, working closely with our SEO, creative, and web teams to build compounding growth systems — not one-off campaigns.",
       ],
       responsibilitiesHeading: "What you'll do",
@@ -134,12 +134,12 @@ function seed(): Position[] {
         { key: 'High-impact clients', value: 'Work with ambitious brands across EdTech, FinTech, DTC, and healthcare.', sub: '' },
       ],
       equalOpportunity:
-        'Adnovara is an equal opportunity employer. We hire based on craft and ownership and do not discriminate on the basis of race, religion, national origin, gender, sexual orientation, age, or disability.',
-      seoTitle: 'Ads Manager — Open Role at Adnovara',
+        'GrowthVireX is an equal opportunity employer. We hire based on craft and ownership and do not discriminate on the basis of race, religion, national origin, gender, sexual orientation, age, or disability.',
+      seoTitle: 'Ads Manager — Open Role at GrowthVireX',
       seoDescription:
         'We are hiring a senior Ads Manager to own paid media strategy across Google, Meta, and LinkedIn. Remote-first, performance-driven, high-ownership role.',
       jobPostingDescription:
-        "Adnovara manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a senior Ads Manager to own multi-channel ad strategy across Google, Meta, and LinkedIn for a portfolio of high-growth clients.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a senior Ads Manager to own multi-channel ad strategy across Google, Meta, and LinkedIn for a portfolio of high-growth clients.",
       datePosted: now.slice(0, 10),
       validThrough: '',
       salaryMin: 75000,

@@ -1,26 +1,26 @@
 export const site = {
-  name: 'Adnovara',
-  shortName: 'Adnovara',
-  tagline: 'Where Brands Bloom.',
-  url: 'https://www.adnovara.com',
+  name: 'GrowthVireX',
+  shortName: 'GrowthVireX',
+  tagline: 'We make growth contagious.',
+  url: 'https://www.growthvirex.com',
   description:
-    'Adnovara is a modern advertising growth company helping brands grow faster through smart paid media, creative ad production, and conversion optimization. We find your audience, speak their language, and scale what works.',
+    'GrowthVireX is a growth studio that turns ambitious brands into category leaders. We engineer paid media, creative, and conversion systems that spread — turning every win into the next one.',
   keywords: [
-    'advertising growth company',
+    'growth marketing studio',
     'paid media agency',
     'creative ad production',
     'conversion optimization',
-    'growth marketing',
+    'performance marketing',
     'Meta advertising',
     'Google advertising',
     'TikTok advertising',
-    'Adnovara',
+    'GrowthVireX',
   ],
   locale: 'en_US',
-  twitter: '@adnovara',
+  twitter: '@growthvirex',
   ogImage: '/images/og/default.jpg', // 1200x630
   contact: {
-    email: 'contact@adnovara.com',
+    email: 'hello@growthvirex.com',
     phone: '+65 6210 8847',
   },
   social: {

@@ -1,26 +1,32 @@
 import Link from 'next/link';
-import { Mail, ArrowUpRight } from 'lucide-react';
+import { Mail } from 'lucide-react';
 import { services } from '@/content/services';
 import { site } from '@/content/site';
+import Logo from './Logo';
 
 export default function Footer() {
   const year = new Date().getFullYear();
-  const iconClass = "flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] text-ink-muted transition hover:border-zest-300 hover:text-zest-400";
+  const iconClass = "flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border)] text-ink-muted transition hover:border-[var(--color-accent)] hover:text-[var(--color-accent)]";
 
   return (
-    <footer className="relative overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-bg-alt)]">
-      <div aria-hidden className="pointer-events-none absolute -bottom-48 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-zest-300/10 blur-3xl" />
+    <footer className="relative overflow-hidden border-t border-[var(--color-border)] bg-[var(--color-ink-warm)] text-[var(--color-bg)]">
+      <div aria-hidden className="bg-dots pointer-events-none absolute inset-0 opacity-[0.06]" />
+      <div aria-hidden className="pointer-events-none absolute -bottom-48 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-[var(--color-accent)]/10 blur-3xl" />
 
-      <div className="container-zest relative pt-20 pb-10">
+      {/* Oversized contagious wordmark */}
+      <div aria-hidden className="container-zest relative pt-16">
+        <div className="select-none font-serif text-[18vw] font-extrabold leading-[0.8] tracking-[-0.04em] text-white/[0.04] md:text-[13rem]">
+          spread.
+        </div>
+      </div>
+
+      <div className="container-zest relative pb-10 pt-8">
 
         <div className="grid grid-cols-2 gap-10 md:grid-cols-12">
           <div className="col-span-2 md:col-span-5">
-            <Link href="/" className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em]">
-              <span className="inline-block h-2.5 w-2.5 rounded-full bg-zest-300" />
-              {site.name}
-            </Link>
-            <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-muted">
-              {site.tagline} Modern advertising growth for brands across Asia-Pacific and Europe.
+            <span className="text-[var(--color-bg)]"><Logo /></span>
+            <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/60">
+              {site.tagline} A growth studio for ambitious brands across Asia-Pacific and Europe.
             </p>
             <div className="mt-6 flex gap-2">
               <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={iconClass}>
@@ -57,11 +63,11 @@ export default function Footer() {
           </FooterCol>
         </div>
 
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-[var(--color-border)] pt-8 text-xs text-ink-muted md:flex-row md:items-center">
+        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-white/10 pt-8 text-xs text-white/50 md:flex-row md:items-center">
           <span>© {year} {site.name}. All rights reserved.</span>
           <div className="flex gap-6">
-            <Link href="/privacy/" className="transition hover:text-[var(--color-fg)]">Privacy</Link>
-            <Link href="/terms/" className="transition hover:text-[var(--color-fg)]">Terms</Link>
+            <Link href="/privacy/" className="transition hover:text-[var(--color-accent)]">Privacy</Link>
+            <Link href="/terms/" className="transition hover:text-[var(--color-accent)]">Terms</Link>
           </div>
         </div>
       </div>
@@ -72,7 +78,7 @@ export default function Footer() {
 function FooterCol({ title, children, className = '' }: { title: string; children: React.ReactNode; className?: string }) {
   return (
     <div className={className}>
-      <div className="mb-4 text-[0.7rem] font-medium uppercase tracking-[0.15em] text-ink-muted">{title}</div>
+      <div className="mb-4 font-mono text-[0.7rem] uppercase tracking-[0.25em] text-[var(--color-accent)]">{title}</div>
       <ul className="space-y-2.5">{children}</ul>
     </div>
   );
@@ -81,7 +87,7 @@ function FooterCol({ title, children, className = '' }: { title: string; childre
 function FooterLink({ href, children }: { href: string; children: React.ReactNode }) {
   return (
     <li>
-      <Link href={href} className="text-sm text-[var(--color-fg)]/80 transition hover:text-zest-400">
+      <Link href={href} className="text-sm text-white/70 transition hover:text-white">
         {children}
       </Link>
     </li>

@@ -16,7 +16,8 @@ export default function ServicesIndex() {
   return (
     <main>
       <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-zest-gradient opacity-60" />
+        <div aria-hidden className="absolute inset-0 bg-spark-gradient opacity-90" />
+        <div aria-hidden className="bg-grid absolute inset-0 opacity-30" />
         <div className="container-zest relative pt-40 pb-20 text-center">
           <Reveal>
             <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
@@ -35,7 +36,7 @@ export default function ServicesIndex() {
         <div className="grid gap-5 md:grid-cols-2">
           {services.map((s, i) => (
             <Reveal key={s.slug} delay={i * 100}>
-              <Link href={`/services/${s.slug}/`} className="group relative flex flex-col justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 transition hover:-translate-y-1 hover:border-zest-300 hover:shadow-2xl hover:shadow-zest-300/10">
+              <Link href={`/services/${s.slug}/`} className="group relative flex flex-col justify-between rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 transition hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-lg)]">
                 <div>
                   <div className="text-xs uppercase tracking-widest text-ink-muted">
                     {String(i + 1).padStart(2, '0')} — {s.hero.eyebrow}

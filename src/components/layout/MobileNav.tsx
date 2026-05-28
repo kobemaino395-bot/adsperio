@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { ChevronDown, X } from 'lucide-react';
 import { services } from '@/content/services';
-import { site } from '@/content/site';
+import Logo from './Logo';
 
 type Props = { open: boolean; onClose: () => void };
 
@@ -31,10 +31,7 @@ export default function MobileNav({ open, onClose }: Props) {
         aria-hidden={!open}
       >
         <div className="flex h-16 items-center justify-between border-b border-[var(--color-border)] px-6">
-          <span className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em]">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-zest-300" />
-            {site.name}
-          </span>
+          <Logo asLink={false} />
           <button
             onClick={onClose}
             aria-label="Close menu"
@@ -101,7 +98,7 @@ export default function MobileNav({ open, onClose }: Props) {
           <Link
             href="/contact/"
             onClick={onClose}
-            className="flex w-full items-center justify-center rounded-full bg-zest-300 px-4 py-3 text-sm font-medium text-ink"
+            className="flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-accent)] px-4 py-3 text-sm font-semibold text-[var(--color-accent-fg)]"
           >
             Book a call →
           </Link>

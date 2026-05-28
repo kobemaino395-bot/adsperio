@@ -30,7 +30,7 @@ export const DEFAULT_SLOTS: DefaultSlot[] = [
     slug: 'remote-policy',
     title: 'Remote work policy',
     description: 'Available at /api/downloads/remote-policy.',
-    publicFilename: 'Adnovara_Remote_Policy.pdf',
+    publicFilename: 'GrowthVireX_Remote_Policy.pdf',
     publicMimeType: 'application/pdf',
   },
 ];

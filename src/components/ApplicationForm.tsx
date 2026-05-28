@@ -137,8 +137,8 @@ export default function ApplicationForm() {
       <label className="flex items-start gap-3 text-sm text-ink-muted">
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
         <span>
-          I consent to Adnovara processing the data in this form for the purpose of recruiting for this role,
-          and storing it for up to 12 months. I can request deletion at any time by emailing hiring@adnovara.com.
+          I consent to GrowthVireX processing the data in this form for the purpose of recruiting for this role,
+          and storing it for up to 12 months. I can request deletion at any time by emailing hiring@growthvirex.com.
         </span>
       </label>
 

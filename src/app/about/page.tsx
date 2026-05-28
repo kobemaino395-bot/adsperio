@@ -7,8 +7,8 @@ import Reveal from '@/components/ui/Reveal';
 export const metadata: Metadata = {
   title: 'About — The Team Behind the Growth',
   description:
-    'Adnovara is a modern advertising growth company built around one mission: helping brands bloom through smart paid media, creative production, and conversion optimization.',
-  keywords: ['about Adnovara', 'advertising growth company team', 'paid media agency philosophy'],
+    'GrowthVireX is a growth studio built around one mission: making growth contagious through engineered paid media, creative production, and conversion optimization.',
+  keywords: ['about GrowthVireX', 'growth marketing studio team', 'paid media agency philosophy'],
   alternates: { canonical: '/about/' },
 };
 
@@ -41,17 +41,17 @@ export default function AboutPage() {
                 </span>
               </Reveal>
               <Reveal delay={100}>
-                <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-7xl">
-                  Where{' '}
+                <h1 className="mt-8 text-5xl font-extrabold tracking-tight md:text-7xl">
+                  Growth that{' '}
                   <span className="relative inline-block">
-                    <span className="relative z-10">brands bloom.</span>
+                    <span className="relative z-10">catches on.</span>
                     <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
                   </span>
                 </h1>
               </Reveal>
               <Reveal delay={250}>
                 <p className="mt-6 max-w-xl text-lg text-ink-muted md:text-xl">
-                  We&apos;re a modern advertising growth company based in Singapore. Simple approach: find your audience, speak their language, and scale what works.
+                  We&apos;re a growth studio based in Singapore. The approach is simple: find the signal, engineer the system, and make the wins spread.
                 </p>
               </Reveal>
             </div>
@@ -75,7 +75,7 @@ export default function AboutPage() {
             <div className="text-xs font-medium uppercase tracking-widest text-ink-muted">Our mission</div>
             <div>
               <p className="text-2xl font-medium leading-relaxed md:text-3xl">
-                To help brands of all sizes grow faster through smart paid media, creative ad production, and conversion optimization — across Meta, Google, TikTok, and YouTube.
+                To make growth contagious for brands of all sizes — engineering paid media, creative ad production, and conversion optimization into one system across Meta, Google, TikTok, and YouTube.
               </p>
               <p className="mt-8 text-lg text-ink-muted">
                 Simple name, serious results. We&apos;ve partnered with over 250 brands across Asia-Pacific and Europe and generated over $300M in tracked revenue for our clients.

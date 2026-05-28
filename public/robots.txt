@@ -4,4 +4,4 @@ Disallow: /api/
 Disallow: /_next/
 Disallow: /404
 
-Sitemap: https://adnovara.com/sitemap.xml
+Sitemap: https://growthvirex.com/sitemap.xml

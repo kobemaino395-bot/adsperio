@@ -39,7 +39,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Scaled a DTC wellness brand from six to seven figures in 8 months.',
     metaTitle: 'Aura Wellness — 612% Revenue Growth via Paid Social & CRO',
     metaDescription:
-      'How Adnovara scaled Aura Wellness from $80K to $580K monthly revenue through Meta, TikTok, and conversion-optimized landing pages.',
+      'How GrowthVireX scaled Aura Wellness from $80K to $580K monthly revenue through Meta, TikTok, and conversion-optimized landing pages.',
     keywords: ['DTC marketing case study', 'Meta ads wellness brand', 'CRO case study', 'paid social scaling'],
     hero: {
       eyebrow: 'Case Study — Health & Wellness',
@@ -67,7 +67,7 @@ export const caseStudies: CaseStudy[] = [
       body: 'Within 8 months, monthly revenue grew from $80K to $580K. CPA dropped 38% even as spend scaled 3.2x. The new landing page lifted conversion rate by 71%, and repeat purchase rate climbed from 14% to 22% thanks to better post-purchase flows.',
     },
     testimonial: {
-      quote: 'Adnovara didn\'t just run our ads — they rebuilt how we think about growth. The landing page alone paid for the entire engagement in the first month.',
+      quote: 'GrowthVireX didn\'t just run our ads — they rebuilt how we think about growth. The landing page alone paid for the entire engagement in the first month.',
       author: 'Priya Mehta',
       role: 'Founder, Aura Wellness',
     },
@@ -168,7 +168,7 @@ export const caseStudies: CaseStudy[] = [
     tagline: 'Launched a new product line to a 2x sellout in 6 weeks.',
     metaTitle: 'Lumière Tech — Product Launch Case Study: 2x Sellout',
     metaDescription:
-      'How Adnovara orchestrated a coordinated launch across paid social, SEO, and influencer seeding — selling out Lumière Tech\'s new product line in 6 weeks.',
+      'How GrowthVireX orchestrated a coordinated launch across paid social, SEO, and influencer seeding — selling out Lumière Tech\'s new product line in 6 weeks.',
     keywords: ['product launch marketing', 'consumer electronics launch', 'influencer marketing', 'launch strategy'],
     hero: {
       eyebrow: 'Case Study — Consumer Tech',

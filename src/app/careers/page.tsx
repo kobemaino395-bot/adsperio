@@ -7,10 +7,10 @@ import { listPositions } from '@/server/content/positions';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: 'Careers — Join Adnovara',
+  title: 'Careers — Join GrowthVireX',
   description:
-    "We're hiring growth marketers, performance creatives, and engineers. Remote-first, outcome-driven, and obsessed with helping brands bloom.",
-  keywords: ['marketing careers', 'growth marketing jobs', 'remote marketing jobs', 'Adnovara careers'],
+    "We're hiring growth marketers, performance creatives, and engineers. Remote-first, outcome-driven, and obsessed with making growth contagious.",
+  keywords: ['marketing careers', 'growth marketing jobs', 'remote marketing jobs', 'GrowthVireX careers'],
   alternates: { canonical: '/careers/' },
 };
 
@@ -66,7 +66,7 @@ export default async function CareersPage() {
         {openings.length === 0 ? (
           <p className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 text-center text-sm text-ink-muted">
             No open roles right now. Want to introduce yourself anyway?{' '}
-            <a href="mailto:hiring@adnovara.com" className="text-zest-400 hover:underline">hiring@adnovara.com</a>
+            <a href="mailto:hiring@growthvirex.com" className="text-zest-400 hover:underline">hiring@growthvirex.com</a>
           </p>
         ) : (
           <div>
@@ -133,7 +133,7 @@ export default async function CareersPage() {
             </p>
           </Reveal>
           <Reveal delay={250}>
-            <Link href="mailto:hiring@adnovara.com?subject=Introducing%20myself"
+            <Link href="mailto:hiring@growthvirex.com?subject=Introducing%20myself"
               className="btn-primary mt-8"
             >
               Introduce yourself

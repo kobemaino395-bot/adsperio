@@ -3,8 +3,8 @@ import Reveal from '@/components/ui/Reveal';
 import { site } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service — Adnovara',
-  description: 'Terms and conditions governing the use of Adnovara services and website.',
+  title: 'Terms of Service — GrowthVireX',
+  description: 'Terms and conditions governing the use of GrowthVireX services and website.',
   alternates: { canonical: '/terms/' },
 };
 

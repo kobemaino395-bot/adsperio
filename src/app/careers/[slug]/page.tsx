@@ -238,10 +238,10 @@ export default async function PositionPage({ params }: { params: Params }) {
                 <div className="rounded-2xl border border-[var(--color-border)] p-8">
                   <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Questions?</div>
                   <a
-                    href={`mailto:hiring@adnovara.com?subject=Question about ${encodeURIComponent(p.title)} role`}
+                    href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
                     className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
                   >
-                    hiring@adnovara.com
+                    hiring@growthvirex.com
                   </a>
                 </div>
               </aside>
@@ -354,10 +354,10 @@ export default async function PositionPage({ params }: { params: Params }) {
                   Reach out before applying — we&apos;re happy to answer any questions about the role.
                 </p>
                 <a
-                  href={`mailto:hiring@adnovara.com?subject=Question about ${encodeURIComponent(p.title)} role`}
+                  href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
                   className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
                 >
-                  hiring@adnovara.com
+                  hiring@growthvirex.com
                 </a>
               </div>
             </Reveal>

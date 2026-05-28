@@ -91,7 +91,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
             <input
               type="text"
               name="publicFilename"
-              placeholder="e.g. Adnovara_Handbook.zip"
+              placeholder="e.g. GrowthVireX_Handbook.zip"
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
             />
           </label>

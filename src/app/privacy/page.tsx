@@ -3,8 +3,8 @@ import Reveal from '@/components/ui/Reveal';
 import { site } from '@/content/site';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy — Adnovara',
-  description: 'How Adnovara collects, uses, and protects your personal information.',
+  title: 'Privacy Policy — GrowthVireX',
+  description: 'How GrowthVireX collects, uses, and protects your personal information.',
   alternates: { canonical: '/privacy/' },
 };
 

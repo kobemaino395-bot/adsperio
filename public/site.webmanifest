@@ -1,7 +1,7 @@
 {
-  "name": "Adnovara",
-  "short_name": "Adnovara",
-  "description": "Adnovara is a modern advertising growth company helping brands grow faster through smart paid media, creative ad production, and conversion optimization.",
+  "name": "GrowthVireX",
+  "short_name": "GrowthVireX",
+  "description": "GrowthVireX is a modern advertising growth company helping brands grow faster through smart paid media, creative ad production, and conversion optimization.",
   "icons": [
     { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
     { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }

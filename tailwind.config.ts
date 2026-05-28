@@ -6,31 +6,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
+        // "zest" name retained for compatibility — now the vermilion spark ramp
         zest: {
-          50:  '#f7ffd9',
-          100: '#ecffa8',
-          200: '#dcff6b',
-          300: '#c5f82a', // primary accent — citrus lime
-          400: '#a9db14',
-          500: '#86ae0f',
-          600: '#667f12',
-          700: '#4e6114',
-          800: '#394613',
-          900: '#252e0c',
+          50:  '#fff2ee',
+          100: '#ffe0d6',
+          200: '#ffc2af',
+          300: '#ff5a2c', // primary accent — vermilion spark
+          400: '#ec4318',
+          500: '#c8351a',
+          600: '#9c2913',
+          700: '#74200f',
+          800: '#5a190c',
+          900: '#3d1108',
+        },
+        pine: {
+          50:  '#e9f3ee',
+          100: '#c9e3d6',
+          300: '#4aa57f',
+          500: '#146349',
+          700: '#0d3a2b',
+          900: '#0a2419',
         },
         ink: {
-          DEFAULT: '#0a0a0a',
-          soft: '#171717',
-          muted: '#555555',
+          DEFAULT: '#0a1410',
+          soft: '#13201a',
+          muted: '#5c6b62',
         },
       },
       fontFamily: {
-        sans: ['ui-sans-serif', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
-        display: ['ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
+        display: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
       },
       backgroundImage: {
-        'zest-gradient':
-          'radial-gradient(ellipse at top left, rgba(197,248,42,0.35), transparent 50%), radial-gradient(ellipse at bottom right, rgba(255,138,0,0.25), transparent 50%)',
+        'spark-gradient':
+          'radial-gradient(ellipse at top left, rgba(255,90,44,0.18), transparent 55%), radial-gradient(ellipse at bottom right, rgba(31,138,99,0.16), transparent 55%)',
       },
       animation: {
         'orb-float': 'orb-float 14s ease-in-out infinite',

@@ -4,9 +4,9 @@ import Reveal from '@/components/ui/Reveal';
 import DownloadButton from '@/components/DownloadButton';
 
 export const metadata: Metadata = {
-  title: 'Remote Work Policy — Adnovara',
+  title: 'Remote Work Policy — GrowthVireX',
   description:
-    'Adnovara’s remote work policy: eligibility, working hours, equipment, communication standards, data security, and performance expectations.',
+    'GrowthVireX’s remote work policy: eligibility, working hours, equipment, communication standards, data security, and performance expectations.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/remote-work-policy/' },
 };
@@ -58,7 +58,7 @@ export default function Page() {
 
           <Reveal delay={200}>
             <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
-              How Adnovara works remote-first. This document sets the expectations for working
+              How GrowthVireX works remote-first. This document sets the expectations for working
               hours, communication, equipment, data security, and performance — for every member
               of the team, on every client engagement.
             </p>
@@ -159,7 +159,7 @@ export default function Page() {
                 <p className="text-sm leading-relaxed text-ink-muted">
                   This policy supersedes any earlier remote-work guidance. If you find a conflict
                   with a prior document, this version wins. Send corrections to{' '}
-                  <a href="mailto:people@adnovara.com" className="text-zest-400 hover:underline">people@adnovara.com</a>.
+                  <a href="mailto:people@growthvirex.com" className="text-zest-400 hover:underline">people@growthvirex.com</a>.
                 </p>
               </div>
             </Reveal>
@@ -194,10 +194,10 @@ export default function Page() {
                   People & Ops handles interpretation of this policy and approves exceptions.
                 </p>
                 <a
-                  href="mailto:people@adnovara.com?subject=Remote work policy question"
+                  href="mailto:people@growthvirex.com?subject=Remote work policy question"
                   className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
                 >
-                  people@adnovara.com
+                  people@growthvirex.com
                 </a>
               </div>
             </Reveal>
@@ -218,7 +218,7 @@ export default function Page() {
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-14 text-center">
         <div className="container-zest max-w-2xl">
           <p className="text-sm leading-relaxed text-ink-muted">
-            Internal use only. Do not redistribute outside Adnovara without written permission.
+            Internal use only. Do not redistribute outside GrowthVireX without written permission.
           </p>
         </div>
       </section>

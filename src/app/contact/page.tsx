@@ -6,8 +6,8 @@ import Reveal from '@/components/ui/Reveal';
 export const metadata: Metadata = {
   title: 'Contact — Let\'s Build Your Growth Engine',
   description:
-    'Get in touch with Adnovara. Free 30-minute strategy call, no commitment. Response within one business day, guaranteed.',
-  keywords: ['contact Adnovara', 'advertising growth company contact', 'book a growth consultation'],
+    'Get in touch with GrowthVireX. Free 30-minute strategy call, no commitment. Response within one business day, guaranteed.',
+  keywords: ['contact GrowthVireX', 'growth marketing studio contact', 'book a growth consultation'],
   alternates: { canonical: '/contact/' },
 };
 
@@ -45,7 +45,7 @@ export default function ContactPage() {
           >
             {/* Replace with your Web3Forms access key from https://web3forms.com */}
             <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
-            <input type="hidden" name="subject" value="New contact from adnovara.com" />
+            <input type="hidden" name="subject" value="New contact from growthvirex.com" />
             <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
 
             <div className="grid gap-6 md:grid-cols-2">

@@ -6,8 +6,8 @@ import Reveal from '@/components/ui/Reveal';
 export const metadata: Metadata = {
   title: 'Case Studies — Real Growth, Real Numbers',
   description:
-    'Browse Adnovara case studies across EdTech, FinTech, healthcare, DTC, and consumer electronics. Measurable results from real engagements.',
-  keywords: ['marketing case studies', 'growth marketing results', 'Adnovara portfolio'],
+    'Browse GrowthVireX case studies across EdTech, FinTech, healthcare, DTC, and consumer electronics. Measurable results from real engagements.',
+  keywords: ['marketing case studies', 'growth marketing results', 'GrowthVireX portfolio'],
   alternates: { canonical: '/case-studies/' },
 };
 

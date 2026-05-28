@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
 
   return (
     <div className="mx-auto mt-12 max-w-sm rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
-      <h1 className="text-lg font-semibold tracking-tight">Adnovara · Admin sign-in</h1>
+      <h1 className="text-lg font-semibold tracking-tight">GrowthVireX · Admin sign-in</h1>
       <p className="mt-1 text-sm text-zinc-500">Restricted area. Activity is logged.</p>
 
       {error && (

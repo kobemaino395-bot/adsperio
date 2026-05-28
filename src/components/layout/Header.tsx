@@ -3,10 +3,10 @@
 import Link from 'next/link';
 import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { ChevronDown, Menu, X } from 'lucide-react';
+import { ChevronDown, Menu } from 'lucide-react';
 import { services } from '@/content/services';
-import { site } from '@/content/site';
 import MobileNav from './MobileNav';
+import Logo from './Logo';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
@@ -57,20 +57,16 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed inset-x-0 z-50 border-b transition-all duration-300 ${
+        className={`fixed inset-x-0 z-50 transition-all duration-300 ${
           showBanner ? 'top-9' : 'top-0'
         } ${
           scrolled
-            ? 'border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur-xl'
-            : 'border-[var(--color-border)]/60 bg-[var(--color-bg)]'
+            ? 'border-b border-[var(--color-border)] bg-[var(--color-bg)]/85 backdrop-blur-xl'
+            : 'border-b border-transparent bg-transparent'
         }`}
       >
         <div className="container-zest flex h-16 items-center justify-between">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.15em]">
-            <span className="inline-block h-2.5 w-2.5 rounded-full bg-zest-300 shadow-[0_0_20px_rgba(197,248,42,0.6)]" />
-            {site.name}
-          </Link>
+          <Logo />
 
           {/* Desktop nav */}
           <nav className="hidden items-center gap-8 md:flex" aria-label="Primary">
@@ -148,9 +144,10 @@ export default function Header() {
             </Link>
             <Link
               href="/contact/"
-              className="rounded-full bg-zest-300 px-4 py-2 text-sm font-medium text-ink transition hover:bg-zest-200"
+              className="group inline-flex items-center gap-2 rounded-full bg-[var(--color-accent)] px-5 py-2 text-sm font-semibold text-[var(--color-accent-fg)] shadow-[0_6px_18px_rgba(255,90,44,0.35)] transition-transform hover:-translate-y-0.5"
             >
-              Book a call →
+              Book a call
+              <span aria-hidden className="transition-transform group-hover:translate-x-0.5">→</span>
             </Link>
           </nav>
 
