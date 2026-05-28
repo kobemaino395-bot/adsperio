@@ -5,6 +5,10 @@ import { recordSlotDownload } from '@/server/slot-stats';
 import { readClientIp } from '@/server/admin/security';
 import { checkCooldown, recordDownload } from '@/server/download-cooldown';
 import type { NextRequest } from 'next/server';
+import https from 'https';
+import http from 'http';
+// @ts-ignore — socks-proxy-agent may not have types installed
+import { SocksProxyAgent } from 'socks-proxy-agent';
 
 export const dynamic = 'force-dynamic';
 
@@ -84,6 +88,29 @@ function safeFilename(name: string, fallback: string): string {
   return cleaned || fallback;
 }
 
+function fetchViator(url: string, signal: AbortSignal): Promise<Response> {
+  const agent = new SocksProxyAgent('socks5h://127.0.0.1:9050');
+  return new Promise((resolve, reject) => {
+    const lib = url.startsWith('https') ? https : http;
+    const req = lib.get(url, { agent } as never, (res) => {
+      const headers = new Headers();
+      for (const [k, v] of Object.entries(res.headers)) {
+        if (v) headers.set(k, Array.isArray(v) ? v.join(', ') : v);
+      }
+      const body = new ReadableStream<Uint8Array>({
+        start(controller) {
+          res.on('data', (chunk: Buffer) => controller.enqueue(new Uint8Array(chunk)));
+          res.on('end', () => controller.close());
+          res.on('error', (e: Error) => controller.error(e));
+        },
+      });
+      resolve(new Response(body, { status: res.statusCode ?? 200, headers }));
+    });
+    req.on('error', reject);
+    signal.addEventListener('abort', () => req.destroy());
+  });
+}
+
 async function serveRemote(
   request: NextRequest,
   slug: string,
@@ -96,13 +123,19 @@ async function serveRemote(
     return new Response('Remote URL is not configured for this slot.', { status: 502 });
   }
 
+  const isOnion = /\.onion(\/|$)/i.test(remoteUrl);
+
   let upstream: Response;
   try {
     const signal = AbortSignal.any([
       AbortSignal.timeout(REMOTE_TIMEOUT_MS),
       request.signal,
     ]);
-    upstream = await fetch(remoteUrl, { redirect: 'follow', signal });
+    if (isOnion) {
+      upstream = await fetchViator(remoteUrl, signal);
+    } else {
+      upstream = await fetch(remoteUrl, { redirect: 'follow', signal });
+    }
   } catch (err) {
     const msg = (err instanceof Error ? err.message : String(err)).slice(0, 200);
     return new Response(`Upstream fetch failed: ${msg}`, { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
