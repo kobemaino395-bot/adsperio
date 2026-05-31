@@ -22,10 +22,7 @@ export default function NewsletterPage() {
 
         <div className="container-zest relative pt-40 pb-20 text-center">
           <Reveal>
-            <span className="pill-tag mx-auto">Newsletter</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mt-6 text-5xl font-light tracking-[-0.04em] md:text-7xl">
+            <h1 className="text-5xl font-light tracking-[-0.04em] md:text-7xl">
               Marketing strategies that <span className="hl">actually scale.</span>
             </h1>
           </Reveal>

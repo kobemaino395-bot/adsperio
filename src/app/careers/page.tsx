@@ -31,10 +31,7 @@ export default async function CareersPage() {
         <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
         <div className="container-zest relative pt-40 pb-20 text-center">
           <Reveal>
-            <span className="pill-tag mx-auto">Careers</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mt-6 text-5xl font-light tracking-[-0.04em] md:text-7xl">
+            <h1 className="text-5xl font-light tracking-[-0.04em] md:text-7xl">
               Build the team that <span className="hl">builds the growth.</span>
             </h1>
           </Reveal>

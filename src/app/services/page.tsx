@@ -19,14 +19,11 @@ export default function ServicesIndex() {
         <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
         <div className="container-zest relative pt-40 pb-16 text-center md:pt-48">
           <Reveal>
-            <span className="pill-tag mx-auto">Services</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
+            <h1 className="mx-auto max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
               Four levers. <span className="hl">One engine.</span>
             </h1>
           </Reveal>
-          <Reveal delay={240}>
+          <Reveal delay={140}>
             <p className="mx-auto mt-6 max-w-2xl text-lg font-light text-[var(--color-fg-muted)]">
               Each service works on its own. Combined, they compound. Pick a channel — or let us build the full stack.
             </p>

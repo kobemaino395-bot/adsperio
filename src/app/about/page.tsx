@@ -34,14 +34,11 @@ export default function AboutPage() {
         <div className="container-zest relative grid items-center gap-12 pt-40 pb-20 md:pt-48 lg:grid-cols-[1.1fr_1fr]">
           <div>
             <Reveal>
-              <span className="pill-tag">About us</span>
-            </Reveal>
-            <Reveal delay={120}>
-              <h1 className="mt-6 text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
+              <h1 className="text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
                 Growth that <span className="hl">catches on.</span>
               </h1>
             </Reveal>
-            <Reveal delay={220}>
+            <Reveal delay={140}>
               <p className="mt-6 max-w-md text-lg font-light text-[var(--color-fg-muted)]">
                 A growth studio based in Singapore. The approach is simple: find the signal, engineer the system, and make the wins spread.
               </p>

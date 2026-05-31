@@ -18,14 +18,11 @@ export default function ContactPage() {
         <div aria-hidden className="glow absolute inset-x-0 top-0 h-[440px]" />
         <div className="container-zest relative pt-40 pb-14 text-center md:pt-48">
           <Reveal>
-            <span className="pill-tag mx-auto">Contact</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
+            <h1 className="mx-auto max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
               Let&apos;s talk <span className="hl">growth.</span>
             </h1>
           </Reveal>
-          <Reveal delay={240}>
+          <Reveal delay={140}>
             <p className="mx-auto mt-6 max-w-xl text-lg font-light text-[var(--color-fg-muted)]">
               Tell us where you are and where you want to be. We&apos;ll reply within one business day.
             </p>

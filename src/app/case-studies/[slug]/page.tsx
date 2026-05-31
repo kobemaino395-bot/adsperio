@@ -91,10 +91,7 @@ export default async function CaseStudyPage(
         <div className="container-zest relative pt-40 pb-20">
           <div className="mx-auto max-w-4xl text-center">
             <Reveal>
-              <span className="pill-tag mx-auto">{cs.industry}</span>
-            </Reveal>
-            <Reveal delay={120}>
-              <h1 className="mt-6 text-5xl font-light tracking-[-0.04em] md:text-7xl">
+              <h1 className="text-5xl font-light tracking-[-0.04em] md:text-7xl">
                 {cs.hero.title}{' '}
                 <span className="hl">{cs.hero.titleAccent}</span>
               </h1>

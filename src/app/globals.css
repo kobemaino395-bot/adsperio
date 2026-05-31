@@ -184,14 +184,9 @@ h1, h2, h3, h4 {
   &:hover { transform: translateY(-1px); opacity: 0.92; }
 }
 
-/* highlighted phrase — indigo underline mark under ink text */
+/* emphasized phrase — clean indigo display emphasis, no marker bar */
 @utility hl {
-  color: var(--color-fg);
-  background-image: linear-gradient(var(--color-accent), var(--color-accent));
-  background-repeat: no-repeat;
-  background-size: 100% 0.1em;
-  background-position: 0 92%;
-  padding-bottom: 0.02em;
+  color: var(--color-accent);
 }
 
 /* all-caps micro eyebrow */

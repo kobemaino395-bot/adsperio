@@ -81,10 +81,7 @@ export default async function ServicePage(
 
         <div className="container-zest relative pt-40 pb-24 text-center">
           <Reveal>
-            <span className="pill-tag mx-auto">{service.hero.eyebrow}</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mx-auto mt-6 max-w-4xl text-5xl font-light tracking-[-0.04em] md:text-7xl">
+            <h1 className="mx-auto max-w-4xl text-5xl font-light tracking-[-0.04em] md:text-7xl">
               {service.hero.title}{' '}
               <span className="hl">{service.hero.titleAccent}</span>
             </h1>

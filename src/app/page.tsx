@@ -73,10 +73,7 @@ export default function HomePage() {
 
         <div className="container-zest relative pt-40 pb-24 text-center md:pt-48">
           <Reveal>
-            <span className="pill-tag mx-auto">Growth studio</span>
-          </Reveal>
-          <Reveal delay={120}>
-            <h1 className="mx-auto mt-6 max-w-4xl text-5xl font-light leading-[1.03] tracking-[-0.04em] md:text-7xl">
+            <h1 className="mx-auto max-w-4xl text-5xl font-light leading-[1.03] tracking-[-0.04em] md:text-7xl">
               We make growth <span className="hl">contagious.</span>
             </h1>
           </Reveal>
