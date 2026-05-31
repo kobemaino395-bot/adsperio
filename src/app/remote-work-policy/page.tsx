@@ -51,13 +51,13 @@ export default function Page() {
           </Reveal>
 
           <Reveal delay={100}>
-            <h1 className="mt-6 max-w-3xl text-[2.5rem] font-medium leading-[1] tracking-[-0.03em] md:text-[4.5rem]">
+            <h1 className="mt-6 max-w-3xl text-[2.5rem] font-light leading-[1.02] tracking-[-0.04em] md:text-[4.5rem]">
               Remote Work Policy
             </h1>
           </Reveal>
 
           <Reveal delay={200}>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-[var(--color-fg-muted)]">
               How GrowthVireX works remote-first. This document sets the expectations for working
               hours, communication, equipment, data security, and performance — for every member
               of the team, on every client engagement.
@@ -78,7 +78,7 @@ export default function Page() {
       </section>
 
       {/* META STRIP */}
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-ink-warm)] text-[var(--color-bg)]">
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-navy)] text-white">
         <div className="container-zest py-8">
           <Reveal>
             <dl className="flex flex-wrap gap-x-16 gap-y-6">
@@ -159,7 +159,7 @@ export default function Page() {
                 <p className="text-sm leading-relaxed text-ink-muted">
                   This policy supersedes any earlier remote-work guidance. If you find a conflict
                   with a prior document, this version wins. Send corrections to{' '}
-                  <a href="mailto:people@growthvirex.com" className="text-zest-400 hover:underline">people@growthvirex.com</a>.
+                  <a href="mailto:people@growthvirex.com" className="text-[var(--color-accent)] hover:underline">people@growthvirex.com</a>.
                 </p>
               </div>
             </Reveal>
@@ -169,7 +169,7 @@ export default function Page() {
           <aside className="space-y-5">
             <Reveal>
               <div
-                className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]"
+                className="rounded-2xl bg-[var(--color-bg-navy)] p-8 text-white"
                 style={{ boxShadow: 'var(--shadow-brutal)' }}
               >
                 <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Download</div>
@@ -195,7 +195,7 @@ export default function Page() {
                 </p>
                 <a
                   href="mailto:people@growthvirex.com?subject=Remote work policy question"
-                  className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
                 >
                   people@growthvirex.com
                 </a>

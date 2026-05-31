@@ -1,33 +1,19 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { site } from '@/content/site';
-import { Bricolage_Grotesque, Hanken_Grotesk, Space_Mono } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import { headers } from 'next/headers';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HiringBanner from '@/components/layout/HiringBanner';
 
-// Display — characterful editorial grotesque (repoints every `font-serif` heading)
-const display = Bricolage_Grotesque({
-  subsets: ['latin'],
-  variable: '--font-serif',
-  display: 'swap',
-  weight: ['400', '500', '600', '700', '800'],
-});
-
-// Body — clean, warm grotesk
-const sans = Hanken_Grotesk({
+// Inter at thin weights — the open-source analogue to Sohne. Drives body and
+// every display heading; ss01 is enabled globally on the body.
+const sans = Inter({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-});
-
-// Technical labels / eyebrows
-const mono = Space_Mono({
-  subsets: ['latin'],
-  variable: '--font-mono',
-  display: 'swap',
-  weight: ['400', '700'],
+  weight: ['300', '400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -76,8 +62,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: '#f5f2ea' },
-    { media: '(prefers-color-scheme: dark)',  color: '#0e241b' },
+    { media: '(prefers-color-scheme: light)', color: '#ffffff' },
+    { media: '(prefers-color-scheme: dark)',  color: '#0b1020' },
   ],
   width: 'device-width',
   initialScale: 1,
@@ -101,8 +87,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const isAdmin = pathname.startsWith('/admin');
 
   return (
-    <html lang="en" className={`${display.variable} ${sans.variable} ${mono.variable}`}>
+    <html lang="en" className={sans.variable} suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('gvx-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
+          }}
+        />
         {!isAdmin && (
           <script
             type="application/ld+json"

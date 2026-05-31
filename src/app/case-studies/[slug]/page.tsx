@@ -5,6 +5,7 @@ import { caseStudies, getCaseStudyBySlug } from '@/content/case-studies';
 import { services } from '@/content/services';
 import { site } from '@/content/site';
 import Reveal from '@/components/ui/Reveal';
+import { BrowserFrame, AreaChart, ChannelBars } from '@/components/mockups/ProductMockups';
 
 type Params = { slug: string };
 
@@ -84,37 +85,30 @@ export default async function CaseStudyPage(
 
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
-        <div aria-hidden className="animate-orb-float absolute -top-48 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-zest-300/30 blur-3xl" />
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[540px]" />
+        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
 
         <div className="container-zest relative pt-40 pb-20">
           <div className="mx-auto max-w-4xl text-center">
             <Reveal>
-              <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
-                {cs.hero.eyebrow}
-              </span>
+              <span className="pill-tag mx-auto">{cs.industry}</span>
             </Reveal>
-            <Reveal delay={100}>
-              <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-7xl">
+            <Reveal delay={120}>
+              <h1 className="mt-6 text-5xl font-light tracking-[-0.04em] md:text-7xl">
                 {cs.hero.title}{' '}
-                <span className="relative inline-block">
-                  <span className="relative z-10">
-                    {cs.hero.titleAccent}
-                  </span>
-                  <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
-                </span>
+                <span className="hl">{cs.hero.titleAccent}</span>
               </h1>
             </Reveal>
             <Reveal delay={250}>
-              <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted md:text-xl">
+              <p className="mx-auto mt-6 max-w-2xl text-lg font-light text-[var(--color-fg-muted)] md:text-xl">
                 {cs.hero.summary}
               </p>
             </Reveal>
             <Reveal delay={400}>
-              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-widest text-ink-muted">
-                <span><strong className="text-[var(--color-fg)]">Client:</strong> {cs.client}</span>
-                <span><strong className="text-[var(--color-fg)]">Industry:</strong> {cs.industry}</span>
-                <span><strong className="text-[var(--color-fg)]">Duration:</strong> {cs.duration}</span>
+              <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">
+                <span><strong className="font-medium text-[var(--color-fg)]">Client:</strong> {cs.client}</span>
+                <span><strong className="font-medium text-[var(--color-fg)]">Industry:</strong> {cs.industry}</span>
+                <span><strong className="font-medium text-[var(--color-fg)]">Duration:</strong> {cs.duration}</span>
               </div>
             </Reveal>
           </div>
@@ -122,28 +116,58 @@ export default async function CaseStudyPage(
       </section>
 
       {/* METRICS */}
-      <section className="border-y border-[var(--color-border)] bg-ink text-white">
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)]">
         <div className="container-zest py-20">
           <div className="grid gap-12 md:grid-cols-[1.5fr_2fr] md:items-center">
             <Reveal>
-              <div className="text-xs uppercase tracking-widest text-neutral-500">Headline result</div>
-              <div className="mt-4 text-7xl font-semibold tracking-tight md:text-[10rem] leading-none text-zest-300">
+              <div className="text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">Headline result</div>
+              <div className="tnum mt-4 text-7xl font-light tracking-tight md:text-[10rem] leading-none text-[var(--color-accent)]">
                 {cs.headline.value}
               </div>
-              <div className="mt-3 text-base uppercase tracking-widest text-neutral-400">
+              <div className="mt-3 text-base uppercase tracking-widest text-[var(--color-fg-muted)]">
                 {cs.headline.label}
               </div>
             </Reveal>
-            <div className="grid grid-cols-2 gap-6 border-l border-white/10 pl-10">
+            <div className="grid grid-cols-2 gap-6 border-l border-[var(--color-border)] pl-10">
               {cs.metrics.map((m, i) => (
                 <Reveal key={m.label} delay={i * 100}>
-                  <div className="text-3xl font-semibold tracking-tight md:text-5xl">{m.value}</div>
-                  <div className="mt-1 text-xs uppercase tracking-widest text-neutral-500">{m.label}</div>
+                  <div className="tnum text-3xl font-light tracking-tight md:text-5xl">{m.value}</div>
+                  <div className="mt-1 text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">{m.label}</div>
                 </Reveal>
               ))}
             </div>
           </div>
         </div>
+      </section>
+
+      {/* RESULTS VISUAL */}
+      <section className="container-zest py-24">
+        <Reveal>
+          <div className="mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
+            <h2 className="text-2xl font-light tracking-[-0.02em] md:text-3xl">The trajectory</h2>
+            <span className="text-sm font-light text-[var(--color-fg-muted)]">Tracked revenue over the {cs.duration} engagement</span>
+          </div>
+        </Reveal>
+        <Reveal delay={120}>
+          <BrowserFrame url={`app.growthvirex.com/${cs.slug}`}>
+            <div className="grid gap-5 p-5 sm:grid-cols-[1.7fr_1fr] sm:p-6">
+              <div className="rounded-xl border border-[var(--color-border)] p-4">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-[0.62rem] uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">Tracked revenue</div>
+                    <div className="tnum mt-1 text-2xl font-light tracking-tight">{cs.headline.value}</div>
+                  </div>
+                  <span className="tnum rounded-full bg-[var(--color-zest-50)] px-2 py-1 text-[0.65rem] font-medium text-[var(--color-accent-deep)]">{cs.headline.label}</span>
+                </div>
+                <AreaChart className="mt-3" />
+              </div>
+              <div className="rounded-xl border border-[var(--color-border)] p-4">
+                <div className="text-[0.62rem] uppercase tracking-[0.12em] text-[var(--color-fg-muted)]">Channel mix · ROAS</div>
+                <ChannelBars className="mt-5" />
+              </div>
+            </div>
+          </BrowserFrame>
+        </Reveal>
       </section>
 
       {/* NARRATIVE */}
@@ -152,12 +176,12 @@ export default async function CaseStudyPage(
           {[cs.challenge, cs.approach, cs.results].map((section, i) => (
             <Reveal key={i} delay={i * 100}>
               <article className="grid gap-6 md:grid-cols-[180px_1fr]">
-                <div className="text-xs font-medium uppercase tracking-widest text-ink-muted">
+                <div className="tnum text-xs font-medium uppercase tracking-widest text-[var(--color-accent-deep)]">
                   {String(i + 1).padStart(2, '0')} / {['Challenge', 'Approach', 'Results'][i]}
                 </div>
                 <div>
-                  <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">{section.heading}</h2>
-                  <p className="mt-4 text-lg leading-relaxed text-ink-muted">{section.body}</p>
+                  <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">{section.heading}</h2>
+                  <p className="mt-4 text-lg font-light leading-relaxed text-[var(--color-fg-muted)]">{section.body}</p>
                 </div>
               </article>
             </Reveal>
@@ -170,13 +194,13 @@ export default async function CaseStudyPage(
         <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24">
           <Reveal>
             <div className="container-zest max-w-4xl text-center">
-              <div className="text-6xl leading-none text-zest-400">&ldquo;</div>
-              <blockquote className="mt-4 text-2xl font-medium leading-relaxed md:text-3xl">
+              <div className="text-6xl leading-none text-[var(--color-accent)]">&ldquo;</div>
+              <blockquote className="mt-4 text-2xl font-light leading-relaxed tracking-[-0.01em] md:text-3xl">
                 {cs.testimonial.quote}
               </blockquote>
               <div className="mt-8">
-                <div className="font-semibold">{cs.testimonial.author}</div>
-                <div className="mt-1 text-sm text-ink-muted">{cs.testimonial.role}</div>
+                <div className="font-medium">{cs.testimonial.author}</div>
+                <div className="mt-1 text-sm font-light text-[var(--color-fg-muted)]">{cs.testimonial.role}</div>
               </div>
             </div>
           </Reveal>
@@ -187,19 +211,19 @@ export default async function CaseStudyPage(
       {relatedServices.length > 0 && (
         <section className="container-zest py-24">
           <Reveal>
-            <h2 className="mb-10 text-3xl font-semibold tracking-tight md:text-4xl">Services in this engagement</h2>
+            <h2 className="mb-10 text-3xl font-light tracking-[-0.02em] md:text-4xl">Services in this engagement</h2>
           </Reveal>
           <div className="grid gap-4 md:grid-cols-3">
             {relatedServices.map((s, i) => (
               <Reveal key={s.slug} delay={i * 100} className="h-full">
                 <Link
                   href={`/services/${s.slug}/`}
-                  className="group flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8 transition hover:-translate-y-1 hover:border-zest-300"
+                  className="group card flex h-full flex-col p-8 transition hover:-translate-y-1 hover:border-[var(--color-accent)]"
                 >
-                  <div className="text-xs uppercase tracking-widest text-ink-muted">{s.hero.eyebrow}</div>
-                  <h3 className="mt-3 text-xl font-semibold">{s.navTitle}</h3>
-                  <p className="mt-2 text-sm text-ink-muted">{s.navDesc}</p>
-                  <span className="mt-6 inline-block text-sm font-medium text-zest-400 transition group-hover:translate-x-1">
+                  <div className="text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">{s.hero.eyebrow}</div>
+                  <h3 className="mt-3 text-xl font-normal">{s.navTitle}</h3>
+                  <p className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">{s.navDesc}</p>
+                  <span className="mt-6 inline-block text-sm font-medium text-[var(--color-accent)] transition group-hover:translate-x-1">
                     Learn more →
                   </span>
                 </Link>
@@ -213,21 +237,21 @@ export default async function CaseStudyPage(
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24">
         <div className="container-zest">
           <Reveal>
-            <h2 className="mb-10 text-3xl font-semibold tracking-tight md:text-4xl">More case studies</h2>
+            <h2 className="mb-10 text-3xl font-light tracking-[-0.02em] md:text-4xl">More case studies</h2>
           </Reveal>
           <div className="grid gap-4 md:grid-cols-3">
             {otherCases.map((c, i) => (
               <Reveal key={c.slug} delay={i * 100} className="h-full">
                 <Link
                   href={`/case-studies/${c.slug}/`}
-                  className="group flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8 transition hover:-translate-y-1 hover:border-zest-300"
+                  className="group card flex h-full flex-col p-8 transition hover:-translate-y-1 hover:border-[var(--color-accent)]"
                 >
-                  <div className="text-xs uppercase tracking-widest text-ink-muted">{c.industry}</div>
-                  <h3 className="mt-3 text-xl font-semibold">{c.client}</h3>
-                  <p className="mt-2 text-sm text-ink-muted">{c.tagline}</p>
+                  <div className="text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">{c.industry}</div>
+                  <h3 className="mt-3 text-xl font-normal">{c.client}</h3>
+                  <p className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">{c.tagline}</p>
                   <div className="mt-6 flex items-baseline justify-between">
-                    <span className="text-2xl font-semibold text-zest-400">{c.headline.value}</span>
-                    <span className="text-sm font-medium text-zest-400 transition group-hover:translate-x-1">
+                    <span className="tnum text-2xl font-light text-[var(--color-accent)]">{c.headline.value}</span>
+                    <span className="text-sm font-medium text-[var(--color-accent)] transition group-hover:translate-x-1">
                       Read →
                     </span>
                   </div>
@@ -242,12 +266,12 @@ export default async function CaseStudyPage(
       <section className="py-28 text-center">
         <div className="container-zest max-w-3xl">
           <Reveal>
-            <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">
+            <h2 className="text-4xl font-light tracking-[-0.03em] md:text-5xl">
               Ready to write your own case study?
             </h2>
           </Reveal>
           <Reveal delay={100}>
-            <p className="mx-auto mt-4 text-lg text-ink-muted">
+            <p className="mx-auto mt-4 text-lg font-light text-[var(--color-fg-muted)]">
               Tell us where you want to be in 90 days. We&apos;ll show you how to get there.
             </p>
           </Reveal>

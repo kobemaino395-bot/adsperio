@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { site } from '@/content/site';
 import { team } from '@/content/team';
 import Reveal from '@/components/ui/Reveal';
+import { DashboardComposite } from '@/components/mockups/ProductMockups';
 
 export const metadata: Metadata = {
   title: 'About — The Team Behind the Growth',
@@ -29,42 +29,30 @@ const stats = [
 export default function AboutPage() {
   return (
     <main>
-      <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
-
-        <div className="container-zest relative pt-40 pb-24">
-          <div className="grid items-center gap-14 lg:grid-cols-[1.1fr_1fr]">
-            <div>
-              <Reveal>
-                <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
-                  About {site.shortName}
-                </span>
-              </Reveal>
-              <Reveal delay={100}>
-                <h1 className="mt-8 text-5xl font-extrabold tracking-tight md:text-7xl">
-                  Growth that{' '}
-                  <span className="relative inline-block">
-                    <span className="relative z-10">catches on.</span>
-                    <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
-                  </span>
-                </h1>
-              </Reveal>
-              <Reveal delay={250}>
-                <p className="mt-6 max-w-xl text-lg text-ink-muted md:text-xl">
-                  We&apos;re a growth studio based in Singapore. The approach is simple: find the signal, engineer the system, and make the wins spread.
-                </p>
-              </Reveal>
-            </div>
-            <Reveal delay={300}>
-              <div className="relative">
-                <div aria-hidden className="absolute -right-4 -top-4 h-20 w-20 bg-[var(--color-accent)]" />
-                <div className="photo-tinted relative aspect-[5/6] w-full" style={{ boxShadow: 'var(--shadow-brutal)' }}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/images/about-hero.jpg" alt="" className="photo-tinted-img" loading="eager" />
-                </div>
-              </div>
+      <section className="relative">
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[480px]" />
+        <div className="container-zest relative grid items-center gap-12 pt-40 pb-20 md:pt-48 lg:grid-cols-[1.1fr_1fr]">
+          <div>
+            <Reveal>
+              <span className="pill-tag">About us</span>
+            </Reveal>
+            <Reveal delay={120}>
+              <h1 className="mt-6 text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
+                Growth that <span className="hl">catches on.</span>
+              </h1>
+            </Reveal>
+            <Reveal delay={220}>
+              <p className="mt-6 max-w-md text-lg font-light text-[var(--color-fg-muted)]">
+                A growth studio based in Singapore. The approach is simple: find the signal, engineer the system, and make the wins spread.
+              </p>
             </Reveal>
           </div>
+          <Reveal delay={200}>
+            <div className="photo-tinted aspect-[5/4] w-full overflow-hidden rounded-2xl border border-[var(--color-border)]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/images/about-hero.jpg" alt="" className="photo-tinted-img" loading="eager" />
+            </div>
+          </Reveal>
         </div>
       </section>
 
@@ -72,12 +60,12 @@ export default function AboutPage() {
       <section className="container-zest py-24">
         <Reveal>
           <div className="mx-auto grid max-w-5xl gap-16 md:grid-cols-[1fr_2fr]">
-            <div className="text-xs font-medium uppercase tracking-widest text-ink-muted">Our mission</div>
+            <div className="text-xs font-medium uppercase tracking-widest text-[var(--color-accent-deep)]">Our mission</div>
             <div>
-              <p className="text-2xl font-medium leading-relaxed md:text-3xl">
+              <p className="text-2xl font-light leading-relaxed tracking-[-0.01em] md:text-3xl">
                 To make growth contagious for brands of all sizes — engineering paid media, creative ad production, and conversion optimization into one system across Meta, Google, TikTok, and YouTube.
               </p>
-              <p className="mt-8 text-lg text-ink-muted">
+              <p className="mt-8 text-lg font-light text-[var(--color-fg-muted)]">
                 Simple name, serious results. We&apos;ve partnered with over 250 brands across Asia-Pacific and Europe and generated over $300M in tracked revenue for our clients.
               </p>
             </div>
@@ -86,34 +74,54 @@ export default function AboutPage() {
       </section>
 
       {/* STATS */}
-      <section className="border-y border-[var(--color-border)] bg-ink text-white">
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)]">
         <div className="container-zest py-20">
           <Reveal>
-            <h2 className="mb-12 text-2xl font-medium md:text-3xl">Our track record.</h2>
+            <h2 className="mb-12 text-2xl font-light tracking-[-0.01em] md:text-3xl">Our track record.</h2>
           </Reveal>
-          <div className="grid grid-cols-2 gap-8 border-t border-white/10 pt-10 md:grid-cols-4">
+          <div className="grid grid-cols-2 gap-8 border-t border-[var(--color-border)] pt-10 md:grid-cols-4">
             {stats.map((s, i) => (
               <Reveal key={s.label} delay={i * 100}>
-                <div className="text-4xl font-semibold tracking-tight md:text-6xl">{s.value}</div>
-                <div className="mt-2 text-xs uppercase tracking-widest text-neutral-500">{s.label}</div>
+                <div className="tnum text-4xl font-light tracking-tight md:text-6xl">{s.value}</div>
+                <div className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">{s.label}</div>
               </Reveal>
             ))}
           </div>
         </div>
       </section>
 
+      {/* TRANSPARENCY */}
+      <section className="container-zest pt-28">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
+          <Reveal delay={140} className="order-2 lg:order-1">
+            <DashboardComposite />
+          </Reveal>
+          <Reveal className="order-1 lg:order-2">
+            <div>
+              <span className="label-tech">Transparent by default</span>
+              <h2 className="mt-3 max-w-md text-3xl font-light tracking-[-0.02em] md:text-5xl">
+                You see what we see.
+              </h2>
+              <p className="mt-5 max-w-md font-light leading-relaxed text-[var(--color-fg-muted)]">
+                No black boxes, no curated screenshots. Every partner gets a live dashboard wired to real spend and revenue — the same numbers we optimize against, updated daily and walked through every week.
+              </p>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
       {/* PILLARS */}
       <section className="container-zest py-28">
         <Reveal>
-          <h2 className="mb-14 text-4xl font-semibold tracking-tight md:text-5xl">How we work</h2>
+          <h2 className="mb-14 text-4xl font-light tracking-[-0.03em] md:text-5xl">How we work</h2>
         </Reveal>
         <div className="grid gap-5 md:grid-cols-2">
           {pillars.map((p, i) => (
             <Reveal key={p.n} delay={i * 100}>
-              <article className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 transition hover:-translate-y-1 hover:border-zest-300">
-                <div className="text-sm font-medium text-ink-muted">{p.n}</div>
-                <h3 className="mt-4 text-2xl font-semibold">{p.title}</h3>
-                <p className="mt-3 text-ink-muted">{p.desc}</p>
+              <article className="card p-10 transition hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-md)]">
+                <div className="tnum text-sm font-medium text-[var(--color-accent)]">{p.n}</div>
+                <h3 className="mt-4 text-2xl font-light tracking-[-0.01em]">{p.title}</h3>
+                <p className="mt-3 font-light text-[var(--color-fg-muted)]">{p.desc}</p>
               </article>
             </Reveal>
           ))}
@@ -125,10 +133,10 @@ export default function AboutPage() {
         <div className="container-zest">
           <Reveal>
             <div className="mb-16 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
+              <div className="label-tech">
                 The team
               </div>
-              <h2 className="max-w-2xl text-4xl font-semibold tracking-tight md:text-5xl">
+              <h2 className="max-w-2xl text-4xl font-light tracking-[-0.03em] md:text-5xl">
                 The operators behind the work.
               </h2>
             </div>
@@ -138,7 +146,7 @@ export default function AboutPage() {
             {team.map((m, i) => (
               <Reveal key={m.slug} delay={i * 100} className="h-full">
                 <article
-                  className="flex h-full flex-col overflow-hidden bg-[var(--color-bg)]"
+                  className="flex h-full flex-col overflow-hidden rounded-xl bg-[var(--color-bg)]"
                   style={{ border: '1px solid var(--color-border)', boxShadow: 'var(--shadow-md)' }}
                 >
                   <div className="photo-tinted relative aspect-[4/5]">
@@ -146,11 +154,11 @@ export default function AboutPage() {
                     <img src={m.image} alt={`${m.name} portrait`} className="photo-tinted-img" loading="lazy" />
                   </div>
                   <div className="flex flex-1 flex-col p-7">
-                    <h3 className="text-xl font-semibold tracking-tight">{m.name}</h3>
-                    <div className="mt-1 font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
+                    <h3 className="text-xl font-normal tracking-[-0.01em]">{m.name}</h3>
+                    <div className="mt-1 text-[0.65rem] font-medium uppercase tracking-[0.18em] text-[var(--color-accent-deep)]">
                       {m.role}
                     </div>
-                    <p className="mt-4 text-sm leading-relaxed text-ink-muted">{m.bio}</p>
+                    <p className="mt-4 text-sm font-light leading-relaxed text-[var(--color-fg-muted)]">{m.bio}</p>
                   </div>
                 </article>
               </Reveal>
@@ -163,10 +171,10 @@ export default function AboutPage() {
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-28 text-center">
         <div className="container-zest max-w-3xl">
           <Reveal>
-            <h2 className="text-4xl font-semibold tracking-tight md:text-5xl">Want to work with us?</h2>
+            <h2 className="text-4xl font-light tracking-[-0.03em] md:text-5xl">Want to work with us?</h2>
           </Reveal>
           <Reveal delay={100}>
-            <p className="mx-auto mt-4 text-lg text-ink-muted">
+            <p className="mx-auto mt-4 text-lg font-light text-[var(--color-fg-muted)]">
               We take on a limited number of partnerships each quarter. Tell us what you&apos;re building.
             </p>
           </Reveal>

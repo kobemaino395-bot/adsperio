@@ -14,18 +14,14 @@ export default function PrivacyPage() {
   return (
     <main>
       <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50" />
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[420px]" />
+        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
         <div className="container-zest relative pt-40 pb-16">
           <Reveal>
-            <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
-              Legal
-            </span>
-          </Reveal>
-          <Reveal delay={100}>
-            <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-6xl">Privacy Policy</h1>
+            <h1 className="text-5xl font-light tracking-[-0.03em] md:text-6xl">Privacy Policy</h1>
           </Reveal>
           <Reveal delay={200}>
-            <p className="mt-4 text-sm text-ink-muted">Last updated: {lastUpdated}</p>
+            <p className="mt-4 text-sm font-light text-[var(--color-fg-muted)]">Last updated: {lastUpdated}</p>
           </Reveal>
         </div>
       </section>
@@ -155,13 +151,13 @@ export default function PrivacyPage() {
 
 function Prose({ children }: { children: React.ReactNode }) {
   return (
-    <div className="[&>p]:mt-5 [&>p]:leading-relaxed [&>p]:text-ink-muted
-      [&>h2]:mt-12 [&>h2]:border-t [&>h2]:border-[var(--color-border)] [&>h2]:pt-8 [&>h2]:text-2xl [&>h2]:font-semibold [&>h2]:tracking-tight [&>h2]:text-[var(--color-fg)]
-      [&>h3]:mt-6 [&>h3]:text-lg [&>h3]:font-semibold [&>h3]:text-[var(--color-fg)]
+    <div className="font-light [&>p]:mt-5 [&>p]:leading-relaxed [&>p]:text-[var(--color-fg-muted)]
+      [&>h2]:mt-12 [&>h2]:border-t [&>h2]:border-[var(--color-border)] [&>h2]:pt-8 [&>h2]:text-2xl [&>h2]:font-light [&>h2]:tracking-[-0.01em] [&>h2]:text-[var(--color-fg)]
+      [&>h3]:mt-6 [&>h3]:text-lg [&>h3]:font-normal [&>h3]:text-[var(--color-fg)]
       [&>ul]:mt-4 [&>ul]:space-y-2 [&>ul]:pl-5 [&>ul]:list-disc
-      [&_li]:text-ink-muted [&_li]:leading-relaxed
-      [&_a]:text-zest-400 [&_a]:underline-offset-2 hover:[&_a]:underline
-      [&_strong]:text-[var(--color-fg)] [&_strong]:font-semibold
+      [&_li]:text-[var(--color-fg-muted)] [&_li]:leading-relaxed
+      [&_a]:text-[var(--color-accent)] [&_a]:underline-offset-2 hover:[&_a]:underline
+      [&_strong]:text-[var(--color-fg)] [&_strong]:font-medium
     ">
       {children}
     </div>

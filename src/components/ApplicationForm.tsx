@@ -103,8 +103,8 @@ export default function ApplicationForm() {
   if (status === 'success') {
     return (
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
-        <h3 className="font-serif text-2xl font-medium tracking-tight">Thanks — we&apos;ve received your application.</h3>
-        <p className="mt-3 text-sm leading-relaxed text-ink-muted">
+        <h3 className="font-serif text-2xl font-light tracking-[-0.01em]">Thanks — we&apos;ve received your application.</h3>
+        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--color-fg-muted)]">
           We review every submission and your Technical Assessment carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
@@ -200,7 +200,7 @@ function Field({ label, name, type = 'text', required, optional, placeholder, mi
         min={min}
         max={max}
         step={step}
-        className="mt-2 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
       />
     </label>
   );
@@ -216,7 +216,7 @@ function TextArea({ label, name, required, optional, minLength, maxLength, rows 
         minLength={minLength}
         maxLength={maxLength}
         rows={rows}
-        className="mt-2 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
       />
     </label>
   );
@@ -230,7 +230,7 @@ function CountryField({ label, name, required }: { label: string; name: string; 
         name={name}
         required={required}
         defaultValue=""
-        className="mt-2 w-full rounded-md border border-[var(--color-border)] bg-[var(--color-bg)] px-3 py-2 text-sm text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
       >
         <option value="" disabled>Select your country…</option>
         {COUNTRIES.map((c) => (

@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import Reveal from '@/components/ui/Reveal';
-import { site } from '@/content/site';
 import { services } from '@/content/services';
 import { testimonials } from '@/content/testimonials';
+import {
+  DashboardComposite,
+  ConsolePanel,
+  ChannelBars,
+} from '@/components/mockups/ProductMockups';
 
 export const metadata: Metadata = {
   title: 'We make growth contagious.',
@@ -19,324 +23,307 @@ const stats = [
   { value: '94%',   label: 'Client retention' },
 ];
 
-const clients = ['Aura Wellness', 'EduTech Academy', 'Finova', 'Lumière Tech', 'Nexus Health', 'Halcyon', 'Northwind'];
-
-const process = [
-  { n: '01', title: 'Find the signal', body: 'We dig through your data, audience, and market until we find the one lever that actually moves revenue — not vanity metrics.' },
-  { n: '02', title: 'Engineer the system', body: 'Paid media, creative, and conversion built as one machine. Every part instrumented, every result attributable to a dollar.' },
-  { n: '03', title: 'Make it spread', body: 'We pour budget into what works and kill what doesn\'t — compounding winners into a growth loop that runs on its own.' },
+const system = [
+  { n: '01', title: 'Find the signal', body: 'We dig through your data, audience, and market until we isolate the one lever that actually moves revenue.' },
+  { n: '02', title: 'Engineer the system', body: 'Paid media, creative, and conversion built as one machine — every part instrumented, every result attributable.' },
+  { n: '03', title: 'Make it spread', body: 'We pour budget into what works and kill what doesn\'t — compounding winners into a loop that runs on its own.' },
 ];
+
+const clients = ['NOVA', 'Lumen', 'Vellum', 'Cobalt', 'Æther', 'Northwind', 'Parallel'];
+
+const platformPoints = [
+  'Every channel — Meta, Google, TikTok, YouTube — in one revenue view.',
+  'Server-side conversion tracking that survives iOS and cookie loss.',
+  'Spend auto-rebalanced toward the campaigns actually printing ROAS.',
+];
+
+const systemPoints = [
+  'A conversion API that reconciles ad spend to real revenue in milliseconds.',
+  'Creative testing instrumented so every hook, angle, and edit is attributable.',
+];
+
+const faqs = [
+  {
+    q: 'How fast do we see results?',
+    a: 'Most partners see measurable lift within the first 30 days — usually a CAC drop as we cut waste, followed by a revenue ramp as winners compound. The full system is in place by day 90.',
+  },
+  {
+    q: 'What size budgets do you work with?',
+    a: 'We take on brands spending roughly $30K–$1M+ per month across paid channels. Below that, the engineering overhead rarely pays for itself — we’ll tell you honestly if you’re not ready.',
+  },
+  {
+    q: 'Do you replace our in-house team?',
+    a: 'No — we plug into it. We run the paid-media and measurement engine while your team owns brand, product, and lifecycle. Live dashboards mean everyone sees the same numbers.',
+  },
+  {
+    q: 'Which channels do you run?',
+    a: 'Meta, Google, TikTok, and YouTube as the core, with email and the open web layered in where the math works. We follow the revenue, not the platform du jour.',
+  },
+];
+
+const featured = testimonials[0];
 
 export default function HomePage() {
   return (
     <main className="overflow-clip">
-      {/* ───────────────────────── HERO ───────────────────────── */}
+      {/* ───────────────── HERO ───────────────── */}
       <section className="relative">
-        <div aria-hidden className="bg-grid absolute inset-0 opacity-[0.45]" />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--color-bg)]" />
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[680px]" />
+        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
 
-        {/* editorial spine */}
-        <div aria-hidden className="spine-label absolute left-5 top-44 hidden lg:block">
-          GROWTHVIREX — GROWTH STUDIO — EST. APAC / EU
+        <div className="container-zest relative pt-40 pb-24 text-center md:pt-48">
+          <Reveal>
+            <span className="pill-tag mx-auto">Growth studio</span>
+          </Reveal>
+          <Reveal delay={120}>
+            <h1 className="mx-auto mt-6 max-w-4xl text-5xl font-light leading-[1.03] tracking-[-0.04em] md:text-7xl">
+              We make growth <span className="hl">contagious.</span>
+            </h1>
+          </Reveal>
+
+          <Reveal delay={240}>
+            <p className="mx-auto mt-7 max-w-xl text-lg font-light leading-relaxed text-[var(--color-fg-muted)]">
+              We engineer paid media, creative, and conversion into one system — then turn every win into the next one.
+            </p>
+          </Reveal>
+
+          <Reveal delay={340}>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <Link href="/contact/" className="btn-primary">Start a growth audit</Link>
+              <Link href="/case-studies/" className="btn-ghost">See the work</Link>
+            </div>
+          </Reveal>
         </div>
+      </section>
 
-        <div className="container-zest relative pb-24 pt-40 md:pt-44">
-          <div className="grid items-center gap-14 lg:grid-cols-[1.25fr_0.9fr]">
+      {/* ───────────────── STATS ───────────────── */}
+      <section className="container-zest pb-24">
+        <Reveal>
+          <div className="card grid grid-cols-2 divide-y divide-[var(--color-border)] overflow-hidden md:grid-cols-4 md:divide-x md:divide-y-0">
+            {stats.map((s) => (
+              <div key={s.label} className="p-7 md:p-9">
+                <div className="tnum text-4xl font-light tracking-tight md:text-5xl">{s.value}</div>
+                <div className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">{s.label}</div>
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ───────────────── LOGO STRIP ───────────────── */}
+      <section className="container-zest pb-20">
+        <Reveal>
+          <p className="text-center text-xs uppercase tracking-[0.18em] text-[var(--color-fg-muted)]">
+            Trusted by teams scaling past $10M
+          </p>
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-x-12 gap-y-5 opacity-70">
+            {clients.map((c) => (
+              <span key={c} className="text-lg font-light tracking-[0.04em] text-[var(--color-fg-soft)]">{c}</span>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
+      {/* ───────────────── PLATFORM COMPOSITE ───────────────── */}
+      <section className="container-zest pb-28">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
+          <Reveal>
             <div>
-              <Reveal>
-                <div className="flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.25em] text-ink-muted">
-                  <span className="h-2 w-2 animate-blink rounded-full bg-[var(--color-accent)]" />
-                  Now booking Q3 partnerships
-                </div>
-              </Reveal>
-
-              <Reveal delay={90}>
-                <h1 className="mt-7 font-serif text-[3.4rem] font-extrabold leading-[0.92] tracking-[-0.035em] sm:text-[4.5rem] md:text-[5.6rem]">
-                  We make
-                  <br />
-                  growth{' '}
-                  <span className="relative inline-block text-[var(--color-accent)]">
-                    contagious
-                    <svg aria-hidden viewBox="0 0 320 24" className="absolute -bottom-2 left-0 h-3 w-full" preserveAspectRatio="none">
-                      <path d="M2 17 C 80 6, 150 22, 230 9 S 312 6, 318 12" fill="none" stroke="var(--color-accent)" strokeWidth="4" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                  .
-                </h1>
-              </Reveal>
-
-              <Reveal delay={220}>
-                <p className="mt-8 max-w-md text-lg leading-relaxed text-ink-muted">
-                  A growth studio that engineers paid media, creative, and conversion into one system — then turns every win into the next one.
-                </p>
-              </Reveal>
-
-              <Reveal delay={340}>
-                <div className="mt-10 flex flex-wrap items-center gap-4">
-                  <Link href="/contact/" className="btn-primary group text-sm">
-                    Start a growth audit
-                    <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
-                  </Link>
-                  <Link href="/case-studies/" className="btn-ghost text-sm">
-                    See the work
-                  </Link>
-                </div>
-              </Reveal>
-
-              <Reveal delay={460}>
-                <div className="mt-12 flex items-center gap-4 border-t border-[var(--color-border)] pt-6 font-mono text-[0.7rem] uppercase tracking-[0.18em] text-ink-muted">
-                  <span className="text-[var(--color-fg)]">40+ brands</span>
-                  <span className="opacity-40">/</span>
-                  <span className="text-[var(--color-fg)]">$20M+ generated</span>
-                  <span className="opacity-40">/</span>
-                  <span className="text-[var(--color-fg)]">4.9★ partner rating</span>
-                </div>
-              </Reveal>
-            </div>
-
-            <Reveal delay={260} className="hidden lg:block">
-              <SignalPanel />
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* ─────────────────── CLIENT MARQUEE ─────────────────── */}
-      <section className="overflow-hidden border-y border-[var(--color-border)] bg-[var(--color-bg-alt)] py-7">
-        <div className="flex animate-marquee gap-12 whitespace-nowrap will-change-transform">
-          {clients.concat(clients).map((logo, i) => (
-            <span key={i} className="flex items-center gap-12 font-serif text-2xl font-semibold text-ink-muted">
-              {logo}
-              <span aria-hidden className="text-[var(--color-accent)]">✳</span>
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ─────────────────────── STATS ─────────────────────── */}
-      <section className="relative bg-[var(--color-ink-warm)] py-28 text-[var(--color-bg)]">
-        <div aria-hidden className="bg-dots absolute inset-0 opacity-[0.06]" />
-        <div className="container-zest relative">
-          <Reveal>
-            <div className="mb-16 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.25em] text-[var(--color-accent)]">
-                ① Results
-              </div>
-              <h2 className="max-w-2xl font-serif text-4xl font-bold leading-[1.02] tracking-tight md:text-6xl">
-                Numbers the board signs off on.
+              <span className="label-tech">The platform</span>
+              <h2 className="mt-3 max-w-md text-3xl font-light tracking-[-0.02em] md:text-5xl">
+                Every dollar, attributed in real time.
               </h2>
+              <p className="mt-5 max-w-md font-light leading-relaxed text-[var(--color-fg-muted)]">
+                One dashboard for the whole funnel. We instrument spend, creative, and conversion so you can see exactly which campaigns are printing revenue — and which are bleeding it.
+              </p>
+              <ul className="mt-8 space-y-3.5">
+                {platformPoints.map((p) => (
+                  <li key={p} className="flex gap-3 font-light text-[var(--color-fg-soft)]">
+                    <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[var(--color-zest-50)] text-[var(--color-accent)]">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </span>
+                    <span className="leading-snug">{p}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </Reveal>
-
-          <div className="grid grid-cols-1 gap-px overflow-hidden rounded-2xl bg-white/10 sm:grid-cols-2 md:grid-cols-4">
-            {stats.map((s, i) => (
-              <Reveal key={s.label} delay={i * 90} className="bg-[var(--color-ink-warm)] p-8 md:p-10">
-                <div className="font-serif text-5xl font-extrabold tracking-[-0.03em] md:text-7xl">
-                  {s.value}
-                </div>
-                <div className="mt-4 font-mono text-[0.68rem] uppercase tracking-[0.18em] text-white/55">
-                  {s.label}
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ──────────────────── SERVICES LEDGER ──────────────────── */}
-      <section id="solutions" className="relative py-28">
-        <div className="container-zest">
-          <Reveal>
-            <div className="mb-12 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.25em] text-ink-muted">
-                ② Capabilities
-              </div>
-              <h2 className="max-w-2xl font-serif text-4xl font-bold leading-[1.02] tracking-tight md:text-6xl">
-                Four disciplines. <span className="text-ink-muted">One growth engine.</span>
-              </h2>
-            </div>
+          <Reveal delay={140}>
+            <DashboardComposite />
           </Reveal>
-
-          <div className="border-t border-[var(--color-fg)]/15">
-            {services.map((s, i) => (
-              <Reveal key={s.slug} delay={i * 70}>
-                <Link
-                  href={`/services/${s.slug}/`}
-                  className="group relative grid grid-cols-[auto_1fr_auto] items-center gap-5 border-b border-[var(--color-fg)]/15 py-8 transition-colors md:gap-10 md:py-10"
-                >
-                  <span aria-hidden className="absolute inset-0 -z-0 origin-left scale-x-0 bg-[var(--color-accent)]/[0.06] transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-x-100" />
-                  <span className="relative font-mono text-sm text-[var(--color-accent)]">
-                    {String(i + 1).padStart(2, '0')}
-                  </span>
-                  <div className="relative">
-                    <h3 className="font-serif text-2xl font-bold tracking-tight transition-transform duration-500 group-hover:translate-x-2 md:text-4xl">
-                      {s.navTitle}
-                    </h3>
-                    <p className="mt-1.5 max-w-xl text-sm text-ink-muted md:text-base">{s.navDesc}</p>
-                  </div>
-                  <span className="relative flex h-11 w-11 items-center justify-center rounded-full border border-[var(--color-fg)]/20 text-lg transition-all duration-300 group-hover:border-[var(--color-accent)] group-hover:bg-[var(--color-accent)] group-hover:text-[var(--color-accent-fg)] md:h-14 md:w-14">
-                    →
-                  </span>
-                </Link>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ──────────────────── HOW IT SPREADS ──────────────────── */}
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)] py-28">
-        <div className="container-zest">
-          <Reveal>
-            <div className="mb-16 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.25em] text-ink-muted">
-                ③ The method
-              </div>
-              <h2 className="max-w-2xl font-serif text-4xl font-bold leading-[1.02] tracking-tight md:text-6xl">
-                How growth spreads.
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="relative grid gap-10 md:grid-cols-3">
-            {/* connecting line */}
-            <div aria-hidden className="absolute left-0 top-7 hidden h-px w-full origin-left animate-grow-line bg-[var(--color-fg)]/15 md:block" />
-            {process.map((p, i) => (
-              <Reveal key={p.n} delay={i * 120} className="relative">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[var(--color-fg)]/20 bg-[var(--color-bg)] font-mono text-sm text-[var(--color-accent)]">
-                  {p.n}
-                </div>
-                <h3 className="mt-6 font-serif text-2xl font-bold tracking-tight">{p.title}</h3>
-                <p className="mt-3 leading-relaxed text-ink-muted">{p.body}</p>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ──────────────────── TESTIMONIALS ──────────────────── */}
-      <section className="py-28">
-        <div className="container-zest">
-          <Reveal>
-            <div className="mb-16 grid gap-8 md:grid-cols-[1fr_2fr] md:items-end">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.25em] text-ink-muted">
-                ④ In their words
-              </div>
-              <h2 className="max-w-2xl font-serif text-4xl font-bold leading-[1.02] tracking-tight md:text-6xl">
-                What partners <span className="text-ink-muted">actually say.</span>
-              </h2>
-            </div>
-          </Reveal>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {testimonials.map((t, i) => (
-              <Reveal key={t.slug} delay={i * 100} className="h-full">
-                <figure
-                  className="flex h-full flex-col justify-between rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8 transition-shadow hover:shadow-[var(--shadow-md)] md:p-9"
-                >
-                  <div>
-                    <div aria-hidden className="font-serif text-5xl leading-none text-[var(--color-accent)]">&ldquo;</div>
-                    <blockquote className="mt-3 text-lg leading-relaxed text-[var(--color-fg)]">
-                      {t.quote}
-                    </blockquote>
-                  </div>
-                  <figcaption className="mt-8 flex items-center gap-4 border-t border-[var(--color-border)] pt-6">
-                    <div className="photo-tinted relative h-12 w-12 shrink-0 overflow-hidden rounded-full">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={t.image} alt={`${t.author} portrait`} className="photo-tinted-img" loading="lazy" />
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold text-[var(--color-fg)]">{t.author}</div>
-                      <div className="text-xs text-ink-muted">{t.role} · {t.company}</div>
-                    </div>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ──────────────────── FINAL CTA ──────────────────── */}
-      <section className="relative overflow-hidden bg-[var(--color-accent)] py-28 text-[var(--color-accent-fg)]">
-        <div aria-hidden className="bg-grid absolute inset-0 opacity-[0.12]" />
-        <div className="container-zest relative">
-          <div className="grid items-end gap-10 md:grid-cols-[2fr_1fr]">
+      {/* ───────────────── CAPABILITIES ───────────────── */}
+      <section className="container-zest pb-24">
+        <Reveal>
+          <div className="mb-12 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
             <div>
-              <Reveal>
-                <div className="font-mono text-[0.7rem] uppercase tracking-[0.25em] text-[var(--color-accent-fg)]/70">
-                  ⑤ Start here
-                </div>
-              </Reveal>
-              <Reveal delay={100}>
-                <h2 className="mt-5 max-w-3xl font-serif text-5xl font-extrabold leading-[0.98] tracking-[-0.03em] md:text-8xl">
-                  Let&apos;s make it spread.
-                </h2>
-              </Reveal>
+              <span className="label-tech">What we do</span>
+              <h2 className="mt-3 max-w-2xl text-3xl font-light tracking-[-0.02em] md:text-5xl">
+                Four disciplines, one growth engine.
+              </h2>
             </div>
-            <Reveal delay={220}>
+            <Link href="/services/" className="text-sm font-medium text-[var(--color-accent)] hover:underline">
+              All services →
+            </Link>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-5 md:grid-cols-2">
+          {services.map((s, i) => (
+            <Reveal key={s.slug} delay={i * 70}>
               <Link
-                href="/contact/"
-                className="group inline-flex items-center gap-3 rounded-full bg-[var(--color-ink-warm)] px-9 py-5 text-base font-semibold text-[var(--color-bg)] transition-transform hover:-translate-y-1"
+                href={`/services/${s.slug}/`}
+                className="group card flex h-full flex-col justify-between p-8 transition-all duration-300 hover:-translate-y-1 hover:border-[var(--color-accent)] hover:shadow-[var(--shadow-md)] md:p-10"
               >
-                Book a consultation
-                <span aria-hidden className="transition-transform group-hover:translate-x-1">→</span>
+                <div>
+                  <div className="flex items-center gap-3">
+                    <span className="tnum grid h-9 w-9 place-items-center rounded-full bg-[var(--color-zest-50)] text-sm font-medium text-[var(--color-accent)]">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <h3 className="text-2xl font-light tracking-[-0.02em] md:text-3xl">{s.navTitle}</h3>
+                  </div>
+                  <p className="mt-5 font-light leading-relaxed text-[var(--color-fg-muted)]">{s.metaDescription}</p>
+                </div>
+                <span className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-[var(--color-accent)] transition-[gap] group-hover:gap-3">
+                  Explore {s.navTitle} <span aria-hidden>→</span>
+                </span>
               </Link>
             </Reveal>
+          ))}
+        </div>
+      </section>
+
+      {/* ───────────────── HOW IT WORKS ───────────────── */}
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)]">
+        <div className="container-zest py-24">
+          <Reveal>
+            <span className="label-tech">How growth spreads</span>
+            <h2 className="mt-3 max-w-2xl text-3xl font-light tracking-[-0.02em] md:text-5xl">
+              A system, not a campaign.
+            </h2>
+          </Reveal>
+
+          <div className="mt-14 grid gap-6 md:grid-cols-3">
+            {system.map((p, i) => (
+              <Reveal key={p.n} delay={i * 100}>
+                <div className="card h-full p-8">
+                  <div className="tnum grid h-11 w-11 place-items-center rounded-full border border-[var(--color-border)] text-sm font-medium text-[var(--color-accent)]">
+                    {p.n}
+                  </div>
+                  <h3 className="mt-6 text-xl font-normal tracking-[-0.01em]">{p.title}</h3>
+                  <p className="mt-3 font-light leading-relaxed text-[var(--color-fg-muted)]">{p.body}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </section>
-    </main>
-  );
-}
 
-/* ── bespoke "signal" panel: a live-growth graphic, no stock photo ── */
-function SignalPanel() {
-  const bars = [34, 41, 38, 52, 60, 57, 72, 88];
-  return (
-    <div className="relative">
-      <div aria-hidden className="absolute -right-5 -top-5 h-20 w-20 animate-spin-slow rounded-full border border-dashed border-[var(--color-accent)]/50" />
-      <div className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-6 shadow-[var(--shadow-lg)]">
-        <div className="flex items-center justify-between font-mono text-[0.62rem] uppercase tracking-[0.2em] text-ink-muted">
-          <span className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 animate-blink rounded-full bg-[var(--color-grow)]" /> live index
-          </span>
-          <span>§ growth / 90d</span>
-        </div>
+      {/* ───────────────── INSTRUMENTED ───────────────── */}
+      <section className="container-zest py-24">
+        <div className="grid items-center gap-14 lg:grid-cols-2">
+          <Reveal className="order-2 lg:order-1">
+            <ConsolePanel />
+          </Reveal>
+          <Reveal delay={140} className="order-1 lg:order-2">
+            <div>
+              <span className="label-tech">Instrumented end to end</span>
+              <h2 className="mt-3 max-w-md text-3xl font-light tracking-[-0.02em] md:text-5xl">
+                If we can&apos;t measure it, we don&apos;t ship it.
+              </h2>
+              <p className="mt-5 max-w-md font-light leading-relaxed text-[var(--color-fg-muted)]">
+                A server-side conversion layer ties every ad impression back to real revenue — no guesswork, no platform-reported fiction. The numbers you act on are the numbers in your bank.
+              </p>
+              <ul className="mt-8 space-y-3.5">
+                {systemPoints.map((p) => (
+                  <li key={p} className="flex gap-3 font-light text-[var(--color-fg-soft)]">
+                    <span className="mt-1 grid h-5 w-5 shrink-0 place-items-center rounded-full bg-[var(--color-zest-50)] text-[var(--color-accent)]">
+                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M5 13l4 4L19 7" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                    </span>
+                    <span className="leading-snug">{p}</span>
+                  </li>
+                ))}
+              </ul>
 
-        {/* sparkline + bars */}
-        <div className="mt-6 flex h-40 items-end gap-2.5">
-          {bars.map((h, i) => (
-            <div key={i} className="flex flex-1 flex-col justify-end">
-              <div
-                className="rounded-t-sm"
-                style={{
-                  height: `${h}%`,
-                  background: i === bars.length - 1 ? 'var(--color-accent)' : 'color-mix(in srgb, var(--color-grow) 65%, transparent)',
-                }}
-              />
+              <div className="card mt-8 p-5">
+                <div className="flex items-center justify-between">
+                  <span className="label-tech">Channel mix · ROAS</span>
+                  <span className="tnum text-xs text-[var(--color-fg-muted)]">last 30d</span>
+                </div>
+                <ChannelBars className="mt-5" />
+              </div>
             </div>
-          ))}
+          </Reveal>
         </div>
+      </section>
 
-        <svg aria-hidden viewBox="0 0 300 80" className="mt-3 h-14 w-full">
-          <path d="M2 70 C 60 64, 90 40, 140 44 S 220 18, 298 8" fill="none" stroke="var(--color-accent)" strokeWidth="2.5" strokeLinecap="round" />
-          <circle cx="298" cy="8" r="5" fill="var(--color-accent)" />
-          <circle cx="140" cy="44" r="3.5" fill="var(--color-grow)" />
-        </svg>
+      {/* ───────────────── FEATURED QUOTE ───────────────── */}
+      <section className="container-zest py-24">
+        <Reveal>
+          <figure className="mx-auto max-w-4xl text-center">
+            <blockquote className="text-2xl font-light leading-snug tracking-[-0.02em] md:text-4xl">
+              <span className="text-[var(--color-accent)]">“</span>{featured.quote}<span className="text-[var(--color-accent)]">”</span>
+            </blockquote>
+            <figcaption className="mt-8 flex items-center justify-center gap-3">
+              <div className="photo-tinted h-11 w-11 overflow-hidden rounded-full">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={featured.image} alt={`${featured.author} portrait`} className="photo-tinted-img" loading="lazy" />
+              </div>
+              <div className="text-left text-sm">
+                <div className="font-medium">{featured.author}</div>
+                <div className="font-light text-[var(--color-fg-muted)]">{featured.role}, {featured.company}</div>
+              </div>
+            </figcaption>
+          </figure>
+        </Reveal>
+      </section>
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
-          <div className="rounded-xl bg-[var(--color-bg-alt)] p-4">
-            <div className="font-serif text-2xl font-extrabold text-[var(--color-grow)]">+772%</div>
-            <div className="mt-1 font-mono text-[0.6rem] uppercase tracking-[0.15em] text-ink-muted">profit lift</div>
-          </div>
-          <div className="rounded-xl bg-[var(--color-bg-alt)] p-4">
-            <div className="font-serif text-2xl font-extrabold">3.8×</div>
-            <div className="mt-1 font-mono text-[0.6rem] uppercase tracking-[0.15em] text-ink-muted">blended ROAS</div>
+      {/* ───────────────── FAQ ───────────────── */}
+      <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)]">
+        <div className="container-zest py-24">
+          <Reveal>
+            <span className="label-tech">Questions</span>
+            <h2 className="mt-3 max-w-xl text-3xl font-light tracking-[-0.02em] md:text-5xl">
+              The things people ask first.
+            </h2>
+          </Reveal>
+          <div className="mx-auto mt-12 max-w-3xl divide-y divide-[var(--color-border)] border-y border-[var(--color-border)]">
+            {faqs.map((f, i) => (
+              <Reveal key={f.q} delay={i * 60}>
+                <details className="group">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-6 py-6 text-lg font-normal text-[var(--color-fg)] [&::-webkit-details-marker]:hidden">
+                    {f.q}
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full border border-[var(--color-border)] text-[var(--color-accent)] transition-transform group-open:rotate-45">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" aria-hidden><path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" /></svg>
+                    </span>
+                  </summary>
+                  <p className="max-w-2xl pb-6 font-light leading-relaxed text-[var(--color-fg-muted)]">{f.a}</p>
+                </details>
+              </Reveal>
+            ))}
           </div>
         </div>
-      </div>
-      <div aria-hidden className="absolute -bottom-4 -left-4 -z-10 h-24 w-24 rounded-2xl bg-[var(--color-accent)]/15" />
-    </div>
+      </section>
+
+      {/* ───────────────── CTA ───────────────── */}
+      <section className="container-zest pb-28">
+        <Reveal>
+          <div className="relative overflow-hidden rounded-2xl bg-[var(--color-bg-navy)] px-8 py-20 text-center md:px-16">
+            <div aria-hidden className="glow absolute inset-x-0 top-0 h-full opacity-60" />
+            <div className="relative">
+              <h2 className="mx-auto max-w-2xl text-4xl font-light tracking-[-0.03em] text-white md:text-6xl">
+                Ready to build a growth engine?
+              </h2>
+              <p className="mx-auto mt-5 max-w-md text-lg font-light text-white/70">
+                Tell us where you want to be. We&apos;ll show you how to get there.
+              </p>
+              <Link href="/contact/" className="btn-on-dark mt-9">Book a consultation</Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
+    </main>
   );
 }

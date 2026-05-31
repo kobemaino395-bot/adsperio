@@ -27,26 +27,19 @@ export default async function CareersPage() {
   return (
     <main>
       <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[520px]" />
+        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
         <div className="container-zest relative pt-40 pb-20 text-center">
           <Reveal>
-            <span className="inline-block rounded-full border border-ink/10 bg-white/60 px-4 py-1.5 text-xs font-medium uppercase tracking-widest backdrop-blur">
-              Careers
-            </span>
+            <span className="pill-tag mx-auto">Careers</span>
           </Reveal>
-          <Reveal delay={100}>
-            <h1 className="mt-8 text-5xl font-semibold tracking-tight md:text-7xl">
-              Build the team that{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">
-                  builds the growth.
-                </span>
-                <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
-              </span>
+          <Reveal delay={120}>
+            <h1 className="mt-6 text-5xl font-light tracking-[-0.04em] md:text-7xl">
+              Build the team that <span className="hl">builds the growth.</span>
             </h1>
           </Reveal>
           <Reveal delay={250}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted md:text-xl">
+            <p className="mx-auto mt-6 max-w-2xl text-lg font-light text-[var(--color-fg-muted)] md:text-xl">
               We hire specialists who love the craft and generalists who love shipping. No politics, no reporting theater — just good work with good people.
             </p>
           </Reveal>
@@ -55,18 +48,18 @@ export default async function CareersPage() {
 
       <section className="container-zest py-20">
         <Reveal>
-          <div className="mb-10 flex items-baseline justify-between border-b-2 border-ink pb-4">
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Open roles</h2>
-            <span className="text-sm text-ink-muted">
+          <div className="mb-10 flex items-baseline justify-between border-b border-[var(--color-fg)] pb-4">
+            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">Open roles</h2>
+            <span className="tnum text-sm text-[var(--color-fg-muted)]">
               {openings.length} position{openings.length === 1 ? '' : 's'}
             </span>
           </div>
         </Reveal>
 
         {openings.length === 0 ? (
-          <p className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 text-center text-sm text-ink-muted">
+          <p className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-10 text-center text-sm font-light text-[var(--color-fg-muted)]">
             No open roles right now. Want to introduce yourself anyway?{' '}
-            <a href="mailto:hiring@growthvirex.com" className="text-zest-400 hover:underline">hiring@growthvirex.com</a>
+            <a href="mailto:hiring@growthvirex.com" className="text-[var(--color-accent)] hover:underline">hiring@growthvirex.com</a>
           </p>
         ) : (
           <div>
@@ -81,19 +74,19 @@ export default async function CareersPage() {
                     className="group grid grid-cols-1 items-center gap-4 border-b border-[var(--color-border)] py-8 transition hover:pl-4 md:grid-cols-[2fr_1fr_1fr_auto]"
                   >
                     <div>
-                      <h3 className="text-xl font-semibold md:text-2xl">
+                      <h3 className="text-xl font-normal md:text-2xl">
                         {r.title}
                         {r.subtitle && (
-                          <span className="ml-2 italic text-ink-muted">{r.subtitle}</span>
+                          <span className="ml-2 italic font-light text-[var(--color-fg-muted)]">{r.subtitle}</span>
                         )}
                       </h3>
-                      <div className="mt-1 text-sm text-ink-muted md:hidden">
+                      <div className="mt-1 text-sm font-light text-[var(--color-fg-muted)] md:hidden">
                         {[team, location, type].filter(Boolean).join(' · ')}
                       </div>
                     </div>
-                    <div className="hidden text-sm text-ink-muted md:block">{team}</div>
-                    <div className="hidden text-sm text-ink-muted md:block">{location}</div>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-zest-400 transition group-hover:gap-3">
+                    <div className="hidden text-sm font-light text-[var(--color-fg-muted)] md:block">{team}</div>
+                    <div className="hidden text-sm font-light text-[var(--color-fg-muted)] md:block">{location}</div>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--color-accent)] transition group-hover:gap-3">
                       Apply <ArrowUpRight size={14} />
                     </span>
                   </Link>
@@ -107,14 +100,14 @@ export default async function CareersPage() {
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24">
         <div className="container-zest">
           <Reveal>
-            <h2 className="mb-12 text-3xl font-semibold tracking-tight md:text-4xl">Why work here</h2>
+            <h2 className="mb-12 text-3xl font-light tracking-[-0.02em] md:text-4xl">Why work here</h2>
           </Reveal>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
             {benefits.map((b, i) => (
               <Reveal key={b.title} delay={i * 100} className="h-full">
-                <div className="flex h-full flex-col rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8">
-                  <h3 className="text-lg font-semibold">{b.title}</h3>
-                  <p className="mt-2 text-sm text-ink-muted">{b.desc}</p>
+                <div className="card flex h-full flex-col p-8">
+                  <h3 className="text-lg font-normal">{b.title}</h3>
+                  <p className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">{b.desc}</p>
                 </div>
               </Reveal>
             ))}
@@ -125,10 +118,10 @@ export default async function CareersPage() {
       <section className="container-zest py-24 text-center">
         <div className="mx-auto max-w-2xl">
           <Reveal>
-            <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">Don&apos;t see your role?</h2>
+            <h2 className="text-3xl font-light tracking-[-0.02em] md:text-4xl">Don&apos;t see your role?</h2>
           </Reveal>
           <Reveal delay={100}>
-            <p className="mt-4 text-lg text-ink-muted">
+            <p className="mt-4 text-lg font-light text-[var(--color-fg-muted)]">
               We&apos;re always open to exceptional people. Send us what you&apos;ve built.
             </p>
           </Reveal>

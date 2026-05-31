@@ -108,8 +108,8 @@ export default async function PositionPage({ params }: { params: Params }) {
 
       {/* HERO */}
       <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50" />
-        <div aria-hidden className="absolute left-0 right-0 top-24 h-6" style={{ background: tint }} />
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[560px]" />
+        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
 
         <div className="container-zest relative pt-48 pb-20">
           <Reveal>
@@ -127,10 +127,10 @@ export default async function PositionPage({ params }: { params: Params }) {
             </div>
           </Reveal>
           <Reveal delay={200}>
-            <h1 className="mt-6 max-w-4xl text-[2.5rem] font-medium leading-[1] tracking-[-0.03em] md:text-[5rem]">
+            <h1 className="mt-6 max-w-4xl text-[2.5rem] font-light leading-[1.02] tracking-[-0.04em] md:text-[5rem]">
               {p.title}
               {p.subtitle && (
-                <span className="ml-3 align-baseline text-[1.5rem] italic text-ink-muted md:text-[2.5rem]">
+                <span className="ml-3 align-baseline text-[1.5rem] italic font-light text-ink-muted md:text-[2.5rem]">
                   {p.subtitle}
                 </span>
               )}
@@ -138,7 +138,7 @@ export default async function PositionPage({ params }: { params: Params }) {
           </Reveal>
           {p.tagline && (
             <Reveal delay={300}>
-              <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">{p.tagline}</p>
+              <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-ink-muted">{p.tagline}</p>
             </Reveal>
           )}
           <Reveal delay={400}>
@@ -158,7 +158,7 @@ export default async function PositionPage({ params }: { params: Params }) {
 
       {/* STAT CARDS */}
       {p.statCards.some((s) => s.key || s.value) && (
-        <section className="border-y border-[var(--color-border)] bg-[var(--color-ink-warm)] text-[var(--color-bg)]">
+        <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)]">
           <div className="container-zest py-10">
             <Reveal>
               <dl className="flex flex-wrap gap-x-16 gap-y-6">
@@ -166,8 +166,8 @@ export default async function PositionPage({ params }: { params: Params }) {
                   .filter((s) => s.key || s.value)
                   .map((s, i) => (
                     <div key={i}>
-                      <dt className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">{s.key}</dt>
-                      <dd className="mt-1 text-base font-medium">{s.value}</dd>
+                      <dt className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-fg-muted)]">{s.key}</dt>
+                      <dd className="mt-1 text-base font-medium text-[var(--color-fg)]">{s.value}</dd>
                     </div>
                   ))}
               </dl>
@@ -184,7 +184,7 @@ export default async function PositionPage({ params }: { params: Params }) {
             <Reveal>
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8 md:p-10" style={{ boxShadow: 'var(--shadow-md)' }}>
                 <SectionLabel>{p.applySubtitle}</SectionLabel>
-                <h2 className="mt-4 font-serif text-3xl font-medium tracking-tight md:text-4xl">
+                <h2 className="mt-4 text-3xl font-light tracking-[-0.02em] md:text-4xl">
                   Tell us about yourself.
                 </h2>
                 {p.applyBlurb && (
@@ -199,17 +199,17 @@ export default async function PositionPage({ params }: { params: Params }) {
             <Reveal delay={120}>
               <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
                 {downloadUrl && (
-                  <div className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]" style={{ boxShadow: 'var(--shadow-brutal)' }}>
-                    <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">
+                  <div className="card bg-[var(--color-bg-alt)] p-8">
+                    <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-accent)]">
                       {p.downloadTitle || 'Download'}
                     </div>
                     {p.downloadBlurb && (
-                      <p className="mt-3 text-sm leading-relaxed text-white/70">{p.downloadBlurb}</p>
+                      <p className="mt-3 text-sm leading-relaxed text-[var(--color-fg-muted)]">{p.downloadBlurb}</p>
                     )}
                     <DownloadButton
                       href={downloadUrl}
-                      className="mt-6 flex items-center justify-between gap-2 border border-white/20 px-5 py-3 text-sm font-medium transition hover:bg-white/10"
-                      messageClassName="mt-2 text-xs text-white/60"
+                      className="mt-6 flex items-center justify-between gap-2 rounded-full border border-[var(--color-border)] px-5 py-3 text-sm font-medium transition hover:bg-[var(--color-bg-alt)]"
+                      messageClassName="mt-2 text-xs text-[var(--color-fg-muted)]"
                     >
                       <span>Download {downloadFilename ? `(${downloadFilename})` : ''}</span>
                       <span aria-hidden>↓</span>
@@ -239,7 +239,7 @@ export default async function PositionPage({ params }: { params: Params }) {
                   <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Questions?</div>
                   <a
                     href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
-                    className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                    className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
                   >
                     hiring@growthvirex.com
                   </a>
@@ -355,7 +355,7 @@ export default async function PositionPage({ params }: { params: Params }) {
                 </p>
                 <a
                   href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
-                  className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
                 >
                   hiring@growthvirex.com
                 </a>
@@ -368,7 +368,7 @@ export default async function PositionPage({ params }: { params: Params }) {
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24 text-center">
         <div className="container-zest max-w-2xl">
           <Reveal>
-            <h2 className="text-4xl font-medium tracking-tight md:text-5xl">
+            <h2 className="text-4xl font-light tracking-[-0.03em] md:text-5xl">
               Think you&apos;re the one?
             </h2>
           </Reveal>

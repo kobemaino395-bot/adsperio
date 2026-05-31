@@ -59,16 +59,16 @@ function seed(): Position[] {
   const now = new Date().toISOString();
   return [
     {
-      slug: 'ads-manager',
-      title: 'Ads Manager',
+      slug: 'google-ads-specialist',
+      title: 'Google Ads Specialist',
       subtitle: '',
       eyebrow: 'Careers · Open role',
       tagline:
-        "We're looking for a senior paid media specialist to own multi-channel ad strategy for a portfolio of high-growth clients. High ownership, competitive pay, fully remote.",
+        "We're looking for a Google Ads specialist to own paid search, shopping, and PMax strategy for a portfolio of high-growth clients. High ownership, fully remote.",
       heroTint: 'accent',
       statCards: [
         { key: 'Team', value: 'Paid Media' },
-        { key: 'Level', value: 'Senior / Lead' },
+        { key: 'Level', value: 'Mid-level' },
         { key: 'Location', value: 'Remote' },
         { key: 'Type', value: 'Full-time' },
       ],
@@ -81,7 +81,7 @@ function seed(): Position[] {
         'Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.',
       aboutHeading: 'About the role',
       aboutParagraphs: [
-        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a senior Ads Manager who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a Google Ads Specialist who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
         "This is not a coordinator role. You'll be the lead strategist on your accounts, working closely with our SEO, creative, and web teams to build compounding growth systems — not one-off campaigns.",
       ],
       responsibilitiesHeading: "What you'll do",
@@ -126,7 +126,7 @@ function seed(): Position[] {
       benefitsHeading: 'What you get',
       benefitsBlurb: '',
       benefits: [
-        { key: 'Competitive salary', value: '$75K – $110K depending on experience, reviewed annually.', sub: '' },
+        { key: 'Competitive salary', value: '~$40K / year depending on experience, reviewed annually.', sub: '' },
         { key: 'Remote-first', value: 'Work from anywhere. We run async by default with quarterly in-person offsites.', sub: '' },
         { key: 'Learning budget', value: '$2,500/year for courses, certifications, conferences, and books.', sub: '' },
         { key: 'Real equity', value: 'Meaningful agency equity for all full-time team members after year one.', sub: '' },
@@ -135,15 +135,15 @@ function seed(): Position[] {
       ],
       equalOpportunity:
         'GrowthVireX is an equal opportunity employer. We hire based on craft and ownership and do not discriminate on the basis of race, religion, national origin, gender, sexual orientation, age, or disability.',
-      seoTitle: 'Ads Manager — Open Role at GrowthVireX',
+      seoTitle: 'Google Ads Specialist — Open Role at GrowthVireX',
       seoDescription:
-        'We are hiring a senior Ads Manager to own paid media strategy across Google, Meta, and LinkedIn. Remote-first, performance-driven, high-ownership role.',
+        'We are hiring a Google Ads Specialist to own paid search, shopping, and PMax strategy. Remote-first, performance-driven, high-ownership role.',
       jobPostingDescription:
-        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a senior Ads Manager to own multi-channel ad strategy across Google, Meta, and LinkedIn for a portfolio of high-growth clients.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a Google Ads Specialist to own paid search, shopping, and PMax strategy across Google Ads for a portfolio of high-growth clients.",
       datePosted: now.slice(0, 10),
       validThrough: '',
-      salaryMin: 75000,
-      salaryMax: 110000,
+      salaryMin: 38000,
+      salaryMax: 42000,
       hidden: false,
       createdAt: now,
       updatedAt: now,

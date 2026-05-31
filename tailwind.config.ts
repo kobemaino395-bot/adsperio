@@ -2,44 +2,33 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: ['./src/**/*.{ts,tsx,mdx}'],
-  darkMode: 'media',
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
-        // "zest" name retained for compatibility — now the vermilion spark ramp
+        // "zest" name retained for compatibility — now the indigo brand ramp
         zest: {
-          50:  '#fff2ee',
-          100: '#ffe0d6',
-          200: '#ffc2af',
-          300: '#ff5a2c', // primary accent — vermilion spark
-          400: '#ec4318',
-          500: '#c8351a',
-          600: '#9c2913',
-          700: '#74200f',
-          800: '#5a190c',
-          900: '#3d1108',
+          50:  '#eef0ff',
+          100: '#dcdcfd',
+          200: '#b9b9f9', // primary-bg-subdued
+          300: '#8f86fd',
+          400: '#665efd', // primary-soft
+          500: '#533afd', // primary
+          600: '#4434d4', // primary-deep
+          700: '#2e2b8c', // primary-press
+          800: '#252574',
+          900: '#1c1e54', // brand-dark-900
         },
-        pine: {
-          50:  '#e9f3ee',
-          100: '#c9e3d6',
-          300: '#4aa57f',
-          500: '#146349',
-          700: '#0d3a2b',
-          900: '#0a2419',
-        },
+        // "ink" tokens are the deep-navy text scale (never pure black)
         ink: {
-          DEFAULT: '#0a1410',
-          soft: '#13201a',
-          muted: '#5c6b62',
+          DEFAULT: '#0d253d',
+          soft: '#273951',
+          muted: '#64748d',
         },
       },
       fontFamily: {
-        sans: ['var(--font-sans)', 'ui-sans-serif', 'system-ui', '-apple-system', 'sans-serif'],
-        display: ['var(--font-serif)', 'ui-serif', 'Georgia', 'serif'],
-      },
-      backgroundImage: {
-        'spark-gradient':
-          'radial-gradient(ellipse at top left, rgba(255,90,44,0.18), transparent 55%), radial-gradient(ellipse at bottom right, rgba(31,138,99,0.16), transparent 55%)',
+        sans: ['var(--font-sans)', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
+        display: ['var(--font-sans)', '"Helvetica Neue"', 'Helvetica', 'Arial', 'sans-serif'],
       },
       animation: {
         'orb-float': 'orb-float 14s ease-in-out infinite',

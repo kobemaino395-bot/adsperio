@@ -40,13 +40,13 @@ function renderBlock(block: Block, i: number) {
   switch (block.type) {
     case 'h2':
       return (
-        <h2 key={i} className="prose-heading mt-14 mb-5 font-serif text-[1.75rem] font-medium leading-[1.2] tracking-tight md:text-[2.125rem]">
+        <h2 key={i} className="prose-heading mt-14 mb-5 font-serif text-[1.75rem] font-light leading-[1.2] tracking-[-0.02em] md:text-[2.125rem]">
           {block.text}
         </h2>
       );
     case 'h3':
       return (
-        <h3 key={i} className="mt-10 mb-3 font-serif text-[1.375rem] font-medium leading-snug tracking-tight">
+        <h3 key={i} className="mt-10 mb-3 font-serif text-[1.375rem] font-normal leading-snug tracking-[-0.01em]">
           {block.text}
         </h3>
       );
@@ -143,10 +143,10 @@ export default async function IssuePage({ params }: { params: Promise<Params> })
             <div className="mb-10 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
               {issue.category} &nbsp;/&nbsp; {issue.readTime}
             </div>
-            <h1 className="font-serif text-[2.5rem] font-medium leading-[1.05] tracking-[-0.02em] md:text-[4rem] lg:text-[4.5rem]">
+            <h1 className="font-serif text-[2.5rem] font-light leading-[1.04] tracking-[-0.04em] md:text-[4rem] lg:text-[4.5rem]">
               {issue.title}
             </h1>
-            <p className="mt-8 max-w-2xl font-serif text-[1.25rem] leading-[1.5] text-ink-muted md:text-[1.375rem]">
+            <p className="mt-8 max-w-2xl font-serif text-[1.25rem] font-light leading-[1.5] text-[var(--color-fg-muted)] md:text-[1.375rem]">
               {issue.excerpt}
             </p>
             <div className="mt-12 flex items-center gap-3 text-[0.75rem] uppercase tracking-[0.15em] text-ink-muted">
@@ -192,7 +192,7 @@ export default async function IssuePage({ params }: { params: Promise<Params> })
               <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
                 Subscribe
               </div>
-              <h2 className="mt-4 font-serif text-[2rem] font-medium leading-[1.1] tracking-tight md:text-[2.5rem]">
+              <h2 className="mt-4 font-serif text-[2rem] font-light leading-[1.1] tracking-[-0.02em] md:text-[2.5rem]">
                 Tuesday mornings, in your inbox.
               </h2>
             </div>
@@ -206,11 +206,11 @@ export default async function IssuePage({ params }: { params: Promise<Params> })
                   name="email"
                   required
                   placeholder="your@email.com"
-                  className="flex-1 border-b-2 border-[var(--color-fg)] bg-transparent px-1 py-3 font-serif text-base focus:outline-none focus:border-zest-400"
+                  className="flex-1 border-b border-[var(--color-fg)] bg-transparent px-1 py-3 font-serif text-base focus:outline-none focus:border-[var(--color-accent)]"
                 />
                 <button
                   type="submit"
-                  className="font-mono text-xs uppercase tracking-[0.15em] text-[var(--color-fg)] transition hover:text-zest-400"
+                  className="font-mono text-xs uppercase tracking-[0.15em] text-[var(--color-accent)] transition hover:text-[var(--color-accent-deep)]"
                 >
                   Subscribe →
                 </button>
@@ -231,7 +231,7 @@ export default async function IssuePage({ params }: { params: Promise<Params> })
               <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
                 ← Previous · No. {prevIssue.issueNo}
               </div>
-              <h3 className="mt-3 font-serif text-xl font-medium leading-snug transition group-hover:text-zest-400 md:text-2xl">
+              <h3 className="mt-3 font-serif text-xl font-normal leading-snug transition group-hover:text-[var(--color-accent)] md:text-2xl">
                 {prevIssue.title}
               </h3>
             </Link>
@@ -241,7 +241,7 @@ export default async function IssuePage({ params }: { params: Promise<Params> })
               <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
                 Next · No. {nextIssue.issueNo} →
               </div>
-              <h3 className="mt-3 font-serif text-xl font-medium leading-snug transition group-hover:text-zest-400 md:text-2xl">
+              <h3 className="mt-3 font-serif text-xl font-normal leading-snug transition group-hover:text-[var(--color-accent)] md:text-2xl">
                 {nextIssue.title}
               </h3>
             </Link>

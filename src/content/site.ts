@@ -20,8 +20,9 @@ export const site = {
   twitter: '@growthvirex',
   ogImage: '/images/og/default.jpg', // 1200x630
   contact: {
-    email: 'hello@growthvirex.com',
-    phone: '+65 6210 8847',
+    email: 'contact@growthvirex.com',
+    phone: '+65 6950 1180',
+    address: 'Level 14, 71 Robinson Road, Singapore 068895',
   },
   social: {
     linkedin: '#',

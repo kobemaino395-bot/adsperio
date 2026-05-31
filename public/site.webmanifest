@@ -1,13 +1,35 @@
 {
-  "name": "GrowthVireX",
-  "short_name": "GrowthVireX",
-  "description": "GrowthVireX is a modern advertising growth company helping brands grow faster through smart paid media, creative ad production, and conversion optimization.",
-  "icons": [
-    { "src": "/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
-  ],
-  "theme_color": "#111111",
+  "name": "Your Application Name",
+  "short_name": "App",
+  "description": "Application description",
+  "start_url": "/",
+  "display": "standalone",
   "background_color": "#ffffff",
-  "display": "browser",
-  "start_url": "/"
+  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "productivity"
+  ],
+  "lang": "en",
+  "dir": "ltr"
 }

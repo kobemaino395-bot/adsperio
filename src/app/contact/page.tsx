@@ -14,20 +14,19 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <main>
-      <section className="relative overflow-hidden">
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-50 opacity-60" />
-        <div className="container-zest relative pt-40 pb-16 text-center">
+      <section className="relative">
+        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[440px]" />
+        <div className="container-zest relative pt-40 pb-14 text-center md:pt-48">
           <Reveal>
-            <h1 className="text-5xl font-semibold tracking-tight md:text-7xl">
-              Let&apos;s{' '}
-              <span className="relative inline-block">
-                <span className="relative z-10">talk growth.</span>
-                <span aria-hidden className="absolute bottom-1 left-0 right-0 -z-0 h-[0.35em] bg-[var(--color-accent)]" />
-              </span>
+            <span className="pill-tag mx-auto">Contact</span>
+          </Reveal>
+          <Reveal delay={120}>
+            <h1 className="mx-auto mt-6 max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
+              Let&apos;s talk <span className="hl">growth.</span>
             </h1>
           </Reveal>
-          <Reveal delay={150}>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-ink-muted md:text-xl">
+          <Reveal delay={240}>
+            <p className="mx-auto mt-6 max-w-xl text-lg font-light text-[var(--color-fg-muted)]">
               Tell us where you are and where you want to be. We&apos;ll reply within one business day.
             </p>
           </Reveal>
@@ -41,7 +40,7 @@ export default function ContactPage() {
           <form
             action="https://api.web3forms.com/submit"
             method="POST"
-            className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8 md:p-12"
+            className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8 md:p-12"
           >
             {/* Replace with your Web3Forms access key from https://web3forms.com */}
             <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
@@ -62,7 +61,7 @@ export default function ContactPage() {
               <select
                 name="budget"
                 required
-                className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+                className="w-full rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
               >
                 <option value="">Select a range</option>
                 <option>Under $10K / month</option>
@@ -80,7 +79,7 @@ export default function ContactPage() {
                 name="message"
                 rows={5}
                 required
-                className="w-full resize-none rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+                className="w-full resize-none rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
                 placeholder="Tell us about your goals, current marketing setup, and where you're feeling stuck."
               />
             </div>
@@ -98,12 +97,12 @@ export default function ContactPage() {
           <aside className="space-y-6">
             <ContactCard icon={<Mail size={16} />} label="Email" value={site.contact.email} href={`mailto:${site.contact.email}`} />
             <ContactCard icon={<Phone size={16} />} label="Phone" value={site.contact.phone} href={`tel:${site.contact.phone.replace(/\s/g, '')}`} />
-            <ContactCard icon={<MapPin size={16} />} label="Based in" value="Singapore" />
+            <ContactCard icon={<MapPin size={16} />} label="Based in" value={site.contact.address} />
 
-            <div className="rounded-3xl border border-[var(--color-border)] bg-ink p-8 text-white">
-              <div className="text-xs uppercase tracking-widest text-neutral-500">Response time</div>
-              <div className="mt-3 text-3xl font-semibold tracking-tight">&lt; 24 hours</div>
-              <p className="mt-2 text-sm text-neutral-400">
+            <div className="card bg-[var(--color-bg-sunken)] p-8">
+              <div className="label-tech">Response time</div>
+              <div className="tnum mt-3 text-3xl font-light tracking-tight">&lt; 24 hours</div>
+              <p className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">
                 Every inquiry gets a real reply from a senior strategist — not a sales bot.
               </p>
             </div>
@@ -120,15 +119,15 @@ function Field({
 }: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
   return (
     <div>
-      <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
-        {label} {required && <span className="text-zest-400">*</span>}
+      <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-[var(--color-fg-muted)]">
+        {label} {required && <span className="text-[var(--color-accent)]">*</span>}
       </label>
       <input
         type={type}
         name={name}
         required={required}
         placeholder={placeholder}
-        className="w-full rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] px-4 py-3 text-base transition focus:border-zest-300 focus:outline-none"
+        className="w-full rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
       />
     </div>
   );
@@ -139,14 +138,14 @@ function ContactCard({
 }: { icon: React.ReactNode; label: string; value: string; href?: string }) {
   const content = (
     <>
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-ink-muted">
+      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">
         {icon} {label}
       </div>
-      <div className="mt-2 text-lg font-medium">{value}</div>
+      <div className="mt-2 text-lg font-normal">{value}</div>
     </>
   );
   return (
-    <div className="rounded-3xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 transition hover:border-zest-300">
+    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 transition hover:border-[var(--color-accent)]">
       {href ? <a href={href} className="block">{content}</a> : content}
     </div>
   );

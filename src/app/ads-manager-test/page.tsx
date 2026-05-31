@@ -5,9 +5,9 @@ import Reveal from '@/components/ui/Reveal';
 import DownloadButton from '@/components/DownloadButton';
 
 export const metadata: Metadata = {
-  title: 'Ads Manager Test — GrowthVireX',
+  title: 'Google Ads Specialist Test — GrowthVireX',
   description:
-    'Download the GrowthVireX Ads Manager candidate assignment. A two-day strategic test on paid media planning, budget allocation, and campaign optimization.',
+    'Download the GrowthVireX Google Ads Specialist candidate assignment. A two-day strategic test on paid media planning, budget allocation, and campaign optimization.',
   robots: { index: false, follow: false },
   alternates: { canonical: '/ads-manager-test/' },
 };
@@ -46,18 +46,18 @@ export default function Page() {
           <Reveal>
             <div className="flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
               <span className="h-2 w-2 animate-blink rounded-full bg-[var(--color-accent)]" />
-              Candidate assignment · Ads Manager
+              Candidate assignment · Google Ads Specialist
             </div>
           </Reveal>
 
           <Reveal delay={100}>
-            <h1 className="mt-6 max-w-3xl text-[2.5rem] font-medium leading-[1] tracking-[-0.03em] md:text-[4.5rem]">
-              Ads Manager Test
+            <h1 className="mt-6 max-w-3xl text-[2.5rem] font-light leading-[1.02] tracking-[-0.04em] md:text-[4.5rem]">
+              Google Ads Specialist Test
             </h1>
           </Reveal>
 
           <Reveal delay={200}>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+            <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-[var(--color-fg-muted)]">
               A short, strategic assessment designed to evaluate your planning, problem-solving,
               and paid media expertise through a simulated real-world scenario. Download the brief
               below and submit your response within 2 days.
@@ -78,7 +78,7 @@ export default function Page() {
       </section>
 
       {/* META STRIP */}
-      <section className="border-y border-[var(--color-border)] bg-[var(--color-ink-warm)] text-[var(--color-bg)]">
+      <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-navy)] text-white">
         <div className="container-zest py-8">
           <Reveal>
             <dl className="flex flex-wrap gap-x-16 gap-y-6">
@@ -172,7 +172,7 @@ export default function Page() {
           <aside className="space-y-5">
             <Reveal>
               <div
-                className="rounded-2xl bg-[var(--color-ink-warm)] p-8 text-[var(--color-bg)]"
+                className="rounded-2xl bg-[var(--color-bg-navy)] p-8 text-white"
                 style={{ boxShadow: 'var(--shadow-brutal)' }}
               >
                 <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-white/50">Download</div>
@@ -198,8 +198,8 @@ export default function Page() {
                   If anything in the brief is unclear, reach out before you start.
                 </p>
                 <a
-                  href="mailto:hiring@growthvirex.com?subject=Question about Ads Manager Test"
-                  className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                  href="mailto:hiring@growthvirex.com?subject=Question about Google Ads Specialist Test"
+                  className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
                 >
                   hiring@growthvirex.com
                 </a>
@@ -210,11 +210,11 @@ export default function Page() {
               <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
                 <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">About the role</div>
                 <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-                  This test is part of the hiring process for the Ads Manager position at GrowthVireX.
+                  This test is part of the hiring process for the Google Ads Specialist position at GrowthVireX.
                 </p>
                 <Link
                   href="/careers/ads-manager/"
-                  className="mt-4 inline-block text-sm font-medium text-zest-400 hover:underline"
+                  className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
                 >
                   View job description →
                 </Link>

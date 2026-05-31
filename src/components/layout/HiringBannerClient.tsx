@@ -43,14 +43,18 @@ export default function HiringBannerClient({ config }: { config: BannerConfig })
 
   const hasCta = config.ctaUrl && config.ctaText;
   const inner = (
-    <span className="container-zest flex h-full items-center justify-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.2em]">
-      <span className="h-1.5 w-1.5 animate-blink rounded-full bg-[var(--color-accent)]" />
-      {config.badge && <span className="text-white/80">{config.badge}</span>}
-      {config.badge && config.message && <span className="text-white/40">·</span>}
-      {config.message && <span className="font-semibold">{config.message}</span>}
-      {hasCta && (
-        <span className="ml-1 transition-transform group-hover:translate-x-0.5">{config.ctaText}</span>
-      )}
+    <span className="flex items-center gap-2.5 rounded-full border border-[var(--color-border)] bg-[var(--color-bg-alt)]/90 py-1.5 pl-3.5 pr-1.5 shadow-[var(--shadow-md)] backdrop-blur transition-transform duration-200 group-hover:-translate-y-0.5">
+      <span className="h-1.5 w-1.5 shrink-0 animate-blink rounded-full bg-[var(--color-accent)]" />
+      <span className="min-w-0 truncate text-xs">
+        {config.badge && <span className="font-semibold text-[var(--color-accent)]">{config.badge}</span>}
+        {config.badge && config.message && <span className="text-[var(--color-fg-muted)]"> · </span>}
+        {config.message && <span className="text-[var(--color-fg-muted)]">{config.message}</span>}
+        {hasCta && (
+          <span className="ml-1.5 font-semibold text-[var(--color-fg)] transition-transform group-hover:translate-x-0.5">
+            {config.ctaText}
+          </span>
+        )}
+      </span>
       <button
         type="button"
         onClick={(e) => {
@@ -64,7 +68,7 @@ export default function HiringBannerClient({ config }: { config: BannerConfig })
           setDismissed(true);
         }}
         aria-label="Dismiss"
-        className="ml-3 inline-flex h-5 w-5 items-center justify-center rounded text-white/60 hover:bg-white/10 hover:text-white"
+        className="grid h-5 w-5 shrink-0 place-items-center rounded-full text-[var(--color-fg-muted)] hover:bg-[var(--color-bg-sunken)] hover:text-[var(--color-fg)]"
       >
         ×
       </button>
@@ -72,7 +76,7 @@ export default function HiringBannerClient({ config }: { config: BannerConfig })
   );
 
   const className =
-    'fixed inset-x-0 top-0 z-[60] h-9 border-b border-[var(--color-border)] bg-[var(--color-ink-warm)] text-[var(--color-bg)]';
+    'fixed bottom-5 right-5 z-[60] max-w-[calc(100vw-2.5rem)]';
 
   if (!mounted) {
     // SSR-safe render: no link, just inert markup until hydration decides
