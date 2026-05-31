@@ -184,9 +184,9 @@ h1, h2, h3, h4 {
   &:hover { transform: translateY(-1px); opacity: 0.92; }
 }
 
-/* emphasized phrase — clean indigo display emphasis, no marker bar */
+/* emphasized phrase — same ink as the headline; restrained, no color or bar */
 @utility hl {
-  color: var(--color-accent);
+  color: inherit;
 }
 
 /* all-caps micro eyebrow */
