@@ -85,11 +85,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const h = await headers();
   const pathname = h.get('x-adn-pathname') ?? '';
   const isAdmin = pathname.startsWith('/admin');
+  const nonce = h.get('x-nonce') ?? undefined;
 
   return (
     <html lang="en" className={sans.variable} suppressHydrationWarning>
       <body className="min-h-screen font-sans antialiased">
         <script
+          nonce={nonce}
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=localStorage.getItem('gvx-theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()`,
           }}
