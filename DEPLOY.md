@@ -314,7 +314,76 @@ Should return `200` (or `301`/`404` from Next.js — anything but connection ref
 
 **SSL/TLS mode** (Cloudflare dashboard → SSL/TLS → Overview):
 
-Set to **Full** — Cloudflare connects to your server over HTTP but serves HTTPS to visitors. Do not use Flexible (insecure) or Full Strict (requires a valid cert on the server).
+Set to **Full** — Cloudflare connects to your server on port 443 using the Origin Certificate. Do not use Flexible (insecure) or Full Strict (requires a CA-signed cert).
+
+**Origin Certificate** (Cloudflare dashboard → SSL/TLS → Origin Server → Create Certificate):
+
+1. Leave defaults (RSA, 15 year expiry) → **Create**
+2. Copy the **Origin Certificate** and **Private Key** — private key is only shown once
+
+On the server:
+
+```bash
+sudo nano /etc/ssl/certs/growthvirex.crt
+# paste the Origin Certificate, save
+
+sudo nano /etc/ssl/private/growthvirex.key
+# paste the Private Key, save
+```
+
+**Update Nginx to listen on 443** — add a second server block to `/etc/nginx/sites-available/growthvirex` below the existing port 80 block:
+
+```nginx
+server {
+    listen 443 ssl;
+    server_name growthvirex.com www.growthvirex.com;
+
+    ssl_certificate /etc/ssl/certs/growthvirex.crt;
+    ssl_certificate_key /etc/ssl/private/growthvirex.key;
+
+    client_max_body_size 22m;
+
+    location = /admin/login/submit {
+        limit_req zone=admin_login burst=2 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $http_cf_connecting_ip;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location = /api/applications {
+        limit_req zone=applications burst=5 nodelay;
+        proxy_pass http://127.0.0.1:8080;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $http_cf_connecting_ip;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Host              $host;
+        proxy_set_header X-Real-IP         $http_cf_connecting_ip;
+        proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_buffering off;
+    }
+}
+```
+
+Reload Nginx:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Verify port 443 is listening:
+
+```bash
+ss -tlnp | grep :443
+```
 
 ---
 
