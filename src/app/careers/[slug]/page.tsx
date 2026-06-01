@@ -216,7 +216,7 @@ export default async function PositionPage({ params }: { params: Params }) {
                       className="mt-6 flex items-center justify-between gap-2 rounded-full border border-[var(--color-border)] px-5 py-3 text-sm font-medium transition hover:bg-[var(--color-bg-alt)]"
                       messageClassName="mt-2 text-xs text-[var(--color-fg-muted)]"
                     >
-                      <span>Download {downloadFilename ? `(${downloadFilename})` : ''}</span>
+                      <span>{p.downloadTitle || 'Download'}</span>
                       <span aria-hidden>↓</span>
                     </DownloadButton>
                   </div>
