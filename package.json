@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 8088",
+    "dev": "next dev -p 8080",
     "build": "next build",
-    "start": "next start -p 8088",
+    "start": "next start -p ${PORT:-8080}",
     "lint": "eslint"
   },
   "dependencies": {
