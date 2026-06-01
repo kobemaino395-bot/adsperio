@@ -26,13 +26,6 @@ export const DEFAULT_SLOTS: DefaultSlot[] = [
     publicFilename: 'Technical_Assessment.zip',
     publicMimeType: 'application/zip',
   },
-  {
-    slug: 'remote-policy',
-    title: 'Remote work policy',
-    description: 'Available at /api/downloads/remote-policy.',
-    publicFilename: 'GrowthVireX_Remote_Policy.pdf',
-    publicMimeType: 'application/pdf',
-  },
 ];
 
 export const BUILTIN_SLUGS = new Set(DEFAULT_SLOTS.map((s) => s.slug));
