@@ -387,7 +387,41 @@ ss -tlnp | grep :443
 
 ---
 
-## Part 7 — Deploying updates
+## Part 7 — Tor (onion remote slots)
+
+Remote slots whose URL ends in `.onion` are fetched through a local Tor SOCKS5 proxy on `127.0.0.1:9050`. Without Tor running, those downloads will return `502 Upstream fetch failed`.
+
+### 7.1 Install Tor
+
+```bash
+sudo apt install -y tor
+sudo systemctl enable --now tor
+```
+
+Verify it's listening:
+
+```bash
+ss -tlnp | grep 9050
+```
+
+### 7.2 Verify a test fetch (optional)
+
+```bash
+curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org/api/ip
+```
+
+Should return `{"IsTor":true,...}`.
+
+### 7.3 Notes
+
+- Tor is only used for `.onion` URLs. Clearnet remote slots use a direct `fetch()`.
+- No extra env vars are needed — the proxy address is hardcoded to `127.0.0.1:9050`.
+- If Tor is down, onion downloads fail with `502`; clearnet and local slots are unaffected.
+- First requests after a Tor restart may be slow (circuit build time ~5–10 s).
+
+---
+
+## Part 8 — Deploying updates
 
 ```bash
 ssh growthvirex-server
@@ -427,7 +461,7 @@ The take-home asset and JSONL log live in `/var/lib/growthvirex/` and survive `g
 
 ## Deploy checklist (copy/paste)
 
-```
+```text
 [ ] DNS A record for growthvirex.com → server IP
 [ ] Node 20 + Nginx installed
 [ ] /var/www/growthvirex cloned, npm ci, npm run build
