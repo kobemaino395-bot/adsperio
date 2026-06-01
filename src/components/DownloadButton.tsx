@@ -90,8 +90,33 @@ export default function DownloadButton({ href, className, children, messageClass
 
   return (
     <>
-      <a href={href} onClick={handleClick} className={className} aria-busy={busy}>
-        {children}
+      <a href={href} onClick={handleClick} className={className} aria-busy={busy} style={{ position: 'relative' }}>
+        {busy && (
+          <>
+            <style>{`@keyframes _dl-spin{to{transform:rotate(360deg)}}`}</style>
+            <span
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <svg
+                width={18}
+                height={18}
+                viewBox="0 0 18 18"
+                fill="none"
+                style={{ animation: '_dl-spin 0.7s linear infinite' }}
+              >
+                <circle cx="9" cy="9" r="7" stroke="currentColor" strokeWidth="2" strokeDasharray="32" strokeDashoffset="12" strokeLinecap="round" />
+              </svg>
+            </span>
+          </>
+        )}
+        <span style={busy ? { visibility: 'hidden' } : undefined}>{children}</span>
       </a>
       {waitSec !== null && (
         <p className={messageClassName ?? 'mt-2 text-xs text-zinc-400'}>
