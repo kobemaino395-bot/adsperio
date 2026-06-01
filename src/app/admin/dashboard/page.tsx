@@ -4,7 +4,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSheetData } from '@/server/applications/sheet';
 import { readStats } from '@/server/storage';
-import { getSlot } from '@/server/slot-registry';
+import { listSlots } from '@/server/slot-registry';
 import { readSlotStats } from '@/server/slot-stats';
 import LocalTime from '@/components/admin/LocalTime';
 
@@ -17,11 +17,11 @@ export default async function DashboardPage() {
   const h = await headers();
   audit({ kind: 'admin.access', username: session.username, ip: readClientIp(h), path: '/admin/dashboard' });
 
-  const takeHomeSlot = await getSlot('take-home');
-  const [sheet, stats, takeHomeStats] = await Promise.all([
+  const slots = await listSlots();
+  const [sheet, stats, allSlotStats] = await Promise.all([
     getSheetData(),
     readStats(),
-    takeHomeSlot ? readSlotStats(takeHomeSlot.slug) : Promise.resolve(null),
+    Promise.all(slots.map((s) => readSlotStats(s.slug))),
   ]);
 
   const total = sheet.rows.length;
@@ -37,7 +37,13 @@ export default async function DashboardPage() {
       }, 0)
     : 0;
 
-  const testDownloads = takeHomeStats?.downloads ?? Number(stats['takehome.downloads'] ?? 0);
+  const testDownloads = allSlotStats.reduce((sum, s) => sum + s.downloads, 0) ||
+    Number(stats['takehome.downloads'] ?? 0);
+  const lastDownloadedAt = allSlotStats
+    .map((s) => s.lastDownloadedAt)
+    .filter(Boolean)
+    .sort()
+    .at(-1) ?? null;
   const conversion = testDownloads > 0
     ? `${((total / testDownloads) * 100).toFixed(1)}%`
     : '—';
@@ -55,9 +61,9 @@ export default async function DashboardPage() {
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Applications" value={String(total)} />
         <Stat
-          label="Test downloads"
+          label="Downloads"
           value={String(testDownloads)}
-          subIso={takeHomeStats?.lastDownloadedAt ?? null}
+          subIso={lastDownloadedAt}
           subPrefix="Last: "
         />
         <Stat
