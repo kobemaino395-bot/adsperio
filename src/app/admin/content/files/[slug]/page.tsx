@@ -158,7 +158,7 @@ export default async function FileDetailPage({
               <input type="hidden" name="title" value={slot.title} />
               <input type="hidden" name="kind" value="remote" />
               <input
-                type="url"
+                type="text"
                 name="remoteUrl"
                 required
                 defaultValue={slot.remoteUrl}
@@ -246,7 +246,7 @@ export default async function FileDetailPage({
           <label className="block md:col-span-2">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Remote URL (used when type = remote)</span>
             <input
-              type="url"
+              type="text"
               name="remoteUrl"
               defaultValue={slot.remoteUrl}
               placeholder="https://example.com/path/to/file.zip"
