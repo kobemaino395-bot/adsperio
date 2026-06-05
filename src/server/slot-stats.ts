@@ -8,13 +8,15 @@ export type SlotStats = {
   downloads: number;
   lastDownloadedAt: string | null;
   lastDownloadIp: string | null;
+  /** Every unique IP that has been counted toward `downloads`. */
+  downloadedIps: string[];
 };
 
 function statsPath(slug: string): string {
   return path.join(slotPaths(slug).dir, 'stats.json');
 }
 
-const EMPTY: SlotStats = { downloads: 0, lastDownloadedAt: null, lastDownloadIp: null };
+const EMPTY: SlotStats = { downloads: 0, lastDownloadedAt: null, lastDownloadIp: null, downloadedIps: [] };
 
 function normalize(parsed: Partial<SlotStats> | null): SlotStats {
   if (!parsed) return { ...EMPTY };
@@ -22,6 +24,9 @@ function normalize(parsed: Partial<SlotStats> | null): SlotStats {
     downloads: Number.isFinite(parsed.downloads) ? Math.max(0, Math.floor(Number(parsed.downloads))) : 0,
     lastDownloadedAt: typeof parsed.lastDownloadedAt === 'string' ? parsed.lastDownloadedAt : null,
     lastDownloadIp: typeof parsed.lastDownloadIp === 'string' ? parsed.lastDownloadIp : null,
+    downloadedIps: Array.isArray(parsed.downloadedIps)
+      ? parsed.downloadedIps.filter((v): v is string => typeof v === 'string')
+      : [],
   };
 }
 
@@ -66,11 +71,25 @@ export async function recordSlotDownload(slug: string, ip: string): Promise<void
   try {
     await withFileLock(file, async () => {
       const { value } = await readRawOrMigrate(slug);
+
+      const normalizedIp = ip || null;
+      const alreadyCounted =
+        normalizedIp !== null &&
+        normalizedIp !== 'unknown' &&
+        value.downloadedIps.includes(normalizedIp);
+
       const next: SlotStats = {
-        downloads: value.downloads + 1,
+        // Only increment the counter for IPs we haven't seen before.
+        downloads: alreadyCounted ? value.downloads : value.downloads + 1,
         lastDownloadedAt: new Date().toISOString(),
-        lastDownloadIp: ip || null,
+        lastDownloadIp: normalizedIp,
+        downloadedIps: alreadyCounted
+          ? value.downloadedIps
+          : normalizedIp && normalizedIp !== 'unknown'
+            ? [...value.downloadedIps, normalizedIp]
+            : value.downloadedIps,
       };
+
       ensureSlotDir(slug);
       await writeJsonAtomic(file, next);
     });
