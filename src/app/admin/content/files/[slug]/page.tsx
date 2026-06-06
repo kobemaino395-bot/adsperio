@@ -7,6 +7,7 @@ import { getSlot } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../../ContentTabs';
+import CopyButton from '@/components/admin/CopyButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,6 +31,10 @@ export default async function FileDetailPage({
   const { ok, error, updated } = await searchParams;
   const effective = effectivePublicDownload(slot, status.meta);
 
+  const host = h.get('host') ?? '';
+  const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
+  const downloadUrl = `${proto}://${host}/api/downloads/${slot.slug}`;
+
   return (
     <div className="space-y-6">
       <header className="flex items-baseline justify-between">
@@ -42,14 +47,18 @@ export default async function FileDetailPage({
               <span className="rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
             )}
           </div>
-          <p className="mt-1 text-sm text-zinc-500">
-            Public URL: <span className="font-mono">/api/downloads/{esc(slot.slug)}</span>
+          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="font-mono text-sm text-zinc-600 break-all">{downloadUrl}</span>
+            <CopyButton
+              text={downloadUrl}
+              className="rounded border border-zinc-200 px-2 py-px text-xs text-zinc-500 hover:border-zinc-400 hover:text-zinc-800"
+            />
             {slot.isBuiltin && (
-              <span className="ml-2 rounded-full border border-zinc-300 px-2 py-px font-mono text-[0.55rem] uppercase tracking-[0.18em] text-zinc-500">
+              <span className="rounded-full border border-zinc-300 px-2 py-px font-mono text-[0.55rem] uppercase tracking-[0.18em] text-zinc-500">
                 Built-in
               </span>
             )}
-          </p>
+          </div>
         </div>
         <Link href="/admin/content/files" className="text-xs text-zinc-500 hover:text-zinc-900">← Back to files</Link>
       </header>

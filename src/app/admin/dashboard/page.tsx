@@ -44,6 +44,7 @@ export default async function DashboardPage() {
     .filter(Boolean)
     .sort()
     .at(-1) ?? null;
+  const slotBreakdown = slots.map((s, i) => ({ slug: s.slug, title: s.title, downloads: allSlotStats[i]!.downloads }));
   const conversion = testDownloads > 0
     ? `${((total / testDownloads) * 100).toFixed(1)}%`
     : '—';
@@ -60,12 +61,23 @@ export default async function DashboardPage() {
 
       <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <Stat label="Applications" value={String(total)} />
-        <Stat
-          label="Downloads"
-          value={String(testDownloads)}
-          subIso={lastDownloadedAt}
-          subPrefix="Last: "
-        />
+        <div className="rounded-lg border border-zinc-200 bg-white p-5">
+          <div className="text-xs font-medium uppercase tracking-wider text-zinc-500">Downloads</div>
+          <div className="mt-2 text-2xl font-semibold tracking-tight">{String(testDownloads)}</div>
+          {lastDownloadedAt && (
+            <div className="mt-1 text-xs text-zinc-500">Last: <LocalTime iso={lastDownloadedAt} /></div>
+          )}
+          {slotBreakdown.length > 0 && (
+            <div className="mt-3 space-y-1 border-t border-zinc-100 pt-2">
+              {slotBreakdown.map((s) => (
+                <div key={s.slug} className="flex justify-between gap-2 text-xs">
+                  <span className="truncate text-zinc-500">{esc(s.title)}</span>
+                  <span className="tabular-nums font-medium text-zinc-700">{s.downloads}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <Stat
           label="Conversion"
           value={conversion}

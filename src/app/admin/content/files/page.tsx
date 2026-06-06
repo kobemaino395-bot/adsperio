@@ -8,6 +8,7 @@ import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../ContentTabs';
 import FileTypeToggle from './FileTypeToggle';
+import CopyButton from '@/components/admin/CopyButton';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,6 +23,9 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
 
   const { ok, error, created, deleted } = await searchParams;
   const slots = await listSlots();
+  const host = h.get('host') ?? '';
+  const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
+  const origin = `${proto}://${host}`;
   const [statuses, stats] = await Promise.all([
     Promise.all(slots.map((s) => readSlotStatus(s.slug))),
     Promise.all(slots.map((s) => readSlotStats(s.slug))),
@@ -184,12 +188,18 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                       )}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <Link
-                        href={`/admin/content/files/${s.slug}`}
-                        className="text-xs text-zinc-500 hover:text-zinc-900"
-                      >
-                        Open →
-                      </Link>
+                      <div className="flex items-center justify-end gap-3">
+                        <CopyButton
+                          text={`${origin}/api/downloads/${s.slug}`}
+                          className="text-xs text-zinc-400 hover:text-zinc-700"
+                        />
+                        <Link
+                          href={`/admin/content/files/${s.slug}`}
+                          className="text-xs text-zinc-500 hover:text-zinc-900"
+                        >
+                          Open →
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );
