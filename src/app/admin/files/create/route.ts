@@ -2,6 +2,7 @@ import type { NextRequest } from 'next/server';
 import { readSessionFromCookies, verifySessionCsrf } from '@/server/admin/auth';
 import { adminRedirect, audit, readClientIp } from '@/server/admin/security';
 import { createSlot } from '@/server/slot-registry';
+import { prefetchRemoteCache } from '@/server/remote-cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -35,6 +36,10 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   if (!result.ok) {
     return adminRedirect('/admin/content/files?error=' + encodeURIComponent(result.reason));
+  }
+
+  if (result.slot.kind === 'remote' && result.slot.remoteUrl) {
+    prefetchRemoteCache(result.slot.slug, result.slot.remoteUrl, result.slot.publicFilename, result.slot.publicMimeType).catch(() => undefined);
   }
 
   audit({ kind: 'admin.access', username: session.username, ip, path: `slot.create:${result.slot.slug}` });
