@@ -8,6 +8,7 @@ import { effectivePublicDownload, readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../../ContentTabs';
 import CopyButton from '@/components/admin/CopyButton';
+import SettingsKindFields from '@/components/admin/SettingsKindFields';
 
 export const dynamic = 'force-dynamic';
 
@@ -238,30 +239,7 @@ export default async function FileDetailPage({
               className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
             />
           </label>
-          <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Type</span>
-            <select
-              name="kind"
-              defaultValue={slot.kind}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
-            >
-              <option value="local">Local file</option>
-              <option value="remote">Remote URL (proxy)</option>
-            </select>
-            <p className="mt-1 text-xs text-zinc-500">
-              Switching local → remote keeps the on-disk file as a backup but stops serving it.
-            </p>
-          </label>
-          <label className="block md:col-span-2">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Remote URL (used when type = remote)</span>
-            <input
-              type="text"
-              name="remoteUrl"
-              defaultValue={slot.remoteUrl}
-              placeholder="https://example.com/path/to/file.zip"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
-            />
-          </label>
+          <SettingsKindFields initialKind={slot.kind} initialRemoteUrl={slot.remoteUrl} />
           <label className="block md:col-span-2">
             <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
             <input

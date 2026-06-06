@@ -130,7 +130,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                 <th className="px-5 py-2">Status</th>
                 <th className="px-5 py-2">Size</th>
                 <th className="px-5 py-2">Modified</th>
-                <th className="px-5 py-2">Downloads</th>
+                <th className="px-5 py-2 min-w-[11rem]">Downloads</th>
                 <th className="px-5 py-2 text-right"></th>
               </tr>
             </thead>
