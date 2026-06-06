@@ -102,7 +102,7 @@ async function serveRemote(
     recordDownload(slug, ip);
     const filename = safeFilename(publicFilename || cached.meta.filename, `${slug}.bin`);
     const contentType = publicMimeType || cached.meta.contentType;
-    return new Response(cached.data, {
+    return new Response(new Uint8Array(cached.data), {
       status: 200,
       headers: {
         'Content-Type': contentType,
