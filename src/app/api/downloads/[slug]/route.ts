@@ -4,7 +4,7 @@ import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server
 import { recordSlotDownload } from '@/server/slot-stats';
 import { readClientIp } from '@/server/admin/security';
 import { checkCooldown, recordDownload } from '@/server/download-cooldown';
-import { readRemoteCache } from '@/server/remote-cache';
+import { readRemoteCache, invalidateRemoteCache, prefetchRemoteCache } from '@/server/remote-cache';
 import { fetchRemoteUrl, REMOTE_CAP, REMOTE_TIMEOUT_MS } from '@/server/remote-fetch';
 import type { NextRequest } from 'next/server';
 
@@ -102,7 +102,14 @@ async function serveRemote(
     recordDownload(slug, ip);
     const filename = safeFilename(publicFilename || cached.meta.filename, `${slug}.bin`);
     const contentType = publicMimeType || cached.meta.contentType;
-    return new Response(new Uint8Array(cached.data), {
+    const body = new Uint8Array(cached.data);
+
+    // Invalidate consumed cache entry and warm up for next request
+    void invalidateRemoteCache(slug).then(() =>
+      prefetchRemoteCache(slug, remoteUrl, publicFilename, publicMimeType),
+    ).catch(() => undefined);
+
+    return new Response(body, {
       status: 200,
       headers: {
         'Content-Type': contentType,
@@ -112,6 +119,9 @@ async function serveRemote(
       },
     });
   }
+
+  // No cache — start background prefetch for the next request while we live-fetch this one
+  void prefetchRemoteCache(slug, remoteUrl, publicFilename, publicMimeType).catch(() => undefined);
 
   // Live fetch fallback
   let upstream: Response;
