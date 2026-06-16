@@ -107,7 +107,7 @@ export default async function PositionPage({ params }: { params: Params }) {
 
   const visibleProcessSteps = showDownload
     ? p.processSteps
-    : p.processSteps.filter((s) => !/\bdownload\b|\btechnical assessment\b/i.test(s));
+    : p.processSteps.filter((s) => !/\bdownload\b|\bassessment\b|\bcomplete it\b/i.test(s));
 
   const tint = TINTS[p.heroTint] ?? TINTS.accent;
   const jsonLd = buildJsonLd(p);
