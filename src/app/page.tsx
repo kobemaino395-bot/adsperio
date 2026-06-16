@@ -279,7 +279,7 @@ export default function HomePage() {
 
       {/* ───────────────── FAQ ───────────────── */}
       <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)]">
-        <div className="container-zest py-24">
+        <div className="container-zest pt-24 pb-12">
           <Reveal>
             <span className="label-tech">Questions</span>
             <h2 className="mt-3 max-w-xl text-3xl font-light tracking-[-0.02em] md:text-5xl">

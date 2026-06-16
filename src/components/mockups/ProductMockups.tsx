@@ -180,9 +180,9 @@ export function ConsolePanel({ className = '' }: { className?: string }) {
 /* ── Full composite: chart + tiles + table + floating toast ───── */
 export function DashboardComposite({ className = '' }: { className?: string }) {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative pb-8 ${className}`}>
       <BrowserFrame>
-        <div className="grid gap-5 p-5 sm:grid-cols-[1.4fr_1fr] sm:p-6">
+        <div className="grid grid-cols-[1.4fr_1fr] gap-5 p-5 sm:p-6">
           {/* main chart card */}
           <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] p-4">
             <div className="flex items-start justify-between">
