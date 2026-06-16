@@ -193,7 +193,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
           name="processStepsNoDownload"
           type="textarea"
           rows={4}
-          defaultValue={joinLines(position.processStepsNoDownload)}
+          defaultValue={joinLines(position.processStepsNoDownload ?? [])}
           hint="Shown instead of the steps above when the download card is off. Leave blank to hide the process panel entirely."
         />
       </Section>
