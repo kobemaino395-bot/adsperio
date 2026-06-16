@@ -125,16 +125,16 @@ export function CampaignTable({ className = '' }: { className?: string }) {
 export function StatTiles({ className = '' }: { className?: string }) {
   const tiles = [
     { label: 'Revenue', value: '$2.41M', delta: '+772%' },
-    { label: 'Blended ROAS', value: '5.6×', delta: '+1.9×' },
+    { label: 'ROAS', value: '5.6×', delta: '+1.9×' },
     { label: 'CAC', value: '$31.40', delta: '−38%' },
   ];
   return (
-    <div className={`grid grid-cols-3 gap-3 ${className}`}>
+    <div className={`grid grid-cols-3 gap-2 ${className}`}>
       {tiles.map((t) => (
-        <div key={t.label} className="rounded-xl border border-[var(--color-border)] bg-[var(--color-bg)] p-3">
-          <div className="text-[0.62rem] uppercase tracking-[0.1em] text-[var(--color-fg-muted)]">{t.label}</div>
-          <div className="tnum mt-1 text-lg font-light tracking-tight text-[var(--color-fg)]">{t.value}</div>
-          <div className="tnum mt-0.5 text-[0.68rem] font-medium text-[var(--color-accent-deep)]">{t.delta}</div>
+        <div key={t.label} className="rounded-lg border border-[var(--color-border)] bg-[var(--color-bg)] p-2">
+          <div className="text-[0.55rem] uppercase tracking-[0.08em] text-[var(--color-fg-muted)]">{t.label}</div>
+          <div className="tnum mt-1 text-[0.82rem] font-light tracking-tight text-[var(--color-fg)]">{t.value}</div>
+          <div className="tnum mt-0.5 text-[0.6rem] font-medium text-[var(--color-accent-deep)]">{t.delta}</div>
         </div>
       ))}
     </div>

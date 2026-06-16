@@ -305,7 +305,7 @@ export default function HomePage() {
       </section>
 
       {/* ───────────────── CTA ───────────────── */}
-      <section className="container-zest pb-28">
+      <section className="container-zest pt-20 pb-28">
         <Reveal>
           <div className="relative overflow-hidden rounded-2xl bg-[var(--color-bg-navy)] px-8 py-20 text-center md:px-16">
             <div aria-hidden className="glow absolute inset-x-0 top-0 h-full opacity-60" />
