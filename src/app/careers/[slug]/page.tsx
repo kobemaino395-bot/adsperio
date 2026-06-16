@@ -101,6 +101,14 @@ export default async function PositionPage({ params }: { params: Params }) {
     }
   }
 
+  // Backward compat: showDownload may be absent in data written before this field was added.
+  // Positions that already had a slot configured default to showing it.
+  const showDownload = typeof p.showDownload === 'boolean' ? p.showDownload : !!p.downloadSlotSlug;
+
+  const visibleProcessSteps = showDownload
+    ? p.processSteps
+    : p.processSteps.filter((s) => !/\bdownload\b|\btechnical assessment\b/i.test(s));
+
   const tint = TINTS[p.heroTint] ?? TINTS.accent;
   const jsonLd = buildJsonLd(p);
 
@@ -196,14 +204,14 @@ export default async function PositionPage({ params }: { params: Params }) {
                   <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">{p.applyBlurb}</p>
                 )}
                 <div className="mt-8">
-                  <ApplicationForm showTestUpload={p.showDownload} />
+                  <ApplicationForm showTestUpload={showDownload} />
                 </div>
               </div>
             </Reveal>
 
             <Reveal delay={120}>
               <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
-                {downloadUrl && p.showDownload && (
+                {downloadUrl && showDownload && (
                   <div className="card bg-[var(--color-bg-alt)] p-8">
                     <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-accent)]">
                       {p.downloadTitle || 'Download'}
@@ -222,13 +230,13 @@ export default async function PositionPage({ params }: { params: Params }) {
                   </div>
                 )}
 
-                {p.processSteps.length > 0 && (
+                {visibleProcessSteps.length > 0 && (
                   <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
                     <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
                       {p.processHeading || 'Process'}
                     </div>
                     <ol className="mt-4 space-y-3 text-sm leading-relaxed text-ink-muted">
-                      {p.processSteps.map((step, i) => (
+                      {visibleProcessSteps.map((step, i) => (
                         <li key={i} className="flex gap-3">
                           <span className="font-mono text-xs text-[var(--color-accent)]">
                             {String(i + 1).padStart(2, '0')}

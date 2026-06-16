@@ -107,7 +107,7 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
       <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
         <h3 className="font-serif text-2xl font-light tracking-[-0.01em]">Thanks — we&apos;ve received your application.</h3>
         <p className="mt-3 text-sm font-light leading-relaxed text-[var(--color-fg-muted)]">
-          We review every submission and your Technical Assessment carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
+          We review every submission{showTestUpload ? ' and your Technical Assessment' : ''} carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
     );
