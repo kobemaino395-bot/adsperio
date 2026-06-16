@@ -40,6 +40,7 @@ const blank: Position = {
   niceToHave: [],
   processHeading: 'Process',
   processSteps: [],
+  processStepsNoDownload: [],
   benefitsHeading: 'What you get',
   benefitsBlurb: '',
   benefits: [],

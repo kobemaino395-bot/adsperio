@@ -34,6 +34,7 @@ export type Position = {
   niceToHave: string[];
   processHeading: string;
   processSteps: string[];
+  processStepsNoDownload: string[];
   benefitsHeading: string;
   benefitsBlurb: string;
   benefits: Benefit[];
@@ -122,6 +123,11 @@ function seed(): Position[] {
         'Download the Technical Assessment from the panel above.',
         'Complete it within 2 days.',
         'Submit the form with your CV and completed assessment.',
+        '30-minute call with the team.',
+        'Offer.',
+      ],
+      processStepsNoDownload: [
+        'Submit the form with your CV.',
         '30-minute call with the team.',
         'Offer.',
       ],
@@ -235,6 +241,7 @@ function emptyPosition(slug: string): Position {
     niceToHave: [],
     processHeading: 'Process',
     processSteps: [],
+    processStepsNoDownload: [],
     benefitsHeading: 'What you get',
     benefitsBlurb: '',
     benefits: [],
@@ -334,6 +341,7 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
     niceToHave: strList(input.niceToHave, 50, 1000),
     processHeading: str(input.processHeading, 200) || base.processHeading,
     processSteps: strList(input.processSteps, 20, 1000),
+    processStepsNoDownload: strList(input.processStepsNoDownload, 20, 1000),
     benefitsHeading: str(input.benefitsHeading, 200) || base.benefitsHeading,
     benefitsBlurb: str(input.benefitsBlurb, 1000),
     benefits: benefits(input.benefits),

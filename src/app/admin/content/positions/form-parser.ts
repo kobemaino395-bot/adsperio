@@ -60,6 +60,7 @@ export function parsePositionForm(form: FormData): Partial<Position> & { slug: s
     niceToHave: lines(String(form.get('niceToHave') ?? '')),
     processHeading: String(form.get('processHeading') ?? ''),
     processSteps: lines(String(form.get('processSteps') ?? '')),
+    processStepsNoDownload: lines(String(form.get('processStepsNoDownload') ?? '')),
     benefitsHeading: String(form.get('benefitsHeading') ?? ''),
     benefitsBlurb: String(form.get('benefitsBlurb') ?? ''),
     benefits: parseBenefits(String(form.get('benefitsGrid') ?? '')),

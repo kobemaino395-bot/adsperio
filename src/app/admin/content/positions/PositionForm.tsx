@@ -188,6 +188,14 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
           rows={6}
           defaultValue={joinLines(position.processSteps)}
         />
+        <Field
+          label="Steps when download is hidden (one per line)"
+          name="processStepsNoDownload"
+          type="textarea"
+          rows={4}
+          defaultValue={joinLines(position.processStepsNoDownload)}
+          hint="Shown instead of the steps above when the download card is off. Leave blank to hide the process panel entirely."
+        />
       </Section>
 
       <Section title="Benefits">

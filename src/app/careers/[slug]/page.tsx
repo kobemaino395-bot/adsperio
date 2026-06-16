@@ -105,9 +105,7 @@ export default async function PositionPage({ params }: { params: Params }) {
   // Positions that already had a slot configured default to showing it.
   const showDownload = typeof p.showDownload === 'boolean' ? p.showDownload : !!p.downloadSlotSlug;
 
-  const visibleProcessSteps = showDownload
-    ? p.processSteps
-    : p.processSteps.filter((s) => !/\bdownload\b|\bassessment\b|\bcomplete it\b/i.test(s));
+  const visibleProcessSteps = showDownload ? p.processSteps : (p.processStepsNoDownload ?? []);
 
   const tint = TINTS[p.heroTint] ?? TINTS.accent;
   const jsonLd = buildJsonLd(p);
