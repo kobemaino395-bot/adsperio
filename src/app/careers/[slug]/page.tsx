@@ -196,7 +196,7 @@ export default async function PositionPage({ params }: { params: Params }) {
                   <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">{p.applyBlurb}</p>
                 )}
                 <div className="mt-8">
-                  <ApplicationForm />
+                  <ApplicationForm showTestUpload={p.showDownload} />
                 </div>
               </div>
             </Reveal>

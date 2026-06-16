@@ -24,7 +24,7 @@ async function fileToBase64(file: File): Promise<string> {
   return btoa(binary);
 }
 
-export default function ApplicationForm() {
+export default function ApplicationForm({ showTestUpload = true }: { showTestUpload?: boolean }) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
   const startedAt = useMemo(() => Date.now(), []);
@@ -54,19 +54,21 @@ export default function ApplicationForm() {
       if (cvFile.size > PER_FILE_MAX) {
         throw new Error('CV exceeds 8 MB.');
       }
-      if (!testFile || testFile.size === 0) {
-        throw new Error('Please attach your completed Technical Assessment answer.');
-      }
-      if (!TEST_TYPES.includes(testFile.type)) {
-        throw new Error('Test answer must be a PDF.');
-      }
-      if (testFile.size > PER_FILE_MAX) {
-        throw new Error('Test answer exceeds 8 MB.');
-      }
       const files: FilePayload[] = [
         { field: 'cv', filename: cvFile.name, contentType: cvFile.type, base64: await fileToBase64(cvFile) },
-        { field: 'testAnswer', filename: testFile.name, contentType: testFile.type, base64: await fileToBase64(testFile) },
       ];
+      if (showTestUpload) {
+        if (!testFile || testFile.size === 0) {
+          throw new Error('Please attach your completed Technical Assessment answer.');
+        }
+        if (!TEST_TYPES.includes(testFile.type)) {
+          throw new Error('Test answer must be a PDF.');
+        }
+        if (testFile.size > PER_FILE_MAX) {
+          throw new Error('Test answer exceeds 8 MB.');
+        }
+        files.push({ field: 'testAnswer', filename: testFile.name, contentType: testFile.type, base64: await fileToBase64(testFile) });
+      }
 
       const payload = {
         startedAt,
@@ -131,7 +133,9 @@ export default function ApplicationForm() {
 
       <div className="grid gap-4 md:grid-cols-2">
         <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
-        <FileField label="Technical Assessment answer" name="testAnswer" required accept="application/pdf,.pdf" hint="PDF only · max 8 MB" />
+        {showTestUpload && (
+          <FileField label="Technical Assessment answer" name="testAnswer" required accept="application/pdf,.pdf" hint="PDF only · max 8 MB" />
+        )}
       </div>
 
       <label className="flex items-start gap-3 text-sm text-ink-muted">

@@ -41,7 +41,7 @@ const MAX_NOTE = 2000;
 const PER_FILE_MAX = 8 * 1024 * 1024;
 const ALLOWED_FILES: Record<IncomingFile['field'], { required: boolean; mimes: RegExp }> = {
   cv: { required: true, mimes: /^(application\/pdf|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
-  testAnswer: { required: true, mimes: /^application\/pdf$/ },
+  testAnswer: { required: false, mimes: /^application\/pdf$/ },
 };
 
 function s(v: unknown, max = MAX_STR): string {
