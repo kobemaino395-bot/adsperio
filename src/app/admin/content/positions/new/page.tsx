@@ -29,6 +29,7 @@ const blank: Position = {
   downloadSlotSlug: '',
   downloadTitle: '',
   downloadBlurb: '',
+  showDownload: false,
   aboutHeading: 'About the role',
   aboutParagraphs: [],
   responsibilitiesHeading: "What you'll do",
