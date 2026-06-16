@@ -29,8 +29,7 @@ export function LogoMark({ size = 24 }: { size?: number }) {
 
 export default function Logo({ className = '', asLink = true }: Props) {
   const inner = (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
-      <LogoMark size={24} />
+    <span className={`inline-flex items-center ${className}`}>
       <span className="text-[1.15rem] font-bold tracking-[-0.02em] text-[var(--color-fg)]">
         GrowthVireX
       </span>
