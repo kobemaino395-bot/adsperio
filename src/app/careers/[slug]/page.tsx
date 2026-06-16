@@ -203,7 +203,7 @@ export default async function PositionPage({ params }: { params: Params }) {
 
             <Reveal delay={120}>
               <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
-                {downloadUrl && (
+                {downloadUrl && p.showDownload && (
                   <div className="card bg-[var(--color-bg-alt)] p-8">
                     <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-accent)]">
                       {p.downloadTitle || 'Download'}

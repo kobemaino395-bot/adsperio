@@ -108,6 +108,18 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
       </Section>
 
       <Section title="Download card (optional)">
+        <label className="flex items-center gap-3 text-sm">
+          <input
+            type="checkbox"
+            name="showDownload"
+            defaultChecked={position.showDownload}
+            className="h-4 w-4"
+          />
+          <span>
+            <span className="font-medium">Show download</span>
+            <span className="ml-2 text-xs text-zinc-500">When checked, the download card is visible on the job page.</span>
+          </span>
+        </label>
         <div className="grid gap-4 md:grid-cols-2">
           <Field
             label="Linked file slot"

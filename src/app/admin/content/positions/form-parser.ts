@@ -49,6 +49,7 @@ export function parsePositionForm(form: FormData): Partial<Position> & { slug: s
     downloadSlotSlug: String(form.get('downloadSlotSlug') ?? ''),
     downloadTitle: String(form.get('downloadTitle') ?? ''),
     downloadBlurb: String(form.get('downloadBlurb') ?? ''),
+    showDownload: form.get('showDownload') === 'on',
     aboutHeading: String(form.get('aboutHeading') ?? ''),
     aboutParagraphs: paragraphs(String(form.get('aboutParagraphs') ?? '')),
     responsibilitiesHeading: String(form.get('responsibilitiesHeading') ?? ''),

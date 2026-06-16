@@ -23,6 +23,7 @@ export type Position = {
   downloadSlotSlug: string;
   downloadTitle: string;
   downloadBlurb: string;
+  showDownload: boolean;
   aboutHeading: string;
   aboutParagraphs: string[];
   responsibilitiesHeading: string;
@@ -76,6 +77,7 @@ function seed(): Position[] {
       applyBlurb:
         'Submissions go straight to the hiring team. We review every one and reply within 5 business days.',
       downloadSlotSlug: 'take-home',
+      showDownload: true,
       downloadTitle: 'Technical Assessment',
       downloadBlurb:
         'Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.',
@@ -222,6 +224,7 @@ function emptyPosition(slug: string): Position {
     downloadSlotSlug: '',
     downloadTitle: '',
     downloadBlurb: '',
+    showDownload: false,
     aboutHeading: 'About the role',
     aboutParagraphs: [''],
     responsibilitiesHeading: "What you'll do",
@@ -320,6 +323,7 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
     downloadSlotSlug: str(input.downloadSlotSlug, 120),
     downloadTitle: str(input.downloadTitle, 200),
     downloadBlurb: str(input.downloadBlurb, 1000),
+    showDownload: !!input.showDownload,
     aboutHeading: str(input.aboutHeading, 200) || base.aboutHeading,
     aboutParagraphs: strList(input.aboutParagraphs, 20, 4000),
     responsibilitiesHeading: str(input.responsibilitiesHeading, 200) || base.responsibilitiesHeading,
