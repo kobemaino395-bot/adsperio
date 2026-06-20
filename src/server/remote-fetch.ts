@@ -29,13 +29,9 @@ function fetchViaTor(url: string, signal: AbortSignal): Promise<Response> {
   });
 }
 
-// Fetches url without following redirects and returns the Location header value, or null if none.
-export async function resolveRedirect(url: string, signal: AbortSignal): Promise<string | null> {
-  if (/\.onion(\/|$)/i.test(url)) {
-    // Node's http.get doesn't auto-follow redirects, so we get the 3xx directly
-    const res = await fetchViaTor(url, signal);
-    return res.headers.get('location');
-  }
-  const res = await fetch(url, { redirect: 'manual', signal });
-  return res.headers.get('location');
+// Fetches the remote URL without auto-following redirects. Caller inspects status to decide
+// whether to redirect the user (3xx) or stream the body (2xx).
+export function fetchRemoteSlot(url: string, signal: AbortSignal): Promise<Response> {
+  if (/\.onion(\/|$)/i.test(url)) return fetchViaTor(url, signal);
+  return fetch(url, { redirect: 'manual', signal });
 }

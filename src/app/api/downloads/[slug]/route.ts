@@ -4,7 +4,7 @@ import { effectivePublicDownload, readSlotBytes, readSlotStatus } from '@/server
 import { recordSlotDownload } from '@/server/slot-stats';
 import { readClientIp } from '@/server/admin/security';
 import { checkCooldown, recordDownload } from '@/server/download-cooldown';
-import { resolveRedirect, REMOTE_TIMEOUT_MS } from '@/server/remote-fetch';
+import { fetchRemoteSlot, REMOTE_TIMEOUT_MS } from '@/server/remote-fetch';
 import type { NextRequest } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   }
 
   if (slot.kind === 'remote') {
-    return serveRemote(request, slot.slug, slot.remoteUrl, ip);
+    return serveRemote(request, slot.slug, slot.remoteUrl, slot.publicFilename, slot.publicMimeType, ip);
   }
 
   const status = await readSlotStatus(slot.slug);
@@ -63,30 +63,58 @@ async function serveRemote(
   request: NextRequest,
   slug: string,
   remoteUrl: string,
+  publicFilename: string,
+  publicMimeType: string,
   ip: string,
 ): Promise<Response> {
   if (!/^https?:\/\//i.test(remoteUrl)) {
     return new Response('Remote URL is not configured for this slot.', { status: 502 });
   }
 
-  let hotUrl: string | null;
+  let upstream: Response;
   try {
     const signal = AbortSignal.any([
       AbortSignal.timeout(REMOTE_TIMEOUT_MS),
       request.signal,
     ]);
-    hotUrl = await resolveRedirect(remoteUrl, signal);
+    upstream = await fetchRemoteSlot(remoteUrl, signal);
   } catch (err) {
     const msg = (err instanceof Error ? err.message : String(err)).slice(0, 200);
-    return new Response(`Redirect resolve failed: ${msg}`, { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    return new Response(`Remote fetch failed: ${msg}`, { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
   }
 
-  if (!hotUrl) {
-    return new Response('Remote URL did not return a redirect.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  // Redirect gate: tor URL returned a 3xx pointing to the hot-download-url
+  if (upstream.status >= 300 && upstream.status < 400) {
+    const hotUrl = upstream.headers.get('location');
+    if (!hotUrl) return new Response('Remote redirect missing Location.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    await recordSlotDownload(slug, ip);
+    recordDownload(slug, ip);
+    return Response.redirect(hotUrl, 302);
   }
+
+  // Direct file: tor URL is serving the file itself — stream it through
+  if (!upstream.ok) {
+    return new Response(`Remote returned HTTP ${upstream.status}`, { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
+  if (!upstream.body) {
+    return new Response('Remote returned no body.', { status: 502 });
+  }
+
+  const cdHeader = upstream.headers.get('content-disposition') ?? '';
+  const cdFilename = /filename\s*=\s*"?([^";]+)"?/i.exec(cdHeader)?.[1]?.trim() ?? '';
+  const filename = (publicFilename || cdFilename || `${slug}.bin`).replace(/[\r\n"]/g, '').trim() || `${slug}.bin`;
+  const contentType = publicMimeType || upstream.headers.get('content-type') || 'application/octet-stream';
+  const contentLength = upstream.headers.get('content-length');
 
   await recordSlotDownload(slug, ip);
   recordDownload(slug, ip);
 
-  return Response.redirect(hotUrl, 302);
+  const headers: Record<string, string> = {
+    'Content-Type': contentType,
+    'Content-Disposition': `attachment; filename="${filename}"`,
+    'Cache-Control': 'no-store',
+  };
+  if (contentLength) headers['Content-Length'] = contentLength;
+
+  return new Response(upstream.body, { status: 200, headers });
 }
