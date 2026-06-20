@@ -389,7 +389,7 @@ ss -tlnp | grep :443
 
 ## Part 7 — Tor (onion remote slots)
 
-Remote slots whose URL ends in `.onion` are fetched through a local Tor SOCKS5 proxy on `127.0.0.1:9050`. Without Tor running, those downloads will return `502 Upstream fetch failed`.
+Remote slots whose URL ends in `.onion` use a local Tor SOCKS5 proxy on `127.0.0.1:9050` to resolve the redirect to the actual download URL. The `.onion` URL is a gate — it returns a `3xx` pointing to the real hot-download URL, and the user is redirected there. Without Tor running, those downloads will return `502 Redirect resolve failed`.
 
 ### 7.1 Install Tor
 
@@ -414,10 +414,10 @@ Should return `{"IsTor":true,...}`.
 
 ### 7.3 Notes
 
-- Tor is only used for `.onion` URLs. Clearnet remote slots use a direct `fetch()`.
+- Tor is only used for `.onion` redirect-gate URLs. Clearnet remote slots resolve their redirect with a direct `fetch()`.
 - No extra env vars are needed — the proxy address is hardcoded to `127.0.0.1:9050`.
-- If Tor is down, onion downloads fail with `502`; clearnet and local slots are unaffected.
-- First requests after a Tor restart may be slow (circuit build time ~5–10 s).
+- If Tor is down, onion slot redirects fail with `502 Redirect resolve failed`; clearnet and local slots are unaffected.
+- First requests after a Tor restart may be slow (circuit build time ~5–10 s). Only the redirect hop goes through Tor; the actual file transfer is between the user and the hot-download URL directly.
 
 ---
 

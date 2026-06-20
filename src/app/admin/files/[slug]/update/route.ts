@@ -2,7 +2,6 @@ import type { NextRequest } from 'next/server';
 import { readSessionFromCookies, verifySessionCsrf } from '@/server/admin/auth';
 import { adminRedirect, audit, readClientIp } from '@/server/admin/security';
 import { updateSlot } from '@/server/slot-registry';
-import { invalidateRemoteCache, prefetchRemoteCache } from '@/server/remote-cache';
 
 export const dynamic = 'force-dynamic';
 
@@ -47,11 +46,6 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
   }
 
   const updated = result.slot;
-  await invalidateRemoteCache(updated.slug);
-  if (updated.kind === 'remote' && updated.remoteUrl) {
-    prefetchRemoteCache(updated.slug, updated.remoteUrl, updated.publicFilename, updated.publicMimeType).catch(() => undefined);
-  }
-
   audit({ kind: 'admin.access', username: session.username, ip, path: `slot.update:${slug}` });
   return adminRedirect(backTo(slug, 'updated=' + encodeURIComponent(slug)));
 }

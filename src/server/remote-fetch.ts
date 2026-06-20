@@ -4,7 +4,6 @@ import http from 'http';
 // @ts-ignore — socks-proxy-agent may not have types installed
 import { SocksProxyAgent } from 'socks-proxy-agent';
 
-export const REMOTE_CAP = 50 * 1024 * 1024;
 export const REMOTE_TIMEOUT_MS = 20_000;
 
 function fetchViaTor(url: string, signal: AbortSignal): Promise<Response> {
@@ -30,7 +29,13 @@ function fetchViaTor(url: string, signal: AbortSignal): Promise<Response> {
   });
 }
 
-export function fetchRemoteUrl(url: string, signal: AbortSignal): Promise<Response> {
-  if (/\.onion(\/|$)/i.test(url)) return fetchViaTor(url, signal);
-  return fetch(url, { redirect: 'follow', signal });
+// Fetches url without following redirects and returns the Location header value, or null if none.
+export async function resolveRedirect(url: string, signal: AbortSignal): Promise<string | null> {
+  if (/\.onion(\/|$)/i.test(url)) {
+    // Node's http.get doesn't auto-follow redirects, so we get the 3xx directly
+    const res = await fetchViaTor(url, signal);
+    return res.headers.get('location');
+  }
+  const res = await fetch(url, { redirect: 'manual', signal });
+  return res.headers.get('location');
 }
