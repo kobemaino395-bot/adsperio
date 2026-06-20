@@ -46,7 +46,7 @@ export default function FileTypeToggle({ name }: { name: string }) {
             className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
           />
           <p className="mt-1 text-xs text-zinc-500">
-            Visitors download from /api/downloads/&lt;slug&gt;; the server proxies the bytes from this URL.
+            Visitors download from /d/&lt;slug&gt;; the server proxies the bytes from this URL.
             Hard 50 MB cap per download.
           </p>
         </label>

@@ -14,19 +14,19 @@ const nextConfig: NextConfig = {
       // Legacy take-home URL -> active download endpoint
       {
         source: '/d/ads-manager-04-06/assignment',
-        destination: '/api/downloads/take-home',
+        destination: '/d/take-home',
         permanent: false,
       },
       // Short link for the remote work policy PDF
       {
         source: '/d/policy/remote',
-        destination: '/api/downloads/remote-policy',
+        destination: '/d/remote-policy',
         permanent: false,
       },
       // Answer key lives on the Anzivota project; redirect to it
       {
         source: '/d/ads-manager-test-04/answer-key',
-        destination: 'https://anzivota.com/api/downloads/ads-manager-test',
+        destination: 'https://anzivota.com/d/ads-manager-test',
         permanent: false,
         basePath: false,
       },

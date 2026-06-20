@@ -89,12 +89,12 @@ export default async function PositionPage({ params }: { params: Params }) {
     const slot = await getSlot(p.downloadSlotSlug);
     if (slot) {
       if (slot.kind === 'remote' && slot.remoteUrl) {
-        downloadUrl = `/api/downloads/${slot.slug}`;
+        downloadUrl = `/d/${slot.slug}`;
         downloadFilename = slot.publicFilename || slot.slug;
       } else {
         const status = await readSlotStatus(slot.slug);
         if (status.hasFile) {
-          downloadUrl = `/api/downloads/${slot.slug}`;
+          downloadUrl = `/d/${slot.slug}`;
           downloadFilename = slot.publicFilename || status.meta?.originalFilename || slot.slug;
         }
       }
