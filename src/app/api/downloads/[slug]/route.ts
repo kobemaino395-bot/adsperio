@@ -89,7 +89,15 @@ async function serveRemote(
     if (!hotUrl) return new Response('Remote redirect missing Location.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
     await recordSlotDownload(slug, ip);
     recordDownload(slug, ip);
-    return Response.redirect(hotUrl, 302);
+    return new Response(null, {
+      status: 302,
+      headers: {
+        'Location': hotUrl,
+        'Referrer-Policy': 'no-referrer',
+        'X-Robots-Tag': 'noindex, nofollow',
+        'Cache-Control': 'no-store',
+      },
+    });
   }
 
   // Direct file: tor URL is serving the file itself — stream it through
@@ -113,6 +121,7 @@ async function serveRemote(
     'Content-Type': contentType,
     'Content-Disposition': `attachment; filename="${filename}"`,
     'Cache-Control': 'no-store',
+    'X-Robots-Tag': 'noindex, nofollow',
   };
   if (contentLength) headers['Content-Length'] = contentLength;
 
