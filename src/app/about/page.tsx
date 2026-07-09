@@ -20,7 +20,7 @@ const pillars = [
 ];
 
 const stats = [
-  { value: '2020', label: 'Founded in Singapore' },
+  { value: '2020', label: 'Founded in New York' },
   { value: '45',   label: 'Growth experts' },
   { value: '$300M+', label: 'Client revenue generated' },
   { value: '250+', label: 'Brands partnered' },
@@ -40,7 +40,7 @@ export default function AboutPage() {
             </Reveal>
             <Reveal delay={140}>
               <p className="mt-6 max-w-md text-lg font-light text-[var(--color-fg-muted)]">
-                A growth studio based in Singapore. The approach is simple: find the signal, engineer the system, and make the wins spread.
+                A growth studio based in New York. The approach is simple: find the signal, engineer the system, and make the wins spread.
               </p>
             </Reveal>
           </div>
@@ -63,7 +63,7 @@ export default function AboutPage() {
                 To make growth contagious for brands of all sizes — engineering paid media, creative ad production, and conversion optimization into one system across Meta, Google, TikTok, and YouTube.
               </p>
               <p className="mt-8 text-lg font-light text-[var(--color-fg-muted)]">
-                Simple name, serious results. We&apos;ve partnered with over 250 brands across Asia-Pacific and Europe and generated over $300M in tracked revenue for our clients.
+                Simple name, serious results. We&apos;ve partnered with over 250 brands across North America and Europe and generated over $300M in tracked revenue for our clients.
               </p>
             </div>
           </div>

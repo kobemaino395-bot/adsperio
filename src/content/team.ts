@@ -11,7 +11,7 @@ export const team: TeamMember[] = [
     slug: 'rachel-tan',
     name: 'Rachel Tan',
     role: 'Founder & Managing Director',
-    bio: 'Built GrowthVireX in 2020 after a decade leading paid media at consumer and SaaS brands across Singapore and Sydney.',
+    bio: 'Built GrowthVireX in 2020 after a decade leading paid media at consumer and SaaS brands across New York and San Francisco.',
     image: '/images/team/rachel-tan.jpg',
   },
   {

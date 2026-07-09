@@ -138,9 +138,9 @@ export default function PrivacyPage() {
             </p>
             <p>
               <strong>{site.name}</strong><br />
-              10 Anson Road, Level 6, Singapore 079903<br />
+              {site.contact.address}<br />
               <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a><br />
-              <a href={`tel:${site.contact.phone.replace(/\s/g, '')}`}>{site.contact.phone}</a>
+              <a href={`tel:${site.contact.phoneHref}`}>{site.contact.phone}</a>
             </p>
           </Prose>
         </div>

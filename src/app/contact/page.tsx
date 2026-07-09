@@ -93,7 +93,7 @@ export default function ContactPage() {
           {/* SIDEBAR */}
           <aside className="space-y-6">
             <ContactCard icon={<Mail size={16} />} label="Email" value={site.contact.email} href={`mailto:${site.contact.email}`} />
-            <ContactCard icon={<Phone size={16} />} label="Phone" value={site.contact.phone} href={`tel:${site.contact.phone.replace(/\s/g, '')}`} />
+            <ContactCard icon={<Phone size={16} />} label="Phone" value={site.contact.phone} href={`tel:${site.contact.phoneHref}`} />
             <ContactCard icon={<MapPin size={16} />} label="Based in" value={site.contact.address} />
 
             <div className="card bg-[var(--color-bg-sunken)] p-8">

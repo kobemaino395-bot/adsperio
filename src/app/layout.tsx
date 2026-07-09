@@ -77,7 +77,8 @@ const organizationSchema = {
   logo: `${site.url}/favicon.svg`,
   description: site.description,
   email: site.contact.email,
-  telephone: site.contact.phone,
+  telephone: site.contact.phoneHref,
+  address: { '@type': 'PostalAddress', ...site.contact.postalAddress },
   sameAs: [site.social.linkedin, site.social.twitter],
 };
 

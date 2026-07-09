@@ -180,10 +180,10 @@ export default function TermsPage() {
 
             <h2>13. Governing law and disputes</h2>
             <p>
-              These Terms are governed by the laws of Singapore, without regard to its conflict of
-              law provisions. Any dispute arising from or relating to these Terms shall be resolved
-              exclusively in the courts of Singapore, and both parties consent to personal
-              jurisdiction in those courts.
+              These Terms are governed by the laws of {site.legal.governingLaw}, without regard to its
+              conflict of law provisions. Any dispute arising from or relating to these Terms shall be
+              resolved exclusively in the state or federal courts located in {site.legal.venue}, and
+              both parties consent to personal jurisdiction in those courts.
             </p>
             <p>
               Before initiating formal proceedings, both parties agree to attempt good-faith
@@ -204,9 +204,9 @@ export default function TermsPage() {
             </p>
             <p>
               <strong>{site.name}</strong><br />
-              10 Anson Road, Level 6, Singapore 079903<br />
+              {site.contact.address}<br />
               <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a><br />
-              <a href={`tel:${site.contact.phone.replace(/\s/g, '')}`}>{site.contact.phone}</a>
+              <a href={`tel:${site.contact.phoneHref}`}>{site.contact.phone}</a>
             </p>
           </Prose>
         </div>

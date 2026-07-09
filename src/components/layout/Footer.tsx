@@ -25,7 +25,7 @@ export default function Footer() {
         <div className="md:col-span-5">
           <Logo />
           <p className="mt-5 max-w-xs text-sm leading-relaxed text-[var(--color-fg-muted)]">
-            {site.tagline} A growth studio for ambitious brands across Asia-Pacific and Europe.
+            {site.tagline} A growth studio for ambitious brands across North America and Europe.
           </p>
           <div className="mt-6 flex gap-2.5">
             <a href={site.social.linkedin} target="_blank" rel="noopener noreferrer" aria-label="LinkedIn" className={iconClass}>
