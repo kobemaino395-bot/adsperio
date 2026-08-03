@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   // Option 3 — anonymous redirect: forward the visitor straight to the external
   // URL without leaking that we referred them.
   if (slot.kind === 'redirect') {
-    return serveRedirect(slot.slug, slot.remoteUrl, ip);
+    return serveNewTabRedirect(slot.slug, slot.remoteUrl, ip);
   }
 
   // Option 2 — proxy: the server downloads the external URL and streams the
@@ -77,6 +77,79 @@ function anonymousRedirect(location: string): Response {
       'Referrer-Policy': 'no-referrer',
       'X-Robots-Tag': 'noindex, nofollow',
       'Cache-Control': 'no-store',
+    },
+  });
+}
+
+async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string): Promise<Response> {
+  if (!/^https?:\/\//i.test(remoteUrl)) {
+    return new Response('Redirect URL is not configured for this slot.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+  }
+  await recordSlotDownload(slug, ip);
+  recordDownload(slug, ip);
+
+  const html = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="referrer" content="no-referrer">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Opening download...</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: #f5f5f5;
+    }
+    .container {
+      text-align: center;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 24px;
+      background: #0070f3;
+      color: white;
+      text-decoration: none;
+      border-radius: 6px;
+      margin-top: 1rem;
+      cursor: pointer;
+      border: none;
+      font-size: 16px;
+    }
+    .btn:hover {
+      background: #0051cc;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Opening your download...</h2>
+    <p>If the download doesn't start automatically, click the button below:</p>
+    <a href="${remoteUrl}" class="btn" target="_blank" rel="noopener noreferrer">Download File</a>
+  </div>
+  <script>
+    // Auto-open in new tab on page load
+    window.addEventListener('load', function() {
+      window.open('${remoteUrl}', '_blank', 'noopener,noreferrer');
+    });
+  </script>
+</body>
+</html>`;
+
+  return new Response(html, {
+    status: 200,
+    headers: {
+      'Content-Type': 'text/html; charset=utf-8',
+      'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex, nofollow',
     },
   });
 }
