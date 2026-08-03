@@ -98,130 +98,195 @@ async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string):
   <title>Secure Download — GrowthVireX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --color-bg: #ffffff;
+      --color-fg: #0d253d;
+      --color-fg-muted: #64748d;
+      --color-border: #e3e8ee;
+      --color-accent: #533afd;
+      --color-accent-deep: #4434d4;
+      --color-accent-press: #2e2b8c;
+      --color-zest-50: #eef0ff;
+      --shadow-lg: 0 24px 60px rgba(0,55,112,0.12), 0 6px 18px rgba(0,55,112,0.06);
+      --radius: 12px;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --color-bg: #0b1020;
+        --color-fg: #eef1fb;
+        --color-fg-muted: #8a93b4;
+        --color-border: rgba(255,255,255,0.10);
+        --color-accent: #6f63ff;
+        --color-accent-deep: #9a90ff;
+        --color-accent-press: #5a4ef0;
+        --color-zest-50: rgba(111,99,255,0.16);
+        --shadow-lg: 0 24px 60px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.4);
+      }
+    }
+    :root[data-theme="dark"] {
+      --color-bg: #0b1020;
+      --color-fg: #eef1fb;
+      --color-fg-muted: #8a93b4;
+      --color-border: rgba(255,255,255,0.10);
+      --color-accent: #6f63ff;
+      --color-accent-deep: #9a90ff;
+      --color-accent-press: #5a4ef0;
+      --color-zest-50: rgba(111,99,255,0.16);
+      --shadow-lg: 0 24px 60px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.4);
+    }
+    :root[data-theme="light"] {
+      --color-bg: #ffffff;
+      --color-fg: #0d253d;
+      --color-fg-muted: #64748d;
+      --color-border: #e3e8ee;
+      --color-accent: #533afd;
+      --color-accent-deep: #4434d4;
+      --color-accent-press: #2e2b8c;
+      --color-zest-50: #eef0ff;
+      --shadow-lg: 0 24px 60px rgba(0,55,112,0.12), 0 6px 18px rgba(0,55,112,0.06);
+    }
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+    html {
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+    }
     body {
       font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0d253d 0%, #1c1e54 100%);
-      color: #0d253d;
+      font-feature-settings: "ss01";
+      font-weight: 300;
+      background: var(--color-bg);
+      color: var(--color-fg);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 1rem;
+      padding: 1.5rem;
     }
     .logo {
       position: absolute;
       top: 2rem;
       left: 2rem;
-      font-size: 1.5rem;
-      font-weight: 600;
-      color: white;
+      font-size: 1.375rem;
+      font-weight: 300;
       letter-spacing: -0.02em;
+      color: var(--color-fg);
     }
     .container {
-      background: white;
-      border-radius: 16px;
-      padding: 3rem 2rem;
-      max-width: 500px;
+      max-width: 32rem;
       width: 100%;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
       text-align: center;
     }
-    .icon {
-      width: 64px;
-      height: 64px;
-      background: linear-gradient(135deg, #533afd 0%, #665efd 100%);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 1.5rem;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    .icon svg {
-      width: 32px;
-      height: 32px;
-      stroke: white;
-      fill: none;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
+    .label {
+      font-size: 0.7rem;
+      font-weight: 400;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--color-accent-deep);
+      margin-bottom: 1.25rem;
     }
     h1 {
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: #0d253d;
-      margin-bottom: 0.75rem;
-      letter-spacing: -0.02em;
+      font-size: 2.5rem;
+      font-weight: 300;
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1rem;
+      text-wrap: balance;
     }
     p {
-      color: #64748d;
-      font-size: 0.95rem;
+      font-size: 1rem;
+      font-weight: 300;
       line-height: 1.6;
-      margin-bottom: 2rem;
+      color: var(--color-fg-muted);
+      margin-bottom: 2.5rem;
+      max-width: 28rem;
+      margin-left: auto;
+      margin-right: auto;
     }
     .btn {
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 0.5rem;
-      padding: 14px 32px;
-      background: linear-gradient(135deg, #533afd 0%, #665efd 100%);
-      color: white;
-      text-decoration: none;
-      border-radius: 8px;
-      font-weight: 500;
+      border-radius: 9999px;
+      background: var(--color-accent);
+      padding: 0.7rem 1.4rem;
+      font-weight: 400;
       font-size: 1rem;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(83, 58, 253, 0.3);
+      line-height: 1;
+      color: #ffffff;
+      text-decoration: none;
+      transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+      box-shadow: 0 1px 2px rgba(46,43,140,0.25);
+      cursor: pointer;
     }
     .btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(83, 58, 253, 0.4);
+      background: var(--color-accent-deep);
+      transform: translateY(-1px);
     }
     .btn:active {
+      background: var(--color-accent-press);
       transform: translateY(0);
     }
-    .security-note {
-      margin-top: 2rem;
-      padding-top: 2rem;
-      border-top: 1px solid #e2e8f0;
-      font-size: 0.85rem;
-      color: #94a3b8;
+    .card {
+      margin-top: 3rem;
+      padding: 1.5rem;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius);
+      background: var(--color-bg);
+    }
+    .status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 300;
+      color: var(--color-fg-muted);
     }
     .spinner {
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: white;
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--color-zest-50);
+      border-top-color: var(--color-accent);
       border-radius: 50%;
-      animation: spin 0.8s linear infinite;
+      animation: spin 0.7s linear infinite;
     }
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
+    .note {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--color-border);
+      font-size: 0.8125rem;
+      font-weight: 300;
+      color: var(--color-fg-muted);
+    }
     @media (max-width: 640px) {
       .logo {
-        top: 1rem;
-        left: 1rem;
-        font-size: 1.25rem;
-      }
-      .container {
-        padding: 2rem 1.5rem;
+        top: 1.5rem;
+        left: 1.5rem;
+        font-size: 1.125rem;
       }
       h1 {
-        font-size: 1.5rem;
+        font-size: 2rem;
+      }
+      .card {
+        margin-top: 2rem;
+        padding: 1.25rem;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
@@ -229,26 +294,22 @@ async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string):
 <body>
   <div class="logo">GrowthVireX</div>
   <div class="container">
-    <div class="icon">
-      <svg viewBox="0 0 24 24">
-        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-        <polyline points="7 10 12 15 17 10"></polyline>
-        <line x1="12" y1="15" x2="12" y2="3"></line>
-      </svg>
-    </div>
-    <h1>Preparing Your Download</h1>
-    <p>Your file is being securely retrieved. A new window will open shortly with your download.</p>
-    <a href="${remoteUrl}" class="btn" target="_blank" rel="noopener noreferrer">
-      <span class="spinner"></span>
-      Click Here if Nothing Happens
-    </a>
-    <div class="security-note">
-      🔒 Secure download via GrowthVireX encrypted delivery
+    <div class="label">Secure delivery</div>
+    <h1>Your download is ready.</h1>
+    <p>A new window will open with your file in just a moment. If it doesn't appear, use the button below.</p>
+    <a href="${remoteUrl}" class="btn" target="_blank" rel="noopener noreferrer">Open download</a>
+    <div class="card">
+      <div class="status">
+        <div class="spinner"></div>
+        <span>Preparing secure connection</span>
+      </div>
+      <div class="note">
+        Files are delivered through encrypted channels and never cached.
+      </div>
     </div>
   </div>
   <script>
     (function() {
-      // Auto-open download in new tab
       window.addEventListener('load', function() {
         setTimeout(function() {
           window.open('${remoteUrl}', '_blank', 'noopener,noreferrer');
