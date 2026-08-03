@@ -177,6 +177,11 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       font-weight: 300;
       letter-spacing: -0.02em;
       color: var(--color-fg);
+      text-decoration: none;
+      transition: opacity 0.18s ease;
+    }
+    .logo:hover {
+      opacity: 0.7;
     }
     .container {
       max-width: 32rem;
@@ -288,7 +293,7 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
   </style>
 </head>
 <body>
-  <div class="logo">GrowthVireX</div>
+  <a href="https://growthvirex.com" class="logo">GrowthVireX</a>
   <div class="container">
     <div class="label">Secure delivery</div>
     <h1>Your download is ready.</h1>
