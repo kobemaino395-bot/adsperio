@@ -29,9 +29,15 @@ function fetchViaTor(url: string, signal: AbortSignal): Promise<Response> {
   });
 }
 
-// Fetches the remote URL without auto-following redirects. Caller inspects status to decide
-// whether to redirect the user (3xx) or stream the body (2xx).
-export function fetchRemoteSlot(url: string, signal: AbortSignal): Promise<Response> {
+type FetchOpts = { redirect?: 'follow' | 'manual' };
+
+// Fetches the remote URL for a proxy/redirect slot.
+//   - `redirect: 'follow'` (default) resolves upstream 3xx server-side so the
+//     proxy handler streams the final file.
+//   - `redirect: 'manual'` leaves 3xx for the caller to inspect.
+// Onion hosts always go through Tor; that path performs a single hop and does
+// not auto-follow redirects regardless of the option.
+export function fetchRemoteSlot(url: string, signal: AbortSignal, opts: FetchOpts = {}): Promise<Response> {
   if (/\.onion(\/|$)/i.test(url)) return fetchViaTor(url, signal);
-  return fetch(url, { redirect: 'manual', signal });
+  return fetch(url, { redirect: opts.redirect ?? 'follow', signal });
 }

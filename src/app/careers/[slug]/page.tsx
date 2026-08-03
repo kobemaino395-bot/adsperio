@@ -5,7 +5,7 @@ import Reveal from '@/components/ui/Reveal';
 import ApplicationForm from '@/components/ApplicationForm';
 import DownloadButton from '@/components/DownloadButton';
 import { getPosition, listPositions, type Position } from '@/server/content/positions';
-import { getSlot } from '@/server/slot-registry';
+import { getSlot, isRemoteKind } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { site } from '@/content/site';
 
@@ -85,13 +85,17 @@ export default async function PositionPage({ params }: { params: Params }) {
 
   let downloadUrl = '';
   let downloadFilename = '';
+  // Redirect slots forward the browser cross-origin, so they need a plain
+  // navigation rather than the fetch-into-a-blob download flow.
+  let downloadDirect = false;
   if (p.downloadSlotSlug) {
     const slot = await getSlot(p.downloadSlotSlug);
     if (slot) {
-      if (slot.kind === 'remote' && slot.remoteUrl) {
+      if (isRemoteKind(slot.kind) && slot.remoteUrl) {
         downloadUrl = `/d/${slot.slug}`;
         downloadFilename = slot.publicFilename || slot.slug;
-      } else {
+        downloadDirect = slot.kind === 'redirect';
+      } else if (slot.kind === 'local') {
         const status = await readSlotStatus(slot.slug);
         if (status.hasFile) {
           downloadUrl = `/d/${slot.slug}`;
@@ -219,6 +223,7 @@ export default async function PositionPage({ params }: { params: Params }) {
                     )}
                     <DownloadButton
                       href={downloadUrl}
+                      direct={downloadDirect}
                       className="mt-6 flex items-center justify-between gap-2 rounded-full border border-[var(--color-border)] px-5 py-3 text-sm font-medium transition hover:bg-[var(--color-bg-alt)]"
                       messageClassName="mt-2 text-xs text-[var(--color-fg-muted)]"
                     >

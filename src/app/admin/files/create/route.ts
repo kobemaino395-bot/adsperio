@@ -23,13 +23,14 @@ export async function POST(request: NextRequest): Promise<Response> {
     return adminRedirect('/admin/files?error=' + encodeURIComponent('CSRF check failed'));
   }
 
+  const kindRaw = String(form.get('kind') ?? 'local');
   const result = await createSlot({
     slug: String(form.get('slug') ?? ''),
     title: String(form.get('title') ?? ''),
     description: String(form.get('description') ?? ''),
     publicFilename: String(form.get('publicFilename') ?? ''),
     publicMimeType: String(form.get('publicMimeType') ?? ''),
-    kind: form.get('kind') === 'remote' ? 'remote' : 'local',
+    kind: kindRaw === 'proxy' ? 'proxy' : kindRaw === 'redirect' ? 'redirect' : 'local',
     remoteUrl: String(form.get('remoteUrl') ?? ''),
   });
 

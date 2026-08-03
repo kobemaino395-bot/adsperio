@@ -9,6 +9,10 @@ type Props = {
   /** When set, the wait/error message inherits these classes so it can be
    *  themed to match the surrounding card. Defaults to a quiet zinc tone. */
   messageClassName?: string;
+  /** Render a plain link with no fetch interception. Required for slots that
+   *  302-redirect the browser to an external origin — the fetch-into-a-blob
+   *  flow can't follow a cross-origin redirect. */
+  direct?: boolean;
 };
 
 function parseFilename(cd: string | null): string | null {
@@ -25,7 +29,7 @@ function parseFilename(cd: string | null): string | null {
   return plain ? plain[1]!.trim() : null;
 }
 
-export default function DownloadButton({ href, className, children, messageClassName }: Props) {
+export default function DownloadButton({ href, className, children, messageClassName, direct }: Props) {
   const [waitSec, setWaitSec] = useState<number | null>(null);
   const [errMsg, setErrMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -53,6 +57,9 @@ export default function DownloadButton({ href, className, children, messageClass
   }
 
   async function handleClick(e: React.MouseEvent<HTMLAnchorElement>) {
+    // Direct slots (e.g. anonymous redirects) rely on a normal top-level
+    // navigation so the browser can follow the cross-origin 302.
+    if (direct) return;
     // Preserve modifier-clicks (open in new tab etc.) — let the browser handle them.
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
     e.preventDefault();

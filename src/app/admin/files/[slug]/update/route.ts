@@ -37,7 +37,14 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
     description: String(form.get('description') ?? ''),
     publicFilename: String(form.get('publicFilename') ?? ''),
     publicMimeType: String(form.get('publicMimeType') ?? ''),
-    kind: kindRaw === 'remote' ? 'remote' : kindRaw === 'local' ? 'local' : undefined,
+    kind:
+      kindRaw === 'proxy'
+        ? 'proxy'
+        : kindRaw === 'redirect'
+          ? 'redirect'
+          : kindRaw === 'local'
+            ? 'local'
+            : undefined,
     remoteUrl: form.get('remoteUrl') !== null ? String(form.get('remoteUrl') ?? '') : undefined,
   });
 

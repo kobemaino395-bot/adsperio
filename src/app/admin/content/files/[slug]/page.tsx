@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
-import { getSlot } from '@/server/slot-registry';
+import { getSlot, isRemoteKind } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../../ContentTabs';
@@ -42,8 +42,10 @@ export default async function FileDetailPage({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-semibold tracking-tight">{esc(slot.title)}</h1>
-            {slot.kind === 'remote' ? (
-              <span className="rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Remote</span>
+            {slot.kind === 'proxy' ? (
+              <span className="rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Proxy</span>
+            ) : slot.kind === 'redirect' ? (
+              <span className="rounded-full bg-purple-100 px-2 py-px text-xs text-purple-700">Redirect</span>
             ) : (
               <span className="rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
             )}
@@ -81,19 +83,19 @@ export default async function FileDetailPage({
         <section className="rounded-lg border border-zinc-200 bg-white p-5">
           <h2 className="text-sm font-semibold tracking-tight">Status</h2>
           <dl className="mt-3 space-y-1 text-sm">
-            {slot.kind === 'remote' ? (
+            {isRemoteKind(slot.kind) ? (
               <>
                 <Row
                   k="Status"
                   v={
                     slot.remoteUrl
                       ? <span className="text-green-700">Configured</span>
-                      : <span className="text-amber-700">No remote URL set</span>
+                      : <span className="text-amber-700">No {slot.kind === 'redirect' ? 'redirect' : 'remote'} URL set</span>
                   }
                 />
                 {slot.remoteUrl && (
                   <Row
-                    k="Remote URL"
+                    k={slot.kind === 'redirect' ? 'Redirect URL' : 'Remote URL'}
                     v={
                       <a href={slot.remoteUrl} target="_blank" rel="noopener noreferrer" className="break-all font-mono text-xs text-blue-600 hover:underline">
                         {esc(slot.remoteUrl)}
@@ -152,7 +154,7 @@ export default async function FileDetailPage({
                 Download (admin) →
               </a>
             )}
-            {(slot.kind === 'remote' ? !!slot.remoteUrl : status.hasFile) && (
+            {(isRemoteKind(slot.kind) ? !!slot.remoteUrl : status.hasFile) && (
               <a href={`/d/${slot.slug}`} className="text-blue-600 hover:underline">
                 Public link →
               </a>
@@ -160,13 +162,15 @@ export default async function FileDetailPage({
           </div>
         </section>
 
-        {slot.kind === 'remote' ? (
+        {isRemoteKind(slot.kind) ? (
           <section className="rounded-lg border border-zinc-200 bg-white p-5">
-            <h2 className="text-sm font-semibold tracking-tight">Edit remote URL</h2>
+            <h2 className="text-sm font-semibold tracking-tight">
+              {slot.kind === 'redirect' ? 'Edit redirect URL' : 'Edit remote URL'}
+            </h2>
             <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-3 space-y-3">
               <input type="hidden" name="_csrf" value={session.csrf} />
               <input type="hidden" name="title" value={slot.title} />
-              <input type="hidden" name="kind" value="remote" />
+              <input type="hidden" name="kind" value={slot.kind} />
               <input
                 type="text"
                 name="remoteUrl"
@@ -182,7 +186,9 @@ export default async function FileDetailPage({
                 Save URL
               </button>
               <p className="text-xs text-zinc-500">
-                Visitors get bytes streamed from this URL on every request. Hard 50 MB cap per download.
+                {slot.kind === 'redirect'
+                  ? 'Visitors are 302-redirected here with no referrer, so the destination never learns our site sent them.'
+                  : `Visitors get bytes streamed from this URL on every request. Hard ${(slot.maxBytes / (1024 * 1024)).toFixed(0)} MB cap per download.`}
               </p>
             </form>
           </section>

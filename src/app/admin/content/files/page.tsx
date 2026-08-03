@@ -3,7 +3,7 @@ import { headers } from 'next/headers';
 import Link from 'next/link';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
-import { DEFAULT_MAX_BYTES, listSlots } from '@/server/slot-registry';
+import { DEFAULT_MAX_BYTES, isRemoteKind, listSlots, type SlotKind } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import ContentTabs from '../ContentTabs';
@@ -152,14 +152,10 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                     </td>
                     <td className="px-5 py-3 font-mono text-xs text-zinc-600">{esc(s.slug)}</td>
                     <td className="px-5 py-3">
-                      {s.kind === 'remote' ? (
-                        <span className="inline-block rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Remote</span>
-                      ) : (
-                        <span className="inline-block rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
-                      )}
+                      <KindBadge kind={s.kind} />
                     </td>
                     <td className="px-5 py-3">
-                      {s.kind === 'remote' ? (
+                      {isRemoteKind(s.kind) ? (
                         s.remoteUrl ? (
                           <span className="inline-block rounded-full bg-green-100 px-2 py-px text-xs text-green-700">Configured</span>
                         ) : (
@@ -172,12 +168,12 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                       )}
                     </td>
                     <td className="px-5 py-3 text-xs text-zinc-600">
-                      {s.kind === 'remote'
+                      {isRemoteKind(s.kind)
                         ? '—'
                         : status.hasFile ? `${(status.size / 1024).toFixed(1)} KB` : '—'}
                     </td>
                     <td className="px-5 py-3 text-xs text-zinc-500">
-                      {s.kind === 'remote'
+                      {isRemoteKind(s.kind)
                         ? '—'
                         : status.hasFile ? new Date(status.mtimeMs).toLocaleString() : '—'}
                     </td>
@@ -210,4 +206,15 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
       </section>
     </div>
   );
+}
+
+const KIND_BADGE: Record<SlotKind, { label: string; className: string }> = {
+  local: { label: 'Local', className: 'bg-zinc-100 text-zinc-700' },
+  proxy: { label: 'Proxy', className: 'bg-blue-100 text-blue-700' },
+  redirect: { label: 'Redirect', className: 'bg-purple-100 text-purple-700' },
+};
+
+function KindBadge({ kind }: { kind: SlotKind }) {
+  const b = KIND_BADGE[kind] ?? KIND_BADGE.local;
+  return <span className={`inline-block rounded-full px-2 py-px text-xs ${b.className}`}>{b.label}</span>;
 }

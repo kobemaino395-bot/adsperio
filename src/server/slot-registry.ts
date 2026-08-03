@@ -7,7 +7,24 @@ import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-
 
 export const DEFAULT_MAX_BYTES = 100 * 1024 * 1024;
 
-export type SlotKind = 'local' | 'remote';
+/**
+ * How a slot serves its download:
+ * - `local`    — bytes stored on server disk, streamed as an attachment.
+ * - `proxy`    — server fetches `remoteUrl` on every request and streams the
+ *                bytes back, so the visitor never sees the upstream URL.
+ * - `redirect` — server 302s the visitor straight to `remoteUrl`, anonymously
+ *                (no `Referer`, no indexing) so the destination can't tell we
+ *                sent them.
+ *
+ * `remote` is a legacy value (pre-split) kept only so old registries can be
+ * migrated to `proxy` — see `normalizeKind`.
+ */
+export type SlotKind = 'local' | 'proxy' | 'redirect';
+
+/** Kinds that resolve their bytes/target from `remoteUrl` rather than disk. */
+export function isRemoteKind(kind: SlotKind): boolean {
+  return kind === 'proxy' || kind === 'redirect';
+}
 
 export type SlotRecord = {
   slug: string;
@@ -93,9 +110,11 @@ async function load(): Promise<SlotRecord[]> {
         rec.isBuiltin = shouldBeBuiltin;
         modified = true;
       }
-      // Backfill kind/remoteUrl for legacy registries
-      if (rec.kind !== 'local' && rec.kind !== 'remote') {
-        rec.kind = 'local';
+      // Backfill/normalize kind for legacy registries (maps `remote` → `proxy`
+      // and any unknown value → `local`).
+      const normKind = normalizeKind(rec.kind);
+      if (rec.kind !== normKind) {
+        rec.kind = normKind;
         modified = true;
       }
       if (typeof rec.remoteUrl !== 'string') {
@@ -152,7 +171,10 @@ export type CreateSlotInput = {
 };
 
 function normalizeKind(v: unknown): SlotKind {
-  return v === 'remote' ? 'remote' : 'local';
+  if (v === 'proxy' || v === 'redirect') return v;
+  // Legacy registries stored the proxy behaviour under the name `remote`.
+  if (v === 'remote') return 'proxy';
+  return 'local';
 }
 
 function normalizeRemoteUrl(v: unknown): { ok: true; value: string } | { ok: false; reason: string } {
@@ -180,8 +202,8 @@ export async function createSlot(input: CreateSlotInput): Promise<{ ok: true; sl
   const kind = normalizeKind(input.kind);
   const url = normalizeRemoteUrl(input.remoteUrl);
   if (!url.ok) return { ok: false, reason: url.reason };
-  if (kind === 'remote' && !url.value) {
-    return { ok: false, reason: 'Remote URL is required for remote slots' };
+  if (isRemoteKind(kind) && !url.value) {
+    return { ok: false, reason: 'Remote URL is required for proxy and redirect slots' };
   }
 
   const rec: SlotRecord = {
@@ -230,8 +252,8 @@ export async function updateSlot(
     if (!url.ok) return { ok: false, reason: url.reason };
     nextRemoteUrl = url.value;
   }
-  if (nextKind === 'remote' && !nextRemoteUrl) {
-    return { ok: false, reason: 'Remote URL is required for remote slots' };
+  if (isRemoteKind(nextKind) && !nextRemoteUrl) {
+    return { ok: false, reason: 'Remote URL is required for proxy and redirect slots' };
   }
 
   const next: SlotRecord = {
