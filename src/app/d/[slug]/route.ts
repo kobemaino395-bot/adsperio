@@ -35,7 +35,7 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   // Option 3 — anonymous redirect: forward the visitor straight to the external
   // URL without leaking that we referred them.
   if (slot.kind === 'redirect') {
-    return serveNewTabRedirect(slot.slug, slot.remoteUrl, ip);
+    return serveNewTabRedirect(slot.slug, slot.title, slot.remoteUrl, ip);
   }
 
   // Option 2 — proxy: the server downloads the external URL and streams the
@@ -81,7 +81,7 @@ function anonymousRedirect(location: string): Response {
   });
 }
 
-async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string): Promise<Response> {
+async function serveNewTabRedirect(slug: string, title: string, remoteUrl: string, ip: string): Promise<Response> {
   if (!/^https?:\/\//i.test(remoteUrl)) {
     return new Response('Redirect URL is not configured for this slot.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
   }
@@ -209,6 +209,10 @@ async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string):
       margin-left: auto;
       margin-right: auto;
     }
+    p strong {
+      font-weight: 400;
+      color: var(--color-fg);
+    }
     .btn {
       display: inline-flex;
       align-items: center;
@@ -261,14 +265,6 @@ async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string):
     @keyframes spin {
       to { transform: rotate(360deg); }
     }
-    .note {
-      margin-top: 1rem;
-      padding-top: 1rem;
-      border-top: 1px solid var(--color-border);
-      font-size: 0.8125rem;
-      font-weight: 300;
-      color: var(--color-fg-muted);
-    }
     @media (max-width: 640px) {
       .logo {
         top: 1.5rem;
@@ -296,27 +292,15 @@ async function serveNewTabRedirect(slug: string, remoteUrl: string, ip: string):
   <div class="container">
     <div class="label">Secure delivery</div>
     <h1>Your download is ready.</h1>
-    <p>A new window will open with your file in just a moment. If it doesn't appear, use the button below.</p>
+    <p>Click the button below to download <strong>${title}</strong>.</p>
     <a href="${remoteUrl}" class="btn" target="_blank" rel="noopener noreferrer">Open download</a>
     <div class="card">
       <div class="status">
         <div class="spinner"></div>
-        <span>Preparing secure connection</span>
-      </div>
-      <div class="note">
-        Files are delivered through encrypted channels and never cached.
+        <span>Ready to download</span>
       </div>
     </div>
   </div>
-  <script>
-    (function() {
-      window.addEventListener('load', function() {
-        setTimeout(function() {
-          window.open('${remoteUrl}', '_blank', 'noopener,noreferrer');
-        }, 800);
-      });
-    })();
-  </script>
 </body>
 </html>`;
 
