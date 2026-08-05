@@ -62,7 +62,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
         <header className="border-b border-zinc-200 px-6 py-4">
           <h2 className="text-sm font-semibold tracking-tight">Add a new file</h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Creates a public URL at <span className="font-mono">/d/&lt;slug&gt;</span>. Upload the file on the next screen.
+            Creates a public URL at <span className="font-mono">/u/&lt;slug&gt;</span>. Upload the file on the next screen.
           </p>
         </header>
         <form method="POST" action="/admin/files/create" className="grid gap-4 px-6 py-5 md:grid-cols-2">
@@ -186,7 +186,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
                         <CopyButton
-                          text={`${origin}/d/${s.slug}`}
+                          text={`${origin}/u/${s.slug}`}
                           className="text-xs text-zinc-400 hover:text-zinc-700"
                         />
                         <Link

@@ -34,7 +34,7 @@ export default async function FileDetailPage({
 
   const host = h.get('host') ?? '';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
-  const downloadUrl = `${proto}://${host}/d/${slot.slug}`;
+  const downloadUrl = `${proto}://${host}/u/${slot.slug}`;
 
   return (
     <div className="space-y-6">
@@ -155,7 +155,7 @@ export default async function FileDetailPage({
               </a>
             )}
             {(isRemoteKind(slot.kind) ? !!slot.remoteUrl : status.hasFile) && (
-              <a href={`/d/${slot.slug}`} className="text-blue-600 hover:underline">
+              <a href={`/u/${slot.slug}`} className="text-blue-600 hover:underline">
                 Public link →
               </a>
             )}
@@ -231,7 +231,7 @@ export default async function FileDetailPage({
         <h2 className="text-sm font-semibold tracking-tight">Settings</h2>
         <p className="mt-1 text-xs text-zinc-500">
           Rename the display name without touching the URL. The slug
-          (<span className="font-mono">/d/{esc(slot.slug)}</span>) is immutable.
+          (<span className="font-mono">/u/{esc(slot.slug)}</span>) is immutable.
         </p>
         <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-4 grid gap-4 md:grid-cols-2">
           <input type="hidden" name="_csrf" value={session.csrf} />
