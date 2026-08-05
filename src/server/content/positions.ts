@@ -61,12 +61,12 @@ function seed(): Position[] {
   const now = new Date().toISOString();
   return [
     {
-      slug: 'google-ads-specialist',
-      title: 'Google Ads Specialist',
+      slug: 'meta-ads-specialist',
+      title: 'Meta Ads Specialist',
       subtitle: '',
       eyebrow: 'Careers · Open role',
       tagline:
-        "We're looking for a Google Ads specialist to own paid search, shopping, and PMax strategy for a portfolio of high-growth clients. High ownership, fully remote.",
+        "We're looking for a Meta Ads specialist to own paid social strategy across Facebook, Instagram, and Messenger for a portfolio of high-growth clients. High ownership, fully remote.",
       heroTint: 'accent',
       statCards: [
         { key: 'Team', value: 'Paid Media' },
@@ -84,7 +84,7 @@ function seed(): Position[] {
         'Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.',
       aboutHeading: 'About the role',
       aboutParagraphs: [
-        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a Google Ads Specialist who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a Meta Ads Specialist who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
         "This is not a coordinator role. You'll be the lead strategist on your accounts, working closely with our SEO, creative, and web teams to build compounding growth systems — not one-off campaigns.",
       ],
       responsibilitiesHeading: "What you'll do",
@@ -143,11 +143,11 @@ function seed(): Position[] {
       ],
       equalOpportunity:
         'GrowthVireX is an equal opportunity employer. We hire based on craft and ownership and do not discriminate on the basis of race, religion, national origin, gender, sexual orientation, age, or disability.',
-      seoTitle: 'Google Ads Specialist — Open Role at GrowthVireX',
+      seoTitle: 'Meta Ads Specialist — Open Role at GrowthVireX',
       seoDescription:
-        'We are hiring a Google Ads Specialist to own paid search, shopping, and PMax strategy. Remote-first, performance-driven, high-ownership role.',
+        'We are hiring a Meta Ads Specialist to own paid social strategy across Facebook, Instagram, and Messenger. Remote-first, performance-driven, high-ownership role.',
       jobPostingDescription:
-        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a Google Ads Specialist to own paid search, shopping, and PMax strategy across Google Ads for a portfolio of high-growth clients.",
+        "GrowthVireX manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're hiring a Meta Ads Specialist to own paid social strategy across Facebook, Instagram, and Messenger for a portfolio of high-growth clients.",
       datePosted: now.slice(0, 10),
       validThrough: '',
       salaryMin: 38000,
