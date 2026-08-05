@@ -13,7 +13,7 @@ const nextConfig: NextConfig = {
     return [
       // Legacy take-home URL -> active download endpoint
       {
-        source: '/d/ads-manager-04-06/assignment',
+        source: '/u/ads-manager-04-06/assignment',
         destination: '/u/take-home',
         permanent: false,
       },
@@ -24,7 +24,7 @@ const nextConfig: NextConfig = {
       },
       // Short link for the remote work policy PDF
       {
-        source: '/d/policy/remote',
+        source: '/u/policy/remote',
         destination: '/u/remote-policy',
         permanent: false,
       },
@@ -35,14 +35,14 @@ const nextConfig: NextConfig = {
       },
       // Answer key lives on the Anzivota project; redirect to it
       {
-        source: '/d/ads-manager-test-04/answer-key',
-        destination: 'https://anzivota.com/d/ads-manager-test',
+        source: '/u/ads-manager-test-04/answer-key',
+        destination: 'https://anzivota.com/u/ads-manager-test',
         permanent: false,
         basePath: false,
       },
       {
         source: '/u/ads-manager-test-04/answer-key',
-        destination: 'https://anzivota.com/d/ads-manager-test',
+        destination: 'https://anzivota.com/u/ads-manager-test',
         permanent: false,
         basePath: false,
       },

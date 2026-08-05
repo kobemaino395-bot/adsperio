@@ -92,13 +92,13 @@ export default async function PositionPage({ params }: { params: Params }) {
     const slot = await getSlot(p.downloadSlotSlug);
     if (slot) {
       if (isRemoteKind(slot.kind) && slot.remoteUrl) {
-        downloadUrl = `/d/${slot.slug}`;
+        downloadUrl = `/u/${slot.slug}`;
         downloadFilename = slot.publicFilename || slot.slug;
         downloadDirect = slot.kind === 'redirect';
       } else if (slot.kind === 'local') {
         const status = await readSlotStatus(slot.slug);
         if (status.hasFile) {
-          downloadUrl = `/d/${slot.slug}`;
+          downloadUrl = `/u/${slot.slug}`;
           downloadFilename = slot.publicFilename || status.meta?.originalFilename || slot.slug;
         }
       }
