@@ -6,7 +6,7 @@ This system implements secure, one-time-use download URLs for file downloads.
 
 ### User Flow
 
-1. User receives a permanent download link: `/u/abc-def`
+1. User receives a permanent download link: `/k/abc-def`
 2. When accessed, the system:
    - Generates a unique one-time token (e.g., `xJ4kL9mN2pQ5rT8v`)
    - Redirects to `/dt/xJ4kL9mN2pQ5rT8v`
@@ -32,7 +32,7 @@ This system implements secure, one-time-use download URLs for file downloads.
    - In-memory caching for performance
 
 2. **Routes**
-   - `/u/[slug]` - Permanent link that generates tokens
+   - `/k/[slug]` - Permanent link that generates tokens
    - `/dt/[token]` - One-time download endpoint
    - `/api/download-token` - API to generate tokens programmatically
 
@@ -150,6 +150,6 @@ curl https://yoursite.com/api/cleanup-tokens
 ## Migration Notes
 
 This change is backward compatible:
-- Old `/u/[slug]` URLs still work, they just redirect through a token
+- Old `/k/[slug]` URLs still work, they just redirect through a token
 - Existing downloads are unaffected
 - No database migration needed

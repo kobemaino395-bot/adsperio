@@ -48,13 +48,13 @@ export default function FileTypeToggle({ name }: { name: string }) {
           <p className="mt-1 text-xs text-zinc-500">
             {kind === 'proxy' ? (
               <>
-                Visitors download from /u/&lt;slug&gt;; the server fetches this URL and streams the
+                Visitors download from /k/&lt;slug&gt;; the server fetches this URL and streams the
                 bytes back, so the source URL never appears in the browser. Downloads over the size
                 limit are refused.
               </>
             ) : (
               <>
-                Visitors hitting /u/&lt;slug&gt; are 302-redirected here with no referrer, so the
+                Visitors hitting /k/&lt;slug&gt; are 302-redirected here with no referrer, so the
                 destination can&rsquo;t see that our site sent them.
               </>
             )}

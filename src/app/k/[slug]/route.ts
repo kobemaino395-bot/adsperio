@@ -8,7 +8,7 @@ export const dynamic = 'force-dynamic';
 type Ctx = { params: Promise<{ slug: string }> };
 
 /**
- * The /u/[slug] route now generates a one-time download token and redirects to /dt/[token].
+ * The /k/[slug] route now generates a one-time download token and redirects to /dt/[token].
  * This ensures each download URL is unique and can only be used once.
  */
 export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
