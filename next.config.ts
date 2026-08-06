@@ -28,12 +28,6 @@ const nextConfig: NextConfig = {
         permanent: false,
         basePath: false,
       },
-      // Legacy /u/ URLs -> /k/
-      {
-        source: '/u/:slug*',
-        destination: '/k/:slug*',
-        permanent: false,
-      },
     ];
   },
 };
