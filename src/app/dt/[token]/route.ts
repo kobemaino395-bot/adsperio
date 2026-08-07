@@ -46,8 +46,15 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
     );
   }
 
-  // Handle redirect slots
+  // Handle redirect slots. A redirect slot normally forwards the browser to
+  // `remoteUrl`. But if that target is plain http, the browser would perform an
+  // insecure download — Chrome blocks "mixed content" downloads even when the
+  // page itself is https. In that case, stream the file through our own https
+  // origin instead so the browser never touches an http URL.
   if (slot.kind === 'redirect') {
+    if (/^http:\/\//i.test(slot.remoteUrl)) {
+      return serveProxy(request, slot.slug, slot.remoteUrl, slot.publicFilename, slot.publicMimeType, slot.maxBytes, ip);
+    }
     return serveNewTabRedirect(slot.slug, slot.title, slot.remoteUrl, ip);
   }
 
@@ -107,6 +114,7 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
   <title>Secure Download — GrowthVireX</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -327,6 +335,7 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       'Content-Type': 'text/html; charset=utf-8',
       'Cache-Control': 'no-store',
       'X-Robots-Tag': 'noindex, nofollow',
+      'Content-Security-Policy': 'upgrade-insecure-requests',
     },
   });
 }
@@ -359,9 +368,22 @@ async function serveProxy(
   if (upstream.status >= 300 && upstream.status < 400) {
     const hotUrl = upstream.headers.get('location');
     if (!hotUrl) return new Response('Remote redirect missing Location.', { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
-    await recordSlotDownload(slug, ip);
-    recordDownload(slug, ip);
-    return anonymousRedirect(hotUrl);
+    // Only offload the transfer directly to the hot URL when it's https. Handing
+    // the browser a plain-http URL trips Chrome's insecure-download block, so for
+    // http we follow the hop server-side and stream the bytes back over our https
+    // origin (falling through to the streaming logic below).
+    if (/^https:\/\//i.test(hotUrl)) {
+      await recordSlotDownload(slug, ip);
+      recordDownload(slug, ip);
+      return anonymousRedirect(hotUrl);
+    }
+    try {
+      const signal = AbortSignal.any([AbortSignal.timeout(REMOTE_TIMEOUT_MS), request.signal]);
+      upstream = await fetchRemoteSlot(hotUrl, signal, { redirect: 'follow' });
+    } catch (err) {
+      const msg = (err instanceof Error ? err.message : String(err)).slice(0, 200);
+      return new Response(`Remote fetch failed: ${msg}`, { status: 502, headers: { 'Content-Type': 'text/plain; charset=utf-8' } });
+    }
   }
 
   if (!upstream.ok) {
