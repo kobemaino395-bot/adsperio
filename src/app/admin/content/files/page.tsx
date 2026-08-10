@@ -6,7 +6,7 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { DEFAULT_MAX_BYTES, isRemoteKind, listSlots, type SlotKind } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
-import { getDownloadRouteSlug } from '@/server/download-url';
+import { getDownloadRouteSlug } from '@/server/app-settings';
 import ContentTabs from '../ContentTabs';
 import FileTypeToggle from './FileTypeToggle';
 import CopyButton from '@/components/admin/CopyButton';

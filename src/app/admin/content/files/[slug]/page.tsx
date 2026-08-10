@@ -6,7 +6,7 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSlot, isRemoteKind } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
-import { generateDownloadUrl } from '@/server/download-url';
+import { downloadPathFor } from '@/server/app-settings';
 import ContentTabs from '../../ContentTabs';
 import CopyButton from '@/components/admin/CopyButton';
 import SettingsKindFields from '@/components/admin/SettingsKindFields';
@@ -35,7 +35,7 @@ export default async function FileDetailPage({
 
   const host = h.get('host') ?? '';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
-  const downloadPath = await generateDownloadUrl(slot.slug);
+  const downloadPath = await downloadPathFor(slot.slug);
   const downloadUrl = `${proto}://${host}${downloadPath}`;
 
   return (

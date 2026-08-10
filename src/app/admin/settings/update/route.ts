@@ -1,55 +1,42 @@
-import { redirect } from 'next/navigation';
-import { headers } from 'next/headers';
-import { readSessionFromCookies } from '@/server/admin/auth';
-import { audit, esc, readClientIp, readFormField, readSessionField, verifyNoPathTraversal } from '@/server/admin/security';
-import { updateAppSettings, invalidateSettingsCache } from '@/server/app-settings';
 import type { NextRequest } from 'next/server';
+import { readSessionFromCookies, verifySessionCsrf } from '@/server/admin/auth';
+import { adminRedirect, audit, readClientIp } from '@/server/admin/security';
+import { updateDownloadRouteSlug } from '@/server/app-settings';
 
 export const dynamic = 'force-dynamic';
 
+function backTo(qs: string): string {
+  return `/admin/settings?${qs}`;
+}
+
 export async function POST(request: NextRequest): Promise<Response> {
+  const ip = readClientIp(request.headers);
   const session = await readSessionFromCookies();
-  if (!session) return redirect('/admin/login');
+  if (!session) return adminRedirect('/admin/login');
 
-  const h = await headers();
-  const ip = readClientIp(h);
-
-  const form = await request.formData();
-  const csrf = readSessionField(form, '_csrf', session.csrf);
-  if (!csrf.ok) {
-    audit({ kind: 'admin.error.csrf', username: session.username, ip });
-    return new Response(csrf.reason, { status: 403 });
+  let form: FormData;
+  try {
+    form = await request.formData();
+  } catch {
+    return adminRedirect(backTo('error=' + encodeURIComponent('Invalid form data')));
   }
 
-  const downloadRouteSlug = readFormField(form, 'downloadRouteSlug', { required: true, maxLen: 11 });
-  if (!downloadRouteSlug.ok) {
-    return new Response(`Invalid downloadRouteSlug: ${esc(downloadRouteSlug.reason)}`, { status: 400 });
+  const submittedCsrf = String(form.get('_csrf') ?? '');
+  if (!verifySessionCsrf(session, submittedCsrf)) {
+    audit({ kind: 'upload.reject', username: session.username, ip, reason: 'settings-update: csrf' });
+    return adminRedirect(backTo('error=' + encodeURIComponent('CSRF check failed')));
   }
 
-  verifyNoPathTraversal(downloadRouteSlug.value);
-
-  const result = await updateAppSettings({
-    downloadRouteSlug: downloadRouteSlug.value,
-  });
-
+  const result = await updateDownloadRouteSlug(String(form.get('downloadRouteSlug') ?? ''));
   if (!result.ok) {
-    audit({
-      kind: 'admin.settings.update.failed',
-      username: session.username,
-      ip,
-      reason: result.reason,
-    });
-    return new Response(`Failed to update settings: ${esc(result.reason)}`, { status: 400 });
+    return adminRedirect(backTo('error=' + encodeURIComponent(result.reason)));
   }
-
-  invalidateSettingsCache();
 
   audit({
-    kind: 'admin.settings.update',
+    kind: 'admin.access',
     username: session.username,
     ip,
-    downloadRouteSlug: result.settings.downloadRouteSlug,
+    path: `settings.downloadRoute:${result.settings.downloadRouteSlug}`,
   });
-
-  redirect('/admin/settings');
+  return adminRedirect(backTo('updated=' + encodeURIComponent(result.settings.downloadRouteSlug)));
 }

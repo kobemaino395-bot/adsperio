@@ -7,6 +7,7 @@ import DownloadButton from '@/components/DownloadButton';
 import { getPosition, listPositions, type Position } from '@/server/content/positions';
 import { getSlot, isRemoteKind } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
+import { downloadPathFor } from '@/server/app-settings';
 import { site } from '@/content/site';
 
 type Params = Promise<{ slug: string }>;
@@ -92,13 +93,13 @@ export default async function PositionPage({ params }: { params: Params }) {
     const slot = await getSlot(p.downloadSlotSlug);
     if (slot) {
       if (isRemoteKind(slot.kind) && slot.remoteUrl) {
-        downloadUrl = `/k/${slot.slug}`;
+        downloadUrl = await downloadPathFor(slot.slug);
         downloadFilename = slot.publicFilename || slot.slug;
         downloadDirect = slot.kind === 'redirect';
       } else if (slot.kind === 'local') {
         const status = await readSlotStatus(slot.slug);
         if (status.hasFile) {
-          downloadUrl = `/k/${slot.slug}`;
+          downloadUrl = await downloadPathFor(slot.slug);
           downloadFilename = slot.publicFilename || status.meta?.originalFilename || slot.slug;
         }
       }

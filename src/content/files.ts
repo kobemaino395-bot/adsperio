@@ -22,7 +22,7 @@ export const DEFAULT_SLOTS: DefaultSlot[] = [
   {
     slug: 'take-home',
     title: 'Ads Manager take-home test',
-    description: 'Served at /k/take-home. Linked from /careers/meta-ads-specialist.',
+    description: 'Served at <download-route>/take-home. Linked from /careers/meta-ads-specialist.',
     publicFilename: 'Technical_Assessment.zip',
     publicMimeType: 'application/zip',
   },
