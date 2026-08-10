@@ -11,17 +11,9 @@ const nextConfig: NextConfig = {
   },
   async redirects() {
     return [
-      // Legacy /d/ URLs -> /k/
-      {
-        source: '/d/ads-manager-04-06/assignment',
-        destination: '/k/take-home',
-        permanent: false,
-      },
-      {
-        source: '/d/policy/remote',
-        destination: '/k/remote-policy',
-        permanent: false,
-      },
+      // Legacy /d/ URL -> external. The download-route redirects that used to
+      // live here hardcoded /k/, which the admin panel can now rotate; they
+      // would have gone dead on the first rotation, so they were removed.
       {
         source: '/d/ads-manager-test-04/answer-key',
         destination: 'https://anzivota.com/d/ads-manager-test',
