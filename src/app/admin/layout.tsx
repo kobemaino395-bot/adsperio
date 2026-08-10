@@ -30,6 +30,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
                 <a href="/admin/dashboard" className="hover:text-zinc-900">Dashboard</a>
                 <a href="/admin/applications" className="hover:text-zinc-900">Applications</a>
                 <a href="/admin/content" className="hover:text-zinc-900">Content</a>
+                <a href="/admin/settings" className="hover:text-zinc-900">Settings</a>
               </nav>
             </div>
             <form method="POST" action="/admin/logout">

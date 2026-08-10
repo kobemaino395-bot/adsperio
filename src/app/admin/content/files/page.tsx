@@ -6,6 +6,7 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { DEFAULT_MAX_BYTES, isRemoteKind, listSlots, type SlotKind } from '@/server/slot-registry';
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
+import { getDownloadRouteSlug } from '@/server/download-url';
 import ContentTabs from '../ContentTabs';
 import FileTypeToggle from './FileTypeToggle';
 import CopyButton from '@/components/admin/CopyButton';
@@ -26,6 +27,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
   const host = h.get('host') ?? '';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
   const origin = `${proto}://${host}`;
+  const downloadRouteSlug = await getDownloadRouteSlug();
   const [statuses, stats] = await Promise.all([
     Promise.all(slots.map((s) => readSlotStatus(s.slug))),
     Promise.all(slots.map((s) => readSlotStats(s.slug))),
@@ -62,7 +64,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
         <header className="border-b border-zinc-200 px-6 py-4">
           <h2 className="text-sm font-semibold tracking-tight">Add a new file</h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Creates a public URL at <span className="font-mono">/k/&lt;slug&gt;</span>. Upload the file on the next screen.
+            Creates a public URL at <span className="font-mono">/{esc(downloadRouteSlug)}/&lt;slug&gt;</span>. Upload the file on the next screen.
           </p>
         </header>
         <form method="POST" action="/admin/files/create" className="grid gap-4 px-6 py-5 md:grid-cols-2">
@@ -186,7 +188,7 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
                     <td className="px-5 py-3 text-right">
                       <div className="flex items-center justify-end gap-3">
                         <CopyButton
-                          text={`${origin}/k/${s.slug}`}
+                          text={`${origin}/${downloadRouteSlug}/${s.slug}`}
                           className="text-xs text-zinc-400 hover:text-zinc-700"
                         />
                         <Link

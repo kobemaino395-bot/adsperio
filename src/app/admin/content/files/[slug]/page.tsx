@@ -6,6 +6,7 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getSlot, isRemoteKind } from '@/server/slot-registry';
 import { effectivePublicDownload, readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
+import { generateDownloadUrl } from '@/server/download-url';
 import ContentTabs from '../../ContentTabs';
 import CopyButton from '@/components/admin/CopyButton';
 import SettingsKindFields from '@/components/admin/SettingsKindFields';
@@ -34,7 +35,8 @@ export default async function FileDetailPage({
 
   const host = h.get('host') ?? '';
   const proto = h.get('x-forwarded-proto') ?? (host.startsWith('localhost') || host.startsWith('127.') ? 'http' : 'https');
-  const downloadUrl = `${proto}://${host}/k/${slot.slug}`;
+  const downloadPath = await generateDownloadUrl(slot.slug);
+  const downloadUrl = `${proto}://${host}${downloadPath}`;
 
   return (
     <div className="space-y-6">
@@ -155,7 +157,7 @@ export default async function FileDetailPage({
               </a>
             )}
             {(isRemoteKind(slot.kind) ? !!slot.remoteUrl : status.hasFile) && (
-              <a href={`/k/${slot.slug}`} className="text-blue-600 hover:underline">
+              <a href={downloadPath} className="text-blue-600 hover:underline">
                 Public link →
               </a>
             )}
@@ -231,7 +233,7 @@ export default async function FileDetailPage({
         <h2 className="text-sm font-semibold tracking-tight">Settings</h2>
         <p className="mt-1 text-xs text-zinc-500">
           Rename the display name without touching the URL. The slug
-          (<span className="font-mono">/k/{esc(slot.slug)}</span>) is immutable.
+          (<span className="font-mono">{esc(downloadPath)}</span>) is immutable.
         </p>
         <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-4 grid gap-4 md:grid-cols-2">
           <input type="hidden" name="_csrf" value={session.csrf} />
