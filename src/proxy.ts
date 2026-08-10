@@ -31,13 +31,39 @@ function adminCsp(nonce: string): string {
   ].join('; ');
 }
 
-export function proxy(request: NextRequest): NextResponse {
+export async function proxy(request: NextRequest): Promise<NextResponse> {
   const { pathname } = request.nextUrl;
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set('x-adn-pathname', pathname);
 
+  // Handle dynamic download routes before admin checks
   if (!pathname.startsWith('/admin')) {
+    // Check if this is a potential dynamic download route: /[slug]/[fileSlug]
+    const match = pathname.match(/^\/([a-z][a-z0-9-]{0,10})\/([a-z][a-z0-9-]{1,40})\/?$/);
+    if (match) {
+      const [, routeSlug, fileSlug] = match;
+
+      // Skip if it's the static /k/ route or other known routes
+      const knownRoutes = ['k', 'dt', 'api', 'careers', 'positions', 'apply'];
+      if (!knownRoutes.includes(routeSlug)) {
+        try {
+          // Import dynamically to avoid issues with server-only code
+          const { getAppSettings } = await import('@/server/app-settings');
+          const settings = await getAppSettings();
+
+          if (routeSlug === settings.downloadRouteSlug) {
+            // Rewrite to the /k/ route handler
+            const url = request.nextUrl.clone();
+            url.pathname = `/k/${fileSlug}`;
+            return NextResponse.rewrite(url, { request: { headers: requestHeaders } });
+          }
+        } catch (error) {
+          console.error('[proxy] Failed to load app settings:', error);
+        }
+      }
+    }
+
     return NextResponse.next({ request: { headers: requestHeaders } });
   }
 
