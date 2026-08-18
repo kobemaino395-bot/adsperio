@@ -59,7 +59,6 @@ function seed(): SlotRecord[] {
   }));
 }
 
-let cache: SlotRecord[] | null = null;
 const CACHE_KEY = '__adnovara_slot_registry__';
 const globalAny = globalThis as unknown as Record<string, SlotRecord[] | undefined>;
 
@@ -127,7 +126,6 @@ async function load(): Promise<SlotRecord[]> {
     }
 
     globalAny[CACHE_KEY] = records;
-    cache = records;
     return records;
   });
 }
@@ -139,13 +137,11 @@ async function save(records: SlotRecord[]): Promise<void> {
   await withFileLock(file, async () => {
     await writeJsonAtomic(file, records, { pretty: true });
     globalAny[CACHE_KEY] = records;
-    cache = records;
   });
 }
 
 export function invalidateRegistryCache(): void {
   globalAny[CACHE_KEY] = undefined;
-  cache = null;
 }
 
 export async function listSlots(): Promise<SlotRecord[]> {

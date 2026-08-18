@@ -104,14 +104,14 @@ export default function ApplicationsTable({ headers, rows }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-4">
         {countries.length > 0 && (
-          <label className="inline-flex items-center gap-2 text-sm">
-            <span className="text-xs uppercase tracking-wider text-zinc-500">Country</span>
+          <label className="inline-flex items-center gap-2">
+            <span className="eyebrow">Country</span>
             <select
               value={filter}
               onChange={(e) => setFilter(e.target.value)}
-              className="rounded-md border border-zinc-300 bg-white px-2 py-1 text-sm"
+              className="field w-auto text-[0.8125rem]"
             >
               <option value="">All countries</option>
               {countries.map((c) => (
@@ -120,23 +120,23 @@ export default function ApplicationsTable({ headers, rows }: Props) {
             </select>
           </label>
         )}
-        <span className="text-xs text-zinc-500">
+        <span className="caption">
           Showing {totalVisible} of {rows.length}
         </span>
       </div>
 
-      <div className="overflow-x-auto rounded-lg border border-zinc-200 bg-white">
+      <div className="card overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wider text-zinc-500">
-            <tr>
-              <th className="px-3 py-2">#</th>
+          <thead>
+            <tr className="border-hairline border-b">
+              <th className="eyebrow px-3 py-2.5 text-left">#</th>
               {headers.map((col) => (
-                <th key={col} className="whitespace-nowrap px-3 py-2">{col}</th>
+                <th key={col} className="eyebrow whitespace-nowrap px-3 py-2.5 text-left">{col}</th>
               ))}
-              <th className="px-3 py-2"></th>
+              <th className="px-3 py-2.5"></th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-hairline divide-y">
             {groupsWithRanks.map((g) => (
               <GroupBlock
                 key={g.key}
@@ -163,23 +163,23 @@ type GroupProps = {
 function GroupBlock({ group, headers, colCount, startRank }: GroupProps) {
   return (
     <>
-      <tr className="bg-zinc-50/70">
-        <td colSpan={colCount} className="border-t border-zinc-200 px-3 py-2 text-xs font-medium uppercase tracking-wider text-zinc-600">
+      <tr className="bg-canvas-soft">
+        <td colSpan={colCount} className="eyebrow text-ink-2 px-3 py-2">
           {group.label} · {group.items.length} application{group.items.length === 1 ? '' : 's'}
         </td>
       </tr>
       {group.items.map((item, i) => {
         const rankNum = startRank + i;
         return (
-          <tr key={item.originalIdx} className="border-t border-zinc-100 align-top">
-            <td className="px-3 py-2 text-xs text-zinc-400">{rankNum}</td>
+          <tr key={item.originalIdx} className="hover:bg-canvas-soft align-top transition-colors">
+            <td className="text-ink-mute px-3 py-2 text-xs tabular-nums">{rankNum}</td>
             {item.row.map((cell, ci) => {
               const isDateCol = DATE_COL_RE.test(headers[ci] ?? '');
               const display = formatCell(cell, isDateCol);
               return (
-                <td key={ci} className="max-w-[18rem] truncate px-3 py-2 text-zinc-700" title={cell}>
+                <td key={ci} className="text-ink-2 max-w-[18rem] truncate px-3 py-2" title={cell}>
                   {looksLikeUrl(cell) ? (
-                    <a href={cell} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
+                    <a href={cell} target="_blank" rel="noopener noreferrer" className="link-inline">
                       {display}
                     </a>
                   ) : (
@@ -189,7 +189,10 @@ function GroupBlock({ group, headers, colCount, startRank }: GroupProps) {
               );
             })}
             <td className="whitespace-nowrap px-3 py-2 text-right">
-              <a href={`/admin/applications/${item.originalIdx}`} className="text-xs text-zinc-500 hover:text-zinc-900">
+              <a
+                href={`/admin/applications/${item.originalIdx}`}
+                className="eyebrow text-ink hover:text-ink-mute transition-colors"
+              >
                 Open →
               </a>
             </td>

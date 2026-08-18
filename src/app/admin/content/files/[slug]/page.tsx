@@ -10,6 +10,7 @@ import { downloadPathFor } from '@/server/app-settings';
 import ContentTabs from '../../ContentTabs';
 import CopyButton from '@/components/admin/CopyButton';
 import SettingsKindFields from '@/components/admin/SettingsKindFields';
+import { DANGER_BTN, Notice, Tag } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,66 +41,60 @@ export default async function FileDetailPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex items-baseline justify-between">
+      <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-semibold tracking-tight">{esc(slot.title)}</h1>
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="display-3">{esc(slot.title)}</h1>
             {slot.kind === 'proxy' ? (
-              <span className="rounded-full bg-blue-100 px-2 py-px text-xs text-blue-700">Proxy</span>
+              <Tag tone="line">Proxy</Tag>
             ) : slot.kind === 'redirect' ? (
-              <span className="rounded-full bg-purple-100 px-2 py-px text-xs text-purple-700">Redirect</span>
+              <Tag tone="line">Redirect</Tag>
             ) : (
-              <span className="rounded-full bg-zinc-100 px-2 py-px text-xs text-zinc-700">Local</span>
+              <Tag tone="line">Local</Tag>
             )}
           </div>
-          <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-mono text-sm text-zinc-600 break-all">{downloadUrl}</span>
+          <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="text-ink-2 break-all font-mono text-xs">{downloadUrl}</span>
             <CopyButton
               text={downloadUrl}
-              className="rounded border border-zinc-200 px-2 py-px text-xs text-zinc-500 hover:border-zinc-400 hover:text-zinc-800"
+              className="border-hairline text-ink-mute hover:border-hairline-strong hover:text-ink rounded-full border px-2.5 py-1 text-[0.6875rem] font-medium transition-colors"
             />
-            {slot.isBuiltin && (
-              <span className="rounded-full border border-zinc-300 px-2 py-px font-mono text-[0.55rem] uppercase tracking-[0.18em] text-zinc-500">
-                Built-in
-              </span>
-            )}
+            {slot.isBuiltin && <Tag tone="ghost">Built-in</Tag>}
           </div>
         </div>
-        <Link href="/admin/content/files" className="text-xs text-zinc-500 hover:text-zinc-900">← Back to files</Link>
+        <Link href="/admin/content/files" className="eyebrow text-ink hover:text-ink-mute transition-colors">
+          ← Back to files
+        </Link>
       </header>
       <ContentTabs active="files" />
 
-      {ok && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">File saved.</div>
-      )}
-      {updated && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">Settings updated.</div>
-      )}
+      {ok && <Notice tone="ok" label="Saved">File saved.</Notice>}
+      {updated && <Notice tone="ok" label="Updated">Settings updated.</Notice>}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Notice tone="error" label="Error">
           {esc(decodeURIComponent(error))}
-        </div>
+        </Notice>
       )}
 
       <div className="grid gap-6 md:grid-cols-2">
-        <section className="rounded-lg border border-zinc-200 bg-white p-5">
-          <h2 className="text-sm font-semibold tracking-tight">Status</h2>
-          <dl className="mt-3 space-y-1 text-sm">
+        <section className="card p-5">
+          <h2 className="eyebrow text-ink">Status</h2>
+          <dl className="divide-hairline border-hairline mt-4 divide-y border-t text-sm">
             {isRemoteKind(slot.kind) ? (
               <>
                 <Row
                   k="Status"
                   v={
                     slot.remoteUrl
-                      ? <span className="text-green-700">Configured</span>
-                      : <span className="text-amber-700">No {slot.kind === 'redirect' ? 'redirect' : 'remote'} URL set</span>
+                      ? <Tag tone="solid">Configured</Tag>
+                      : <Tag tone="dashed">No {slot.kind === 'redirect' ? 'redirect' : 'remote'} URL set</Tag>
                   }
                 />
                 {slot.remoteUrl && (
                   <Row
                     k={slot.kind === 'redirect' ? 'Redirect URL' : 'Remote URL'}
                     v={
-                      <a href={slot.remoteUrl} target="_blank" rel="noopener noreferrer" className="break-all font-mono text-xs text-blue-600 hover:underline">
+                      <a href={slot.remoteUrl} target="_blank" rel="noopener noreferrer" className="link-inline break-all font-mono text-xs">
                         {esc(slot.remoteUrl)}
                       </a>
                     }
@@ -117,17 +112,17 @@ export default async function FileDetailPage({
                 {status.hasFile && (
                   <Row
                     k="Local backup"
-                    v={<span className="text-xs text-zinc-500">{(status.size / 1024).toFixed(1)} KB still on disk (from before switch)</span>}
+                    v={<span className="text-ink-mute text-xs">{(status.size / 1024).toFixed(1)} KB still on disk (from before switch)</span>}
                   />
                 )}
               </>
             ) : status.hasFile ? (
               <>
-                <Row k="Status" v={<span className="text-green-700">In place</span>} />
+                <Row k="Status" v={<Tag tone="solid">In place</Tag>} />
                 {status.meta?.originalFilename && (
-                  <Row k="Uploaded as" v={<span className="font-mono">{esc(status.meta.originalFilename)}</span>} />
+                  <Row k="Uploaded as" v={<span className="font-mono text-xs">{esc(status.meta.originalFilename)}</span>} />
                 )}
-                <Row k="Served as" v={<span className="font-mono">{esc(effective.filename)}</span>} />
+                <Row k="Served as" v={<span className="font-mono text-xs">{esc(effective.filename)}</span>} />
                 <Row k="Size" v={`${(status.size / 1024).toFixed(1)} KB`} />
                 <Row k="Modified" v={new Date(status.mtimeMs).toLocaleString()} />
                 {status.meta?.uploadedBy && <Row k="Uploaded by" v={esc(status.meta.uploadedBy)} />}
@@ -146,18 +141,18 @@ export default async function FileDetailPage({
                 )}
               </>
             ) : (
-              <Row k="Status" v={<span className="text-amber-700">No file uploaded yet</span>} />
+              <Row k="Status" v={<Tag tone="dashed">No file uploaded yet</Tag>} />
             )}
           </dl>
 
-          <div className="mt-4 space-x-4 text-sm">
+          <div className="mt-5 flex flex-wrap gap-5">
             {slot.kind === 'local' && status.hasFile && (
-              <a href={`/admin/files/${slot.slug}/file`} className="text-blue-600 hover:underline">
+              <a href={`/admin/files/${slot.slug}/file`} className="eyebrow text-ink hover:text-ink-mute transition-colors">
                 Download (admin) →
               </a>
             )}
             {(isRemoteKind(slot.kind) ? !!slot.remoteUrl : status.hasFile) && (
-              <a href={downloadPath} className="text-blue-600 hover:underline">
+              <a href={downloadPath} className="eyebrow text-ink hover:text-ink-mute transition-colors">
                 Public link →
               </a>
             )}
@@ -165,11 +160,11 @@ export default async function FileDetailPage({
         </section>
 
         {isRemoteKind(slot.kind) ? (
-          <section className="rounded-lg border border-zinc-200 bg-white p-5">
-            <h2 className="text-sm font-semibold tracking-tight">
+          <section className="card p-5">
+            <h2 className="eyebrow text-ink">
               {slot.kind === 'redirect' ? 'Edit redirect URL' : 'Edit remote URL'}
             </h2>
-            <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-3 space-y-3">
+            <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-4 space-y-4">
               <input type="hidden" name="_csrf" value={session.csrf} />
               <input type="hidden" name="title" value={slot.title} />
               <input type="hidden" name="kind" value={slot.kind} />
@@ -179,15 +174,12 @@ export default async function FileDetailPage({
                 required
                 defaultValue={slot.remoteUrl}
                 placeholder="https://example.com/path/to/file.zip"
-                className="block w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+                className="field font-mono text-sm"
               />
-              <button
-                type="submit"
-                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-              >
+              <button type="submit" className="btn btn-solid">
                 Save URL
               </button>
-              <p className="text-xs text-zinc-500">
+              <p className="text-ink-mute text-xs">
                 {slot.kind === 'redirect'
                   ? 'Visitors are 302-redirected here with no referrer, so the destination never learns our site sent them.'
                   : `Visitors get bytes streamed from this URL on every request. Hard ${(slot.maxBytes / (1024 * 1024)).toFixed(0)} MB cap per download.`}
@@ -195,30 +187,27 @@ export default async function FileDetailPage({
             </form>
           </section>
         ) : (
-          <section className="rounded-lg border border-zinc-200 bg-white p-5">
-            <h2 className="text-sm font-semibold tracking-tight">
+          <section className="card p-5">
+            <h2 className="eyebrow text-ink">
               {status.hasFile ? 'Replace file' : 'Upload file'}
             </h2>
             <form
               method="POST"
               action={`/admin/files/${slot.slug}/replace`}
               encType="multipart/form-data"
-              className="mt-3 space-y-3"
+              className="mt-4 space-y-4"
             >
               <input type="hidden" name="_csrf" value={session.csrf} />
               <input
                 type="file"
                 name="file"
                 required
-                className="block w-full text-sm text-zinc-700 file:mr-3 file:rounded-md file:border-0 file:bg-zinc-900 file:px-3 file:py-2 file:text-xs file:font-medium file:text-white"
+                className="text-ink-mute block w-full text-[0.875rem] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--indigo)] file:px-4 file:py-2 file:text-[0.8125rem] file:font-medium file:text-white hover:file:bg-[var(--indigo-deep)]"
               />
-              <button
-                type="submit"
-                className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-              >
+              <button type="submit" className="btn btn-solid">
                 {status.hasFile ? 'Upload & replace' : 'Upload'}
               </button>
-              <p className="text-xs text-zinc-500">
+              <p className="text-ink-mute text-xs">
                 Max {(slot.maxBytes / (1024 * 1024)).toFixed(0)} MB.
                 {/zip/i.test(slot.publicMimeType) || /\.zip$/i.test(slot.publicFilename)
                   ? ' ZIP magic-bytes are enforced.'
@@ -229,40 +218,37 @@ export default async function FileDetailPage({
         )}
       </div>
 
-      <section className="rounded-lg border border-zinc-200 bg-white p-5">
-        <h2 className="text-sm font-semibold tracking-tight">Settings</h2>
-        <p className="mt-1 text-xs text-zinc-500">
+      <section className="card p-5">
+        <h2 className="eyebrow text-ink">Settings</h2>
+        <p className="text-ink-mute mt-2 text-xs">
           Rename the display name without touching the URL. The slug
-          (<span className="font-mono">{esc(downloadPath)}</span>) is immutable.
+          (<span className="text-ink font-mono">{esc(downloadPath)}</span>) is immutable.
         </p>
-        <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-4 grid gap-4 md:grid-cols-2">
+        <form method="POST" action={`/admin/files/${slot.slug}/update`} className="mt-5 grid gap-4 md:grid-cols-2">
           <input type="hidden" name="_csrf" value={session.csrf} />
           <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Display name</span>
+            <span className="field-label">Display name</span>
             <input
               type="text"
               name="title"
               required
               defaultValue={slot.title}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+              className="field"
             />
           </label>
           <SettingsKindFields initialKind={slot.kind} initialRemoteUrl={slot.remoteUrl} />
           <label className="block md:col-span-2">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
+            <span className="field-label">Public filename (saved as)</span>
             <input
               type="text"
               name="publicFilename"
               defaultValue={slot.publicFilename}
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+              className="field font-mono text-sm"
             />
-            <p className="mt-1 text-xs text-zinc-500">Blank = use the file as uploaded (local) or the upstream filename (remote).</p>
+            <p className="text-ink-mute mt-1.5 text-xs">Blank = use the file as uploaded (local) or the upstream filename (remote).</p>
           </label>
           <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-            >
+            <button type="submit" className="btn btn-solid">
               Save settings
             </button>
           </div>
@@ -270,17 +256,14 @@ export default async function FileDetailPage({
       </section>
 
       {!slot.isBuiltin && (
-        <section className="rounded-lg border border-red-200 bg-red-50 p-5">
-          <h2 className="text-sm font-semibold tracking-tight text-red-800">Danger zone</h2>
-          <p className="mt-1 text-xs text-red-700">
+        <section className="border-hairline border border-l-2 border-l-red-600 p-5">
+          <h2 className="eyebrow text-red-700 dark:text-red-400">Danger zone</h2>
+          <p className="text-ink-2 mt-2 text-xs">
             Removes this entry and the file on disk. Public URL will return 404.
           </p>
-          <form method="POST" action={`/admin/files/${slot.slug}/delete`} className="mt-3">
+          <form method="POST" action={`/admin/files/${slot.slug}/delete`} className="mt-4">
             <input type="hidden" name="_csrf" value={session.csrf} />
-            <button
-              type="submit"
-              className="rounded-md border border-red-300 bg-white px-3 py-1.5 text-xs font-medium text-red-700 hover:bg-red-100"
-            >
+            <button type="submit" className={DANGER_BTN}>
               Delete file entry
             </button>
           </form>
@@ -292,9 +275,9 @@ export default async function FileDetailPage({
 
 function Row({ k, v }: { k: string; v: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[10rem_1fr] gap-3">
-      <dt className="text-xs uppercase tracking-wider text-zinc-500">{k}</dt>
-      <dd className="text-sm text-zinc-800">{v}</dd>
+    <div className="grid grid-cols-[10rem_1fr] gap-3 py-2">
+      <dt className="eyebrow pt-1">{k}</dt>
+      <dd className="text-ink-2 text-sm tabular-nums">{v}</dd>
     </div>
   );
 }

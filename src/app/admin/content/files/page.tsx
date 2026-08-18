@@ -7,9 +7,11 @@ import { DEFAULT_MAX_BYTES, isRemoteKind, listSlots, type SlotKind } from '@/ser
 import { readSlotStatus } from '@/server/files';
 import { readSlotStats } from '@/server/slot-stats';
 import { getDownloadRouteSlug } from '@/server/app-settings';
+import { site } from '@/content/site';
 import ContentTabs from '../ContentTabs';
 import FileTypeToggle from './FileTypeToggle';
 import CopyButton from '@/components/admin/CopyButton';
+import { Notice, Tag } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,164 +38,166 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Content</h1>
-        <p className="mt-1 text-sm text-zinc-500">Banner, careers positions, and downloadable files.</p>
+        <h1 className="display-3">Content</h1>
+        <p className="text-ink-mute mt-2 text-sm">Banner, careers positions, and downloadable files.</p>
       </header>
       <ContentTabs active="files" />
 
-      {ok && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">Saved.</div>
-      )}
+      {ok && <Notice tone="ok" label="Saved">Changes saved.</Notice>}
       {created && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          File entry &ldquo;{esc(created)}&rdquo; created. <Link href={`/admin/content/files/${esc(created)}`} className="underline">Upload a file →</Link>
-        </div>
+        <Notice tone="ok" label="Created">
+          File entry &ldquo;{esc(created)}&rdquo; created.{' '}
+          <Link href={`/admin/content/files/${esc(created)}`} className="link-inline">
+            Upload a file →
+          </Link>
+        </Notice>
       )}
       {deleted && (
-        <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+        <Notice tone="warn" label="Deleted">
           File entry &ldquo;{esc(deleted)}&rdquo; deleted.
-        </div>
+        </Notice>
       )}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Notice tone="error" label="Error">
           {esc(decodeURIComponent(error))}
-        </div>
+        </Notice>
       )}
 
-      <section className="rounded-lg border border-dashed border-zinc-300 bg-white">
-        <header className="border-b border-zinc-200 px-6 py-4">
-          <h2 className="text-sm font-semibold tracking-tight">Add a new file</h2>
-          <p className="mt-1 text-xs text-zinc-500">
-            Creates a public URL at <span className="font-mono">/{esc(downloadRouteSlug)}/&lt;slug&gt;</span>. Upload the file on the next screen.
+      <section className="card border-dashed">
+        <header className="border-hairline border-b border-dashed px-6 py-4">
+          <h2 className="eyebrow text-ink">Add a new file</h2>
+          <p className="text-ink-mute mt-2 text-xs">
+            Creates a public URL at <span className="text-ink font-mono">/{esc(downloadRouteSlug)}/&lt;slug&gt;</span>.
+            Upload the file on the next screen.
           </p>
         </header>
         <form method="POST" action="/admin/files/create" className="grid gap-4 px-6 py-5 md:grid-cols-2">
           <input type="hidden" name="_csrf" value={session.csrf} />
           <FileTypeToggle name="kind" />
           <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">URL slug</span>
+            <span className="field-label">URL slug</span>
             <input
               type="text"
               name="slug"
               required
               pattern="^[a-z][a-z0-9-]{1,40}$"
               placeholder="e.g. employee-handbook"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+              className="field font-mono text-sm"
             />
-            <p className="mt-1 text-xs text-zinc-500">URL stays fixed regardless of display name.</p>
+            <p className="text-ink-mute mt-1.5 text-xs">URL stays fixed regardless of display name.</p>
           </label>
           <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Display name</span>
+            <span className="field-label">Display name</span>
             <input
               type="text"
               name="title"
               required
               placeholder="e.g. Employee handbook"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+              className="field"
             />
           </label>
           <label className="block md:col-span-2">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Public filename (saved as)</span>
+            <span className="field-label">Public filename (saved as)</span>
             <input
               type="text"
               name="publicFilename"
-              placeholder="e.g. GrowthVireX_Handbook.zip"
-              className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono"
+              placeholder={`e.g. ${site.name}_Handbook.zip`}
+              className="field font-mono text-sm"
             />
           </label>
-          <div className="md:col-span-2">
-            <button
-              type="submit"
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-            >
+          <div className="flex flex-wrap items-center gap-4 md:col-span-2">
+            <button type="submit" className="btn btn-solid">
               Create
             </button>
-            <span className="ml-3 text-xs text-zinc-500">
+            <span className="caption">
               Max upload defaults to {Math.round(DEFAULT_MAX_BYTES / (1024 * 1024))} MB.
             </span>
           </div>
         </form>
       </section>
 
-      <section className="rounded-lg border border-zinc-200 bg-white">
-        <header className="border-b border-zinc-200 px-6 py-4">
-          <h2 className="text-sm font-semibold tracking-tight">Files</h2>
-          <p className="mt-1 text-xs text-zinc-500">{slots.length} entr{slots.length === 1 ? 'y' : 'ies'}.</p>
+      <section className="card">
+        <header className="border-hairline border-b px-6 py-4">
+          <h2 className="eyebrow text-ink">Files</h2>
+          <p className="text-ink-mute mt-2 text-xs tabular-nums">
+            {slots.length} entr{slots.length === 1 ? 'y' : 'ies'}.
+          </p>
         </header>
         {slots.length === 0 ? (
-          <p className="px-6 py-10 text-center text-sm text-zinc-500">No files yet.</p>
+          <p className="text-ink-mute px-6 py-10 text-center text-sm">No files yet.</p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-left text-xs uppercase tracking-wider text-zinc-500">
-              <tr>
-                <th className="px-5 py-2">Display name</th>
-                <th className="px-5 py-2">Slug</th>
-                <th className="px-5 py-2">Kind</th>
-                <th className="px-5 py-2">Status</th>
-                <th className="px-5 py-2">Size</th>
-                <th className="px-5 py-2">Modified</th>
-                <th className="px-5 py-2 min-w-[12rem]">Downloads</th>
-                <th className="px-5 py-2 text-right"></th>
+            <thead>
+              <tr className="border-hairline border-b">
+                <th className="eyebrow px-5 py-2.5 text-left">Display name</th>
+                <th className="eyebrow px-5 py-2.5 text-left">Slug</th>
+                <th className="eyebrow px-5 py-2.5 text-left">Kind</th>
+                <th className="eyebrow px-5 py-2.5 text-left">Status</th>
+                <th className="eyebrow px-5 py-2.5 text-left">Size</th>
+                <th className="eyebrow px-5 py-2.5 text-left">Modified</th>
+                <th className="eyebrow min-w-[12rem] px-5 py-2.5 text-left">Downloads</th>
+                <th className="px-5 py-2.5 text-right"></th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-hairline divide-y">
               {slots.map((s, i) => {
                 const status = statuses[i]!;
                 const st = stats[i]!;
                 return (
-                  <tr key={s.slug} className="border-t border-zinc-100">
+                  <tr key={s.slug} className="hover:bg-canvas-soft transition-colors">
                     <td className="px-5 py-3">
                       <Link href={`/admin/content/files/${s.slug}`} className="font-medium hover:underline">
                         {esc(s.title)}
                       </Link>
                       {s.isBuiltin && (
-                        <span className="ml-2 inline-block rounded-full border border-zinc-300 px-2 py-px font-mono text-[0.55rem] uppercase tracking-[0.18em] text-zinc-500">
-                          Built-in
+                        <span className="ml-2 inline-block align-middle">
+                          <Tag tone="ghost">Built-in</Tag>
                         </span>
                       )}
                     </td>
-                    <td className="px-5 py-3 font-mono text-xs text-zinc-600">{esc(s.slug)}</td>
+                    <td className="text-ink-2 px-5 py-3 font-mono text-xs">{esc(s.slug)}</td>
                     <td className="px-5 py-3">
                       <KindBadge kind={s.kind} />
                     </td>
                     <td className="px-5 py-3">
                       {isRemoteKind(s.kind) ? (
                         s.remoteUrl ? (
-                          <span className="inline-block rounded-full bg-green-100 px-2 py-px text-xs text-green-700">Configured</span>
+                          <Tag tone="solid">Configured</Tag>
                         ) : (
-                          <span className="inline-block rounded-full bg-amber-100 px-2 py-px text-xs text-amber-800">No URL</span>
+                          <Tag tone="dashed">No URL</Tag>
                         )
                       ) : status.hasFile ? (
-                        <span className="inline-block rounded-full bg-green-100 px-2 py-px text-xs text-green-700">In place</span>
+                        <Tag tone="solid">In place</Tag>
                       ) : (
-                        <span className="inline-block rounded-full bg-amber-100 px-2 py-px text-xs text-amber-800">No file</span>
+                        <Tag tone="dashed">No file</Tag>
                       )}
                     </td>
-                    <td className="px-5 py-3 text-xs text-zinc-600">
+                    <td className="text-ink-2 whitespace-nowrap px-5 py-3 text-xs tabular-nums">
                       {isRemoteKind(s.kind)
                         ? '—'
                         : status.hasFile ? `${(status.size / 1024).toFixed(1)} KB` : '—'}
                     </td>
-                    <td className="px-5 py-3 text-xs text-zinc-500">
+                    <td className="text-ink-mute whitespace-nowrap px-5 py-3 text-xs tabular-nums">
                       {isRemoteKind(s.kind)
                         ? '—'
                         : status.hasFile ? new Date(status.mtimeMs).toLocaleString() : '—'}
                     </td>
-                    <td className="px-5 py-3 text-xs text-zinc-600">
+                    <td className="text-ink-2 px-5 py-3 text-xs tabular-nums">
                       {st.downloads}
                       {st.lastDownloadedAt && (
-                        <span className="block text-zinc-400">last {new Date(st.lastDownloadedAt).toLocaleString()}</span>
+                        <span className="text-ink-mute block">last {new Date(st.lastDownloadedAt).toLocaleString()}</span>
                       )}
                     </td>
                     <td className="px-5 py-3 text-right">
-                      <div className="flex items-center justify-end gap-3">
+                      <div className="flex items-center justify-end gap-4">
                         <CopyButton
                           text={`${origin}/${downloadRouteSlug}/${s.slug}`}
-                          className="text-xs text-zinc-400 hover:text-zinc-700"
+                          className="eyebrow text-ink-mute hover:text-ink transition-colors"
                         />
                         <Link
                           href={`/admin/content/files/${s.slug}`}
-                          className="text-xs text-zinc-500 hover:text-zinc-900"
+                          className="eyebrow text-ink hover:text-ink-mute transition-colors"
                         >
                           Open →
                         </Link>
@@ -204,19 +208,19 @@ export default async function FilesListPage({ searchParams }: { searchParams: Se
               })}
             </tbody>
           </table>
+          </div>
         )}
       </section>
     </div>
   );
 }
 
-const KIND_BADGE: Record<SlotKind, { label: string; className: string }> = {
-  local: { label: 'Local', className: 'bg-zinc-100 text-zinc-700' },
-  proxy: { label: 'Proxy', className: 'bg-blue-100 text-blue-700' },
-  redirect: { label: 'Redirect', className: 'bg-purple-100 text-purple-700' },
+const KIND_LABEL: Record<SlotKind, string> = {
+  local: 'Local',
+  proxy: 'Proxy',
+  redirect: 'Redirect',
 };
 
 function KindBadge({ kind }: { kind: SlotKind }) {
-  const b = KIND_BADGE[kind] ?? KIND_BADGE.local;
-  return <span className={`inline-block rounded-full px-2 py-px text-xs ${b.className}`}>{b.label}</span>;
+  return <Tag tone="line">{KIND_LABEL[kind] ?? KIND_LABEL.local}</Tag>;
 }

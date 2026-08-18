@@ -7,7 +7,7 @@ type Props = {
   className?: string;
   children: React.ReactNode;
   /** When set, the wait/error message inherits these classes so it can be
-   *  themed to match the surrounding card. Defaults to a quiet zinc tone. */
+   *  themed to match the surrounding card. Defaults to the caption style. */
   messageClassName?: string;
   /** Render a plain link with no fetch interception. Required for slots that
    *  302-redirect the browser to an external origin — the fetch-into-a-blob
@@ -123,12 +123,12 @@ export default function DownloadButton({ href, className, children, messageClass
         <span style={busy ? { visibility: 'hidden' } : undefined}>{children}</span>
       </a>
       {waitSec !== null && (
-        <p className={messageClassName ?? 'mt-2 text-xs text-zinc-400'}>
+        <p className={messageClassName ?? 'caption mt-2'}>
           Please wait {waitSec} more second{waitSec === 1 ? '' : 's'} before downloading again.
         </p>
       )}
       {errMsg && (
-        <p className={messageClassName ?? 'mt-2 text-xs text-red-400'}>{errMsg}</p>
+        <p className={messageClassName ?? 'mt-2 text-[0.8125rem] text-[var(--ruby)]'}>{errMsg}</p>
       )}
     </>
   );

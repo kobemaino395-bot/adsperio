@@ -5,7 +5,7 @@ export type NewsletterIssue = {
   excerpt: string;
   publishedAt: string;
   readTime: string;
-  category: 'Paid Social' | 'SEO' | 'Creative' | 'Analytics' | 'CRO';
+  category: 'Paid Search' | 'Paid Social' | 'Measurement' | 'Creative';
   keywords: string[];
   body: Block[];
 };
@@ -35,7 +35,7 @@ export const issues: NewsletterIssue[] = [
 
       { type: 'h2', text: 'The audience is too small' },
       { type: 'p', text: 'This one is counterintuitive, and I remember being wrong about it for a long time myself. A 6,000-person audience of "perfect-fit" titles at 12 target accounts sounds like precision targeting. It\'s not. LinkedIn\'s algorithm needs a pool big enough to learn from, and when you hand it 6,000 people it just shows ads to whoever is easiest to reach — which tends to be people scrolling a lot, which tends to mean interns.' },
-      { type: 'p', text: 'Our rule of thumb is 100K+ audience size for cold prospecting. You narrow through creative and offer, not through layered filters. If you have strict ICP constraints, you use an inclusion list at the company level and leave seniority/function broad.' },
+      { type: 'p', text: 'Our hairline of thumb is 100K+ audience size for cold prospecting. You narrow through creative and offer, not through layered filters. If you have strict ICP constraints, you use an inclusion list at the company level and leave seniority/function broad.' },
       { type: 'callout', text: 'The exception is ABM plays where you\'re running to a named account list under 500 companies. That\'s a different motion entirely — treat those separately, don\'t mix them into your prospecting campaigns.' },
 
       { type: 'h2', text: 'The creative is a repurposed webinar' },
@@ -65,58 +65,59 @@ export const issues: NewsletterIssue[] = [
   },
 
   {
-    slug: 'technical-seo-enterprise-checklist',
+    slug: 'performance-max-audit-checklist',
     issueNo: 141,
-    title: 'Our actual technical SEO audit checklist.',
+    title: 'Our actual Performance Max checklist.',
     excerpt:
-      'Most audit decks are theater. This is the shorter, grumpier list we actually run against enterprise sites — in priority order.',
+      'Most PMax advice is either "it\'s a black box, relax" or "never run it". This is the shorter, grumpier list we run against every PMax campaign we inherit.',
     publishedAt: '2026-04-01',
-    readTime: '9 min read',
-    category: 'SEO',
-    keywords: ['technical SEO', 'enterprise SEO', 'SEO audit', 'Core Web Vitals'],
+    readTime: '8 min read',
+    category: 'Paid Search',
+    keywords: ['Performance Max', 'Google Ads', 'PMax audit', 'paid search', 'brand traffic'],
     body: [
-      { type: 'p', text: 'I have opinions about SEO audits. Specifically: most of them are too long, most of them aren\'t prioritized, and most of them include a huge pile of warnings from Screaming Frog that the client then spends six months trying to clear, none of which actually moves traffic.' },
-      { type: 'p', text: 'This is roughly the list we run when we onboard a new enterprise client. It\'s in order of what tends to matter most. We don\'t always check every item — sometimes we\'re 3 bullets in and realize the problem is somewhere else entirely. But this is the default starting point.' },
+      { type: 'p', text: 'I have opinions about Performance Max audits. Specifically: most of them stop at "we can\'t see inside it," which is both untrue and a convenient excuse. You can see quite a lot. It just takes a script, a bit of patience, and a willingness to find out that the campaign your predecessor was proudest of is mostly reselling you traffic you already had.' },
+      { type: 'p', text: 'This is roughly the list we run on takeover, in order of what tends to matter most. We rarely get through all of it — usually we\'re three items in and the problem is obvious. But this is the default starting point.' },
 
-      { type: 'h2', text: 'Can Google get to your pages?' },
-      { type: 'p', text: 'Seems basic. Is not. Every couple of months we onboard someone whose robots.txt is silently blocking a high-value directory because someone added a rule in 2021 and nobody remembers why.' },
+      { type: 'h2', text: 'Is it eating your brand traffic?' },
+      { type: 'p', text: 'This is the first thing, every time, and it is the single most common reason an inherited PMax campaign looks spectacular. Brand queries convert at 40%+ and cost almost nothing. Let PMax absorb them and its reported ROAS becomes a work of fiction.' },
       { type: 'list', items: [
-        'robots.txt reviewed line by line. If you don\'t know why a Disallow is there, delete it (after backing it up).',
-        'XML sitemap exists, returns 200, and matches the URLs you actually want indexed. Sitemaps listing redirected or noindexed URLs are surprisingly common.',
-        'Orphan pages — anything indexable but unlinked from the rest of the site. Usually old campaign pages or legacy blog posts.',
-        'Click depth: your money pages should be reachable within 3 clicks of the homepage. Past that, Google deprioritizes them.',
+        'Pull the search terms via script or the Insights report. If a double-digit share of conversions sit on your own brand name, the reported return is not a performance number, it is an accounting artefact.',
+        'Brand exclusions applied at campaign level — not account level, which does more than people expect.',
+        'A separate brand campaign that actually owns those queries, so you can see what they cost on their own.',
+        'Then run a holdout. Brand exclusions tell you where the traffic went; only a holdout tells you whether the spend was doing anything.',
       ]},
 
-      { type: 'h2', text: 'Is it getting indexed, and are the right URLs being treated as canonical?' },
-      { type: 'p', text: 'This is where most enterprise sites lose the plot. Faceted nav, session IDs, tracking parameters, internationalization — any one of these done wrong can bloat Google\'s crawl budget and leave your real pages under-crawled.' },
+      { type: 'h2', text: 'Can you see anything at all?' },
+      { type: 'p', text: 'The "black box" complaint is mostly a reporting problem. Google exposes more than the default interface shows, and if you are managing real money you should be pulling it.' },
       { type: 'list', items: [
-        'Canonical tags are self-referencing on the URL you want indexed. Not a redirect chain away.',
-        'Faceted / filter URLs are canonicalized or noindexed — one of the two, consistently.',
-        'GSC Pages report: indexed count vs sitemap count should be close. A big gap is a signal to dig.',
-        'No accidental noindex on important pages. Check templates, not just samples. We\'ve seen a single misplaced noindex tag knock an entire category off the index.',
+        'Asset group level reporting via script — the UI aggregates in a way that hides which group is carrying the campaign.',
+        'Channel distribution: how much is going to Display and YouTube versus Search. On accounts we inherit this is frequently 60%+ non-search and nobody knew.',
+        'Placement exclusions reviewed. Mobile app inventory is where budget quietly goes to die.',
+        'Search term insights exported monthly and kept, because Google\'s retention window is shorter than your memory.',
+      ]},
+      { type: 'callout', text: 'One we hit in February: a client\'s PMax was spending 71% of its budget on Display placements inside mobile games, at a reported 6.2x return. Actual incremental contribution, measured by geo holdout, was close enough to zero that we stopped the campaign and revenue did not move.' },
+
+      { type: 'h2', text: 'Is the feed doing the work?' },
+      { type: 'p', text: 'For retail, PMax is mostly a feed product wearing a campaign\'s clothes. If the feed is weak, no amount of bid strategy tinkering rescues it.' },
+      { type: 'list', items: [
+        'Titles front-load the attributes people actually search — brand, product type, size, colour. Not your internal SKU naming convention.',
+        'Products segmented by margin, not lumped into one asset group. You do not want your worst-margin items absorbing the budget.',
+        'Zero-sale products identified and either excluded or given their own low-budget group to test out of.',
+        'Custom labels for seasonality and stock level, so the campaign stops promoting things you cannot ship.',
       ]},
 
-      { type: 'h2', text: 'Core Web Vitals' },
-      { type: 'p', text: 'Still a ranking factor in 2026. More importantly, slow sites convert worse — so even when rankings don\'t budge, you usually see a CVR lift from fixing these. Use CrUX data (real users) not Lighthouse lab scores.' },
+      { type: 'h2', text: 'Is it optimising toward the right thing?' },
+      { type: 'p', text: 'PMax will do exactly what you tell it to, extremely efficiently, including when what you told it is wrong. This is where B2B accounts in particular come unstuck.' },
       { type: 'list', items: [
-        'LCP under 2.5s at the 75th percentile on mobile. Hero images are the usual culprit.',
-        'CLS under 0.1. Watch for late-loading ads, embedded videos without dimensions, and web fonts swapping.',
-        'INP under 200ms. This one is harder than the old FID. Usually it\'s third-party JS — tag managers, chat widgets, session replay tools all stacked up.',
-      ]},
-      { type: 'callout', text: 'A fun one we hit last year: a client\'s chat widget was adding 1.8 seconds of INP on every page. It had been there for two years. Nobody had connected it to traffic decline. We disabled it, traffic came back in six weeks.' },
-
-      { type: 'h2', text: 'Structured data' },
-      { type: 'p', text: 'Easy to implement, easy to get wrong, genuinely does help with rich results and (we suspect, though Google is cagey) with general understanding of your pages.' },
-      { type: 'list', items: [
-        'Organization schema on the homepage.',
-        'BreadcrumbList on every inner page.',
-        'Product / Article / FAQPage schema where applicable.',
-        'Validate in the Rich Results Test, not just Schema.org. Google is stricter than the spec.',
+        'The conversion action being optimised toward is the one that correlates with revenue, not the cheapest event on the page.',
+        'For lead gen: offline conversions piped back from the CRM. Without them you are optimising for form fills, and you will get an enormous number of very cheap ones.',
+        'Conversion values are real values, not a flat placeholder someone set in 2023 and forgot.',
+        'Target ROAS reflects contribution margin, not revenue. These are different numbers and the gap between them is where profitability disappears.',
       ]},
 
-      { type: 'h2', text: 'What we don\'t audit (on purpose)' },
-      { type: 'p', text: 'Meta description pixel length. Title tag tweaks for "power words." Keyword density. LSI keywords, whatever those are supposed to be in 2026. Most content plugins\' "SEO scores." These are all either noise or actively outdated.' },
-      { type: 'p', text: 'If you\'re getting an audit back that spends more time on those than on the four sections above, ask for your money back.' },
+      { type: 'h2', text: 'What we don\'t bother auditing' },
+      { type: 'p', text: 'Asset strength ratings. Whether you have exactly five headlines or four. The "ad strength" score generally. Adding more audience signals in the hope that something sticks. These are either noise or, in the case of audience signals on a mature campaign, close to decorative.' },
+      { type: 'p', text: 'If you get an audit back that spends more time on asset strength than on the four sections above, ask for your money back.' },
     ],
   },
 
@@ -167,7 +168,7 @@ export const issues: NewsletterIssue[] = [
       'Last-click attribution has been degrading for years. Here\'s how we\'re thinking about it now, and what we\'ve stopped promising clients.',
     publishedAt: '2026-03-18',
     readTime: '8 min read',
-    category: 'Analytics',
+    category: 'Measurement',
     keywords: ['marketing attribution', 'multi-touch attribution', 'incrementality', 'privacy'],
     body: [
       { type: 'p', text: 'I\'m going to say something that will make half of you uncomfortable: session-level attribution is essentially dead in 2026, and no tool is going to bring it back. Not Triple Whale, not HockeyStack, not whatever you saw on LinkedIn yesterday. These tools are useful — we use a couple of them — but they don\'t solve the underlying problem, which is that user journeys are now genuinely invisible.' },
@@ -204,7 +205,7 @@ export const issues: NewsletterIssue[] = [
       'A real CRO project from last quarter. Some of these lifts are bigger than they should be, some are smaller. The total is what matters.',
     publishedAt: '2026-03-11',
     readTime: '10 min read',
-    category: 'CRO',
+    category: 'Creative',
     keywords: ['landing page optimization', 'conversion rate optimization', 'CRO', 'SaaS marketing'],
     body: [
       { type: 'p', text: 'Last quarter we reworked the primary landing page for a B2B SaaS client — I\'ll leave them nameless. Original baseline was 2.1% conversion to demo request. Ending CVR after a 3-week sprint was 3.0%. Net lift of 43%.' },

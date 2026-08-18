@@ -104,9 +104,9 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
 
   if (status === 'success') {
     return (
-      <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
-        <h3 className="font-serif text-2xl font-light tracking-[-0.01em]">Thanks — we&apos;ve received your application.</h3>
-        <p className="mt-3 text-sm font-light leading-relaxed text-[var(--color-fg-muted)]">
+      <div className="card bg-canvas-soft p-8">
+        <h3 className="display-3">Thanks — we&apos;ve received your application.</h3>
+        <p className="text-ink-mute mt-3 leading-relaxed">
           We review every submission{showTestUpload ? ' and your Technical Assessment' : ''} carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
@@ -138,16 +138,16 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
         )}
       </div>
 
-      <label className="flex items-start gap-3 text-sm text-ink-muted">
-        <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--color-accent)]" />
+      <label className="text-ink-mute flex items-start gap-3 text-[0.875rem] leading-relaxed">
+        <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--indigo)]" />
         <span>
-          I consent to GrowthVireX processing the data in this form for the purpose of recruiting for this role,
-          and storing it for up to 12 months. I can request deletion at any time by emailing hiring@growthvirex.com.
+          I consent to AdsPerio processing the data in this form for the purpose of recruiting for this role,
+          and storing it for up to 12 months. I can request deletion at any time by emailing hiring@adsperio.com.
         </span>
       </label>
 
       {status === 'error' && (
-        <div className="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="rounded-lg border border-[color-mix(in_oklab,var(--ruby)_45%,transparent)] bg-[color-mix(in_oklab,var(--ruby)_10%,transparent)] px-4 py-3 text-[0.875rem] text-[var(--ruby)]">
           {errorMsg}
         </div>
       )}
@@ -155,8 +155,7 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
       <button
         type="submit"
         disabled={status === 'submitting'}
-        className="inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-60"
-        style={{ boxShadow: 'var(--shadow-brutal)' }}
+        className="btn btn-solid disabled:cursor-not-allowed disabled:opacity-60"
       >
         {status === 'submitting' ? 'Submitting…' : 'Submit application →'}
       </button>
@@ -166,12 +165,12 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
 
 function LabelRow({ label, optional }: { label: string; optional?: boolean }) {
   return (
-    <span className="block font-mono text-[0.65rem] uppercase leading-snug tracking-[0.2em] text-ink-muted">
+    <span className="field-label">
       {label}
       {optional && (
         <>
           {' '}
-          <span className="ml-1 inline-block translate-y-[-1px] rounded-full border border-[var(--color-border)] px-1.5 py-px align-middle text-[0.55rem] tracking-[0.15em] text-ink-muted/80">
+          <span className="border-hairline text-ink-mute ml-1 inline-block translate-y-[-1px] rounded-full border px-1.5 py-px align-middle text-[0.625rem] font-normal">
             Optional
           </span>
         </>
@@ -204,7 +203,7 @@ function Field({ label, name, type = 'text', required, optional, placeholder, mi
         min={min}
         max={max}
         step={step}
-        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="field"
       />
     </label>
   );
@@ -220,7 +219,7 @@ function TextArea({ label, name, required, optional, minLength, maxLength, rows 
         minLength={minLength}
         maxLength={maxLength}
         rows={rows}
-        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="field"
       />
     </label>
   );
@@ -234,7 +233,7 @@ function CountryField({ label, name, required }: { label: string; name: string; 
         name={name}
         required={required}
         defaultValue=""
-        className="mt-2 w-full rounded-md border border-[var(--color-border-input)] bg-[var(--color-bg)] px-3 py-2 text-sm font-light text-[var(--color-fg)] focus:border-[var(--color-accent)] focus:outline-none"
+        className="field"
       >
         <option value="" disabled>Select your country…</option>
         {COUNTRIES.map((c) => (
@@ -250,7 +249,7 @@ function FileField({ label, name, required, optional, accept, hint }: { label: s
     <label className="block">
       <LabelRow label={label} optional={optional} />
       {hint && (
-        <span className="mt-1 block font-mono text-[0.55rem] uppercase tracking-[0.2em] text-ink-muted/70">
+        <span className="caption mb-1.5 block">
           {hint}
         </span>
       )}
@@ -259,7 +258,7 @@ function FileField({ label, name, required, optional, accept, hint }: { label: s
         name={name}
         required={required}
         accept={accept}
-        className="mt-2 block w-full text-sm text-ink-muted file:mr-3 file:rounded-md file:border-0 file:bg-[var(--color-ink-warm)] file:px-3 file:py-2 file:text-xs file:font-medium file:text-[var(--color-bg)]"
+        className="text-ink-mute block w-full text-[0.875rem] file:mr-3 file:rounded-full file:border-0 file:bg-[var(--indigo)] file:px-4 file:py-2 file:text-[0.8125rem] file:font-medium file:text-white hover:file:bg-[var(--indigo-deep)]"
       />
     </label>
   );

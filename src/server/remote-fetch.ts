@@ -1,7 +1,6 @@
 import 'server-only';
 import https from 'https';
 import http from 'http';
-// @ts-ignore — socks-proxy-agent may not have types installed
 import { SocksProxyAgent } from 'socks-proxy-agent';
 
 export const REMOTE_TIMEOUT_MS = 20_000;

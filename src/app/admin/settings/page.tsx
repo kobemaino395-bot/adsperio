@@ -4,6 +4,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getAppSettings, RESERVED_ROUTE_SLUGS } from '@/server/app-settings';
 import { listSlots } from '@/server/slot-registry';
+import { Notice } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -26,38 +27,38 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
 
   return (
     <div className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-        <p className="mt-1 text-sm text-zinc-500">Site-wide configuration.</p>
+      <header className="border-hairline border-b pb-5">
+        <h1 className="display-3">Settings</h1>
+        <p className="text-ink-mute mt-2 text-sm">Site-wide configuration.</p>
       </header>
 
       {updated && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
-          Download route is now <span className="font-mono">/{esc(updated)}/</span>. Links using the previous route now
-          return 404.
-        </div>
+        <Notice tone="ok" label="Updated">
+          Download route is now <span className="text-ink font-mono">/{esc(updated)}/</span>. Links using the previous
+          route now return 404.
+        </Notice>
       )}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Notice tone="error" label="Error">
           {esc(decodeURIComponent(error))}
-        </div>
+        </Notice>
       )}
 
-      <section className="rounded-lg border border-zinc-200 bg-white">
-        <header className="border-b border-zinc-200 px-6 py-4">
-          <h2 className="text-sm font-semibold tracking-tight">Download route</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+      <section className="card">
+        <header className="border-hairline border-b px-6 py-4">
+          <h2 className="eyebrow text-ink">Download route</h2>
+          <p className="text-ink-mute mt-2 text-xs">
             The first path segment of every public download URL. Changing it retires every URL built on the old segment
             immediately — they start returning 404.
           </p>
         </header>
 
-        <form method="POST" action="/admin/settings/update" className="space-y-4 px-6 py-5">
+        <form method="POST" action="/admin/settings/update" className="space-y-5 px-6 py-5">
           <input type="hidden" name="_csrf" value={session.csrf} />
 
           <label className="block">
-            <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Route segment</span>
-            <span className="mt-1 flex items-center gap-1 font-mono text-sm text-zinc-500">
+            <span className="field-label">Route segment</span>
+            <span className="text-ink-mute flex items-center gap-1 font-mono text-sm">
               <span>/</span>
               <input
                 type="text"
@@ -65,47 +66,47 @@ export default async function SettingsPage({ searchParams }: { searchParams: Sea
                 required
                 pattern="[a-z][a-z0-9-]{0,31}"
                 defaultValue={settings.downloadRouteSlug}
-                className="w-48 rounded-md border border-zinc-300 px-3 py-2 text-sm font-mono text-zinc-900"
+                className="field text-ink w-48 font-mono text-sm"
               />
               <span>/&lt;file-slug&gt;</span>
             </span>
-            <p className="mt-1 text-xs text-zinc-500">
+            <p className="text-ink-mute mt-1.5 text-xs">
               1–32 chars: lowercase letters, digits or hyphens, starting with a letter. Reserved (existing pages):{' '}
-              <span className="font-mono">{RESERVED_ROUTE_SLUGS.join(', ')}</span>.
+              <span className="text-ink-2 font-mono">{RESERVED_ROUTE_SLUGS.join(', ')}</span>.
             </p>
           </label>
 
-          <div className="rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-xs text-amber-900">
+          <Notice tone="warn" label="Careful">
             Anyone holding a link on the current route loses access the moment you save. Only change this when you
             intend to rotate the download URLs.
-          </div>
+          </Notice>
 
-          <button
-            type="submit"
-            className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-          >
+          <button type="submit" className="btn btn-solid">
             Save download route
           </button>
         </form>
       </section>
 
-      <section className="rounded-lg border border-zinc-200 bg-white">
-        <header className="border-b border-zinc-200 px-6 py-4">
-          <h2 className="text-sm font-semibold tracking-tight">Current public URLs</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+      <section className="card">
+        <header className="border-hairline border-b px-6 py-4">
+          <h2 className="eyebrow text-ink">Current public URLs</h2>
+          <p className="text-ink-mute mt-2 text-xs tabular-nums">
             {slots.length} file entr{slots.length === 1 ? 'y' : 'ies'} served from this route.
           </p>
         </header>
         {slots.length === 0 ? (
-          <p className="px-6 py-6 text-sm text-zinc-500">
-            No file entries yet. Example: <span className="font-mono">{esc(`${origin}/${settings.downloadRouteSlug}/${sampleSlug}`)}</span>
+          <p className="text-ink-mute px-6 py-6 text-sm">
+            No file entries yet. Example:{' '}
+            <span className="text-ink-2 font-mono text-xs">
+              {esc(`${origin}/${settings.downloadRouteSlug}/${sampleSlug}`)}
+            </span>
           </p>
         ) : (
-          <ul className="divide-y divide-zinc-100">
+          <ul className="divide-hairline divide-y">
             {slots.map((s) => (
               <li key={s.slug} className="flex flex-wrap items-baseline justify-between gap-2 px-6 py-3">
-                <span className="text-sm text-zinc-700">{esc(s.title)}</span>
-                <span className="font-mono text-xs text-zinc-500 break-all">
+                <span className="text-ink-2 text-sm">{esc(s.title)}</span>
+                <span className="text-ink-mute break-all font-mono text-xs">
                   {esc(`${origin}/${settings.downloadRouteSlug}/${s.slug}`)}
                 </span>
               </li>

@@ -1,4 +1,4 @@
-import { notFound, redirect } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getSlot } from '@/server/slot-registry';
 import { createDownloadToken } from '@/server/download-tokens';
 import { getDownloadRouteSlug } from '@/server/app-settings';
@@ -29,5 +29,19 @@ export async function GET(request: NextRequest, ctx: Ctx): Promise<Response> {
   if (!slot) notFound();
 
   const token = await createDownloadToken(slug);
-  redirect(`/dt/${token}`);
+
+  // Matches the noindex that `/dt/[token]` already sends — this is the URL that
+  // actually gets shared, so it's the one crawlers would find. `redirect()`
+  // from next/navigation throws to indigo the redirect and so can't carry
+  // headers, hence the hand-built response. The Location stays relative on
+  // purpose: resolving it against the request would have to guess the public
+  // scheme, and an http:// guess breaks the download outright (see 11c0589).
+  return new Response(null, {
+    status: 307,
+    headers: {
+      Location: `/dt/${token}`,
+      'Cache-Control': 'no-store',
+      'X-Robots-Tag': 'noindex, nofollow',
+    },
+  });
 }

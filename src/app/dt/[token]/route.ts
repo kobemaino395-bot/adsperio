@@ -115,57 +115,57 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
   <meta name="referrer" content="no-referrer">
   <meta name="robots" content="noindex, nofollow">
   <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-  <title>Secure Download — GrowthVireX</title>
+  <title>Secure Download — AdsPerio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
   <style>
+    /* Standalone page — mirrors the tokens in globals.css by hand, since this
+       response is served outside the React tree. */
     :root {
-      --color-bg: #ffffff;
-      --color-fg: #0d253d;
-      --color-fg-muted: #64748d;
-      --color-border: #e3e8ee;
-      --color-accent: #533afd;
-      --color-accent-deep: #4434d4;
-      --color-accent-press: #2e2b8c;
-      --color-zest-50: #eef0ff;
-      --shadow-lg: 0 24px 60px rgba(0,55,112,0.12), 0 6px 18px rgba(0,55,112,0.06);
+      --canvas: #ffffff;
+      --canvas-soft: #f6f9fc;
+      --ink: #0d253d;
+      --ink-2: #273951;
+      --ink-mute: #64748d;
+      --hairline: #e3e8ee;
+      --hairline-strong: #a8c3de;
+      --indigo: #533afd;
+      --indigo-deep: #4434d4;
+      --indigo-ink: #ffffff;
       --radius: 12px;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --color-bg: #0b1020;
-        --color-fg: #eef1fb;
-        --color-fg-muted: #8a93b4;
-        --color-border: rgba(255,255,255,0.10);
-        --color-accent: #6f63ff;
-        --color-accent-deep: #9a90ff;
-        --color-accent-press: #5a4ef0;
-        --color-zest-50: rgba(111,99,255,0.16);
-        --shadow-lg: 0 24px 60px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.4);
+        --canvas: #0a1a2f;
+        --canvas-soft: #0f2439;
+        --ink: #eef4fb;
+        --ink-2: #bfcfe2;
+        --ink-mute: #8298b3;
+        --hairline: rgba(227,232,238,0.14);
+        --hairline-strong: rgba(168,195,222,0.38);
+        --indigo: #7d6dff;
       }
     }
     :root[data-theme="dark"] {
-      --color-bg: #0b1020;
-      --color-fg: #eef1fb;
-      --color-fg-muted: #8a93b4;
-      --color-border: rgba(255,255,255,0.10);
-      --color-accent: #6f63ff;
-      --color-accent-deep: #9a90ff;
-      --color-accent-press: #5a4ef0;
-      --color-zest-50: rgba(111,99,255,0.16);
-      --shadow-lg: 0 24px 60px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.4);
+      --canvas: #0a1a2f;
+      --canvas-soft: #0f2439;
+      --ink: #eef4fb;
+      --ink-2: #bfcfe2;
+      --ink-mute: #8298b3;
+      --hairline: rgba(227,232,238,0.14);
+      --hairline-strong: rgba(168,195,222,0.38);
+      --indigo: #7d6dff;
     }
     :root[data-theme="light"] {
-      --color-bg: #ffffff;
-      --color-fg: #0d253d;
-      --color-fg-muted: #64748d;
-      --color-border: #e3e8ee;
-      --color-accent: #533afd;
-      --color-accent-deep: #4434d4;
-      --color-accent-press: #2e2b8c;
-      --color-zest-50: #eef0ff;
-      --shadow-lg: 0 24px 60px rgba(0,55,112,0.12), 0 6px 18px rgba(0,55,112,0.06);
+      --canvas: #ffffff;
+      --canvas-soft: #f6f9fc;
+      --ink: #0d253d;
+      --ink-2: #273951;
+      --ink-mute: #64748d;
+      --hairline: #e3e8ee;
+      --hairline-strong: #a8c3de;
+      --indigo: #533afd;
     }
     * {
       margin: 0;
@@ -177,11 +177,12 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       text-rendering: optimizeLegibility;
     }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Inter', 'SF Pro Display', system-ui, -apple-system, sans-serif;
       font-feature-settings: "ss01";
-      font-weight: 300;
-      background: var(--color-bg);
-      color: var(--color-fg);
+      
+      font-weight: 400;
+      background: var(--canvas);
+      color: var(--ink);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -193,10 +194,13 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       position: absolute;
       top: 2rem;
       left: 2rem;
-      font-size: 1.375rem;
-      font-weight: 300;
-      letter-spacing: -0.02em;
-      color: var(--color-fg);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 1.0625rem;
+      font-weight: 600;
+      letter-spacing: -0.022em;
+      color: var(--ink);
       text-decoration: none;
       transition: opacity 0.18s ease;
     }
@@ -209,26 +213,26 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       text-align: center;
     }
     .label {
-      font-size: 0.7rem;
-      font-weight: 400;
-      letter-spacing: 0.14em;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: var(--color-accent-deep);
+      color: var(--indigo);
       margin-bottom: 1.25rem;
     }
     h1 {
       font-size: 2.5rem;
       font-weight: 300;
       line-height: 1.05;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.025em;
       margin-bottom: 1rem;
       text-wrap: balance;
     }
     p {
       font-size: 1rem;
-      font-weight: 300;
+      font-weight: 400;
       line-height: 1.6;
-      color: var(--color-fg-muted);
+      color: var(--ink-mute);
       margin-bottom: 2.5rem;
       max-width: 28rem;
       margin-left: auto;
@@ -236,7 +240,7 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
     }
     p strong {
       font-weight: 400;
-      color: var(--color-fg);
+      color: var(--ink);
     }
     .btn {
       display: inline-flex;
@@ -244,31 +248,26 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       justify-content: center;
       gap: 0.5rem;
       border-radius: 9999px;
-      background: var(--color-accent);
+      background: var(--indigo);
       padding: 0.7rem 1.4rem;
-      font-weight: 400;
+      font-weight: 500;
       font-size: 1rem;
       line-height: 1;
-      color: #ffffff;
+      color: var(--indigo-ink);
       text-decoration: none;
-      transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-      box-shadow: 0 1px 2px rgba(46,43,140,0.25);
+      transition: background 0.15s ease;
       cursor: pointer;
     }
     .btn:hover {
-      background: var(--color-accent-deep);
-      transform: translateY(-1px);
-    }
-    .btn:active {
-      background: var(--color-accent-press);
-      transform: translateY(0);
+      background: var(--indigo-deep);
     }
     .card {
       margin-top: 3rem;
       padding: 1.5rem;
-      border: 1px solid var(--color-border);
+      border: 1px solid var(--hairline);
       border-radius: var(--radius);
-      background: var(--color-bg);
+      background: var(--canvas);
+      box-shadow: rgba(0, 55, 112, 0.08) 0 1px 3px;
     }
     .status {
       display: flex;
@@ -276,14 +275,14 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
       justify-content: center;
       gap: 0.75rem;
       font-size: 0.875rem;
-      font-weight: 300;
-      color: var(--color-fg-muted);
+      font-weight: 400;
+      color: var(--ink-mute);
     }
     .spinner {
       width: 14px;
       height: 14px;
-      border: 2px solid var(--color-zest-50);
-      border-top-color: var(--color-accent);
+      border: 2px solid var(--hairline);
+      border-top-color: var(--indigo);
       border-radius: 50%;
       animation: spin 0.7s linear infinite;
     }
@@ -313,7 +312,14 @@ async function serveNewTabRedirect(slug: string, title: string, remoteUrl: strin
   </style>
 </head>
 <body>
-  <a href="https://growthvirex.com" class="logo">GrowthVireX</a>
+  <a href="https://adsperio.com" class="logo">
+    <svg width="24" height="24" viewBox="0 0 32 32" fill="none" aria-hidden="true">
+      <path d="M5.2 28 14.3 5" stroke="var(--ink)" stroke-width="4.6" stroke-linecap="round"/>
+      <path d="M17.7 5 26.8 28" stroke="var(--ink)" stroke-width="4.6" stroke-linecap="round"/>
+      <path d="M9.6 19.8H22.4" stroke="var(--indigo)" stroke-width="4.6" stroke-linecap="round"/>
+    </svg>
+    AdsPerio
+  </a>
   <div class="container">
     <div class="label">Secure delivery</div>
     <h1>Your download is ready.</h1>

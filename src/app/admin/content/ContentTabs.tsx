@@ -9,16 +9,16 @@ export default function ContentTabs({ active }: { active: Tab }) {
     { id: 'files', label: 'Files', href: '/admin/content/files' },
   ];
   return (
-    <nav className="flex gap-1 border-b border-zinc-200">
+    <nav className="border-hairline flex gap-7 border-b">
       {tabs.map((t) => (
         <Link
           key={t.id}
           href={t.href}
           className={
-            'border-b-2 px-4 py-2 text-sm font-medium transition ' +
+            '-mb-px border-b-2 pb-3 text-[0.875rem] font-medium leading-none transition-colors ' +
             (t.id === active
-              ? 'border-zinc-900 text-zinc-900'
-              : 'border-transparent text-zinc-500 hover:text-zinc-900')
+              ? 'border-ink text-ink'
+              : 'border-transparent text-ink-mute hover:text-ink')
           }
         >
           {t.label}

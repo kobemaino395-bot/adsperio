@@ -4,6 +4,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { readBanner } from '@/server/content/banner';
 import ContentTabs from '../ContentTabs';
+import { Notice } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,31 +23,31 @@ export default async function BannerPage({ searchParams }: { searchParams: Searc
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-2xl font-semibold tracking-tight">Content</h1>
-        <p className="mt-1 text-sm text-zinc-500">Banner, careers positions, and downloadable files.</p>
+        <h1 className="display-3">Content</h1>
+        <p className="text-ink-mute mt-2 text-sm">Banner, careers positions, and downloadable files.</p>
       </header>
       <ContentTabs active="banner" />
 
       {ok && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">
+        <Notice tone="ok" label="Saved">
           Banner saved.
-        </div>
+        </Notice>
       )}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Notice tone="error" label="Error">
           {esc(decodeURIComponent(error))}
-        </div>
+        </Notice>
       )}
 
-      <section className="rounded-lg border border-zinc-200 bg-white">
-        <header className="border-b border-zinc-200 px-6 py-4">
-          <h2 className="text-sm font-semibold tracking-tight">Hiring banner</h2>
-          <p className="mt-1 text-xs text-zinc-500">
+      <section className="card">
+        <header className="border-hairline border-b px-6 py-4">
+          <h2 className="eyebrow text-ink">Hiring banner</h2>
+          <p className="text-ink-mute mt-2 text-xs">
             Shown at the top of every public page. Auto-hides on the page the CTA links to.
             Visitors can dismiss it locally (remembered in localStorage).
           </p>
         </header>
-        <form method="POST" action="/admin/content/banner/save" className="space-y-5 px-6 py-5">
+        <form method="POST" action="/admin/content/banner/save" className="space-y-6 px-6 py-5">
           <input type="hidden" name="_csrf" value={session.csrf} />
 
           <label className="flex items-start gap-3 text-sm">
@@ -54,11 +55,11 @@ export default async function BannerPage({ searchParams }: { searchParams: Searc
               type="checkbox"
               name="enabled"
               defaultChecked={cfg.enabled}
-              className="mt-0.5 h-4 w-4"
+              className="accent-ink mt-0.5 h-4 w-4"
             />
             <span>
               <span className="font-medium">Enabled</span>
-              <span className="mt-0.5 block text-xs text-zinc-500">
+              <span className="text-ink-mute mt-0.5 block text-xs">
                 When off, the banner doesn&apos;t render on any public page.
               </span>
             </span>
@@ -92,14 +93,11 @@ export default async function BannerPage({ searchParams }: { searchParams: Searc
             />
           </div>
 
-          <div className="flex items-center gap-3">
-            <button
-              type="submit"
-              className="rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-            >
+          <div className="flex flex-wrap items-center gap-4">
+            <button type="submit" className="btn btn-solid">
               Save banner
             </button>
-            <span className="text-xs text-zinc-500">Changes apply on next page load.</span>
+            <span className="caption">Changes apply on next page load.</span>
           </div>
         </form>
       </section>
@@ -112,16 +110,13 @@ function Field({
 }: { label: string; name: string; defaultValue?: string; placeholder?: string; mono?: boolean }) {
   return (
     <label className="block">
-      <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">{label}</span>
+      <span className="field-label">{label}</span>
       <input
         type="text"
         name={name}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        className={
-          'mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm ' +
-          (mono ? 'font-mono' : '')
-        }
+        className={'field ' + (mono ? 'font-mono text-sm' : '')}
       />
     </label>
   );

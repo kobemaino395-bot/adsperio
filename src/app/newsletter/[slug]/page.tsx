@@ -1,253 +1,243 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
+import Reveal from '@/components/ui/Reveal';
+import GradientMesh from '@/components/mesh/GradientMesh';
 import { issues, getIssueBySlug, type Block } from '@/content/newsletter';
 import { site } from '@/content/site';
 
-type Params = { slug: string };
+type Params = Promise<{ slug: string }>;
 
-export const dynamicParams = false;
-
-export function generateStaticParams(): Params[] {
+export function generateStaticParams() {
   return issues.map((i) => ({ slug: i.slug }));
 }
 
-export async function generateMetadata(
-  { params }: { params: Promise<Params> }
-): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
   const issue = getIssueBySlug(slug);
-  if (!issue) return {};
-  const canonical = `/newsletter/${issue.slug}/`;
+  if (!issue) return { robots: { index: false, follow: false } };
+
   return {
-    title: `${issue.title} — Issue #${issue.issueNo}`,
+    title: issue.title,
     description: issue.excerpt,
-    keywords: issue.keywords,
-    alternates: { canonical },
+    keywords: [...issue.keywords],
+    alternates: { canonical: `/newsletter/${issue.slug}/` },
     openGraph: {
-      title: issue.title,
-      description: issue.excerpt,
-      url: `${site.url}${canonical}`,
       type: 'article',
+      url: `${site.url}/newsletter/${issue.slug}/`,
+      siteName: site.name,
+      title: `${issue.title} · ${site.name}`,
+      description: issue.excerpt,
       publishedTime: issue.publishedAt,
-      authors: [site.name],
     },
-    twitter: { card: 'summary_large_image', title: issue.title, description: issue.excerpt },
   };
 }
 
-function renderBlock(block: Block, i: number) {
+const fmtDate = (iso: string) =>
+  new Date(`${iso}T00:00:00Z`).toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
+
+/** Renders one content block. Each variant gets a genuinely different
+ *  treatment — otherwise the long pieces turn into grey soup. */
+function BlockView({ block }: { block: Block }) {
   switch (block.type) {
     case 'h2':
       return (
-        <h2 key={i} className="prose-heading mt-14 mb-5 font-serif text-[1.75rem] font-light leading-[1.2] tracking-[-0.02em] md:text-[2.125rem]">
+        <h2 className="display-3 border-hairline mt-12 border-t pt-8 text-[clamp(1.375rem,2.4vw,1.75rem)] first:mt-0 first:border-0 first:pt-0">
           {block.text}
         </h2>
       );
+
     case 'h3':
-      return (
-        <h3 key={i} className="mt-10 mb-3 font-serif text-[1.375rem] font-normal leading-snug tracking-[-0.01em]">
-          {block.text}
-        </h3>
-      );
+      return <h3 className="mt-9 text-[1.125rem] font-medium tracking-[-0.015em]">{block.text}</h3>;
+
     case 'p':
-      return (
-        <p key={i} className="prose-p mb-6 font-serif text-[1.1875rem] leading-[1.75] text-[var(--color-fg)]/90">
-          {block.text}
-        </p>
-      );
+      return <p className="text-ink-2 mt-5 text-[1.0625rem] leading-[1.7]">{block.text}</p>;
+
     case 'list':
       return (
-        <ul key={i} className="mb-8 ml-0 list-none space-y-3 border-l border-[var(--color-border)] pl-6 font-serif text-[1.1875rem] leading-[1.7] text-[var(--color-fg)]/90">
-          {block.items.map((item, j) => (
-            <li key={j} className="relative before:absolute before:-left-[1.75rem] before:top-[0.65em] before:font-sans before:text-xs before:text-ink-muted before:content-[counter(list-item)'.']">
-              {item}
+        <ul className="mt-6 space-y-3">
+          {block.items.map((item) => (
+            <li key={item.slice(0, 32)} className="flex gap-3.5">
+              <span aria-hidden className="text-indigo-text mt-[0.45rem] shrink-0">
+                <svg width="12" height="9" viewBox="0 0 12 9" fill="none">
+                  <path
+                    d="M1 4.5L4.5 8L11 1"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+              <span className="text-ink-2 leading-relaxed">{item}</span>
             </li>
           ))}
         </ul>
       );
+
     case 'quote':
       return (
-        <figure key={i} className="my-12 border-t border-b border-[var(--color-border)] py-10">
-          <blockquote className="font-serif text-[1.5rem] leading-[1.4] tracking-tight text-[var(--color-fg)] md:text-[1.875rem]">
-            {block.text}
+        <figure className="my-10 rounded-r-lg border-l-2 border-l-[var(--indigo)] py-2 pl-6">
+          <blockquote className="text-[1.25rem] leading-snug font-light tracking-[-0.015em]">
+            “{block.text}”
           </blockquote>
-          {block.cite && (
-            <figcaption className="mt-5 font-sans text-xs uppercase tracking-[0.18em] text-ink-muted">
-              — {block.cite}
-            </figcaption>
-          )}
+          {block.cite && <figcaption className="caption mt-3">{block.cite}</figcaption>}
         </figure>
       );
+
     case 'callout':
       return (
-        <p key={i} className="my-8 border-l-2 border-[var(--color-fg)] pl-6 font-serif text-[1.0625rem] italic leading-[1.7] text-ink-muted">
-          {block.text}
-        </p>
+        <aside className="border-hairline bg-canvas-soft my-9 rounded-xl border p-6">
+          <span className="eyebrow">In practice</span>
+          <p className="mt-3 leading-relaxed">{block.text}</p>
+        </aside>
       );
+
+    default:
+      return null;
   }
 }
 
-export default async function IssuePage({ params }: { params: Promise<Params> }) {
+export default async function IssuePage({ params }: { params: Params }) {
   const { slug } = await params;
   const issue = getIssueBySlug(slug);
   if (!issue) notFound();
 
-  const formattedDate = new Date(issue.publishedAt).toLocaleDateString('en-US', {
-    year: 'numeric', month: 'long', day: 'numeric',
-  });
+  const ordered = [...issues].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
+  const idx = ordered.findIndex((i) => i.slug === issue.slug);
+  const newer = idx > 0 ? ordered[idx - 1] : null;
+  const older = idx < ordered.length - 1 ? ordered[idx + 1] : null;
 
-  const nextIssue = issues.find((i) => i.issueNo === issue.issueNo + 1);
-  const prevIssue = issues.find((i) => i.issueNo === issue.issueNo - 1);
-
-  const articleSchema = {
+  const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'NewsArticle',
+    '@type': 'Article',
     headline: issue.title,
     description: issue.excerpt,
     datePublished: issue.publishedAt,
+    url: `${site.url}/newsletter/${issue.slug}/`,
     author: { '@type': 'Organization', name: site.name, url: site.url },
-    publisher: {
-      '@type': 'Organization',
-      name: site.name,
-      logo: { '@type': 'ImageObject', url: `${site.url}/favicon.svg` },
-    },
-    mainEntityOfPage: `${site.url}/newsletter/${issue.slug}/`,
+    publisher: { '@type': 'Organization', name: site.name, url: site.url },
     keywords: issue.keywords.join(', '),
   };
 
   return (
-    <main className="bg-[var(--color-bg)]">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }} />
+    <main>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
 
-      {/* THIN TOP METADATA BAR */}
-      <div className="border-b border-[var(--color-border)] pt-24">
-        <div className="container-zest py-5">
-          <div className="flex items-center justify-between text-[0.7rem] font-medium uppercase tracking-[0.18em] text-ink-muted">
-            <Link href="/newsletter/" className="transition hover:text-[var(--color-fg)]">
-              ← The Growth Engine
-            </Link>
-            <div className="flex items-center gap-4">
-              <span>Issue No. {issue.issueNo}</span>
-              <span className="hidden md:inline">·</span>
-              <span className="hidden md:inline">{formattedDate}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* ── Masthead ── */}
+      <section className="mesh-host overflow-hidden pt-16">
+        <GradientMesh height="h-[22rem] md:h-[26rem]" />
+        <div className="wrap-tight py-14 md:py-20">
+          <Reveal>
+            <nav aria-label="Breadcrumb" className="eyebrow flex items-center gap-2">
+              <Link href="/newsletter/" className="hover:text-indigo-deep transition-colors">
+                Notes
+              </Link>
+              <span aria-hidden className="opacity-50">
+                /
+              </span>
+              <span className="text-ink-mute">
+                No. {String(issue.issueNo).padStart(3, '0')}
+              </span>
+            </nav>
+          </Reveal>
 
-      {/* EDITORIAL MASTHEAD */}
-      <header className="border-b border-[var(--color-border)]">
-        <div className="container-zest py-20 md:py-28">
-          <div className="mx-auto max-w-3xl">
-            <div className="mb-10 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-              {issue.category} &nbsp;/&nbsp; {issue.readTime}
-            </div>
-            <h1 className="font-serif text-[2.5rem] font-light leading-[1.04] tracking-[-0.04em] md:text-[4rem] lg:text-[4.5rem]">
-              {issue.title}
-            </h1>
-            <p className="mt-8 max-w-2xl font-serif text-[1.25rem] font-light leading-[1.5] text-[var(--color-fg-muted)] md:text-[1.375rem]">
-              {issue.excerpt}
-            </p>
-            <div className="mt-12 flex items-center gap-3 text-[0.75rem] uppercase tracking-[0.15em] text-ink-muted">
-              <span className="inline-block h-px w-10 bg-[var(--color-fg)]" />
-              <span>By the {site.shortName} editorial team</span>
-            </div>
-          </div>
-        </div>
-      </header>
+          <Reveal delay={80}>
+            <h1 className="display-2 mt-5 max-w-[20ch]">{issue.title}</h1>
+          </Reveal>
 
-      {/* ARTICLE BODY */}
-      <article className="container-zest">
-        <div className="mx-auto max-w-[38rem] py-20">
-          {/* Drop cap on first paragraph */}
-          <style>{`
-            .dropcap > p:first-of-type::first-letter {
-              float: left;
-              font-family: ui-serif, Georgia, serif;
-              font-size: 4.5rem;
-              line-height: 0.85;
-              padding: 0.3rem 0.6rem 0 0;
-              font-weight: 500;
-            }
-          `}</style>
-          <div className="dropcap">
-            {issue.body.map(renderBlock)}
-          </div>
+          <Reveal delay={140}>
+            <p className="lede mt-5">{issue.excerpt}</p>
+          </Reveal>
 
-          {/* SIGN-OFF */}
-          <div className="mt-20 flex items-center gap-4">
-            <span className="inline-block h-px flex-1 bg-[var(--color-border)]" />
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-ink-muted">End of issue</span>
-            <span className="inline-block h-px flex-1 bg-[var(--color-border)]" />
-          </div>
-        </div>
-      </article>
-
-      {/* SUBSCRIBE — EDITORIAL STYLE, NOT BOXED */}
-      <section className="border-t border-b border-[var(--color-border)] bg-[var(--color-bg-alt)]">
-        <div className="container-zest py-24">
-          <div className="mx-auto max-w-3xl md:grid md:grid-cols-[1fr_1.5fr] md:gap-16">
-            <div>
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-                Subscribe
-              </div>
-              <h2 className="mt-4 font-serif text-[2rem] font-light leading-[1.1] tracking-[-0.02em] md:text-[2.5rem]">
-                Tuesday mornings, in your inbox.
-              </h2>
-            </div>
-            <div className="mt-8 md:mt-2">
-              <p className="font-serif text-[1.0625rem] leading-[1.6] text-ink-muted">
-                One issue a week. No affiliate links, no "ultimate guides," no thread-bait. Just what we\'re seeing work (and not work) inside live accounts.
-              </p>
-              <form action="#" method="POST" className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <input
-                  type="email"
-                  name="email"
-                  required
-                  placeholder="your@email.com"
-                  className="flex-1 border-b border-[var(--color-fg)] bg-transparent px-1 py-3 font-serif text-base focus:outline-none focus:border-[var(--color-accent)]"
-                />
-                <button
-                  type="submit"
-                  className="font-mono text-xs uppercase tracking-[0.15em] text-[var(--color-accent)] transition hover:text-[var(--color-accent-deep)]"
-                >
-                  Subscribe →
-                </button>
-              </form>
-              <p className="mt-4 font-mono text-[0.7rem] uppercase tracking-[0.15em] text-ink-muted">
-                15,412 readers · Free forever
-              </p>
-            </div>
-          </div>
+          <Reveal delay={200}>
+            <dl className="border-hairline mt-8 grid grid-cols-2 gap-y-4 border-t pt-5 sm:grid-cols-4">
+              {[
+                { k: 'Issue', v: String(issue.issueNo).padStart(3, '0') },
+                { k: 'Published', v: fmtDate(issue.publishedAt) },
+                { k: 'Topic', v: issue.category },
+                { k: 'Length', v: issue.readTime },
+              ].map((m) => (
+                <div key={m.k}>
+                  <dt className="caption">{m.k}</dt>
+                  <dd className="mt-1 text-[0.875rem] font-medium">{m.v}</dd>
+                </div>
+              ))}
+            </dl>
+          </Reveal>
         </div>
       </section>
 
-      {/* PREV / NEXT — NEWSPAPER STYLE */}
-      <nav className="container-zest py-20">
-        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-0 md:grid-cols-2 md:divide-x md:divide-[var(--color-border)]">
-          {prevIssue ? (
-            <Link href={`/newsletter/${prevIssue.slug}/`} className="group block py-6 md:pr-10">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-                ← Previous · No. {prevIssue.issueNo}
-              </div>
-              <h3 className="mt-3 font-serif text-xl font-normal leading-snug transition group-hover:text-[var(--color-accent)] md:text-2xl">
-                {prevIssue.title}
-              </h3>
-            </Link>
-          ) : <div className="hidden md:block" />}
-          {nextIssue ? (
-            <Link href={`/newsletter/${nextIssue.slug}/`} className="group block border-t border-[var(--color-border)] py-6 md:border-t-0 md:pl-10 md:text-right">
-              <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-                Next · No. {nextIssue.issueNo} →
-              </div>
-              <h3 className="mt-3 font-serif text-xl font-normal leading-snug transition group-hover:text-[var(--color-accent)] md:text-2xl">
-                {nextIssue.title}
-              </h3>
-            </Link>
-          ) : <div className="hidden md:block" />}
+      {/* ── Body ── */}
+      <article className="border-hairline border-t">
+        <div className="wrap-tight py-14 md:py-16">
+          {issue.body.map((block, i) => (
+            <BlockView key={`${block.type}-${i}`} block={block} />
+          ))}
         </div>
-      </nav>
+      </article>
+
+      {/* ── Prev / next ── */}
+      <section className="border-hairline bg-canvas-soft border-y">
+        <div className="wrap-tight grid gap-5 py-14 md:grid-cols-2">
+          {newer ? (
+            <Link href={`/newsletter/${newer.slug}/`} className="card-lift group p-5">
+              <span className="caption">← Newer</span>
+              <h2 className="group-hover:text-indigo-text mt-2 max-w-[24ch] text-[1.0625rem] font-medium tracking-[-0.015em] transition-colors">
+                {newer.title}
+              </h2>
+            </Link>
+          ) : (
+            <span />
+          )}
+          {older && (
+            <Link
+              href={`/newsletter/${older.slug}/`}
+              className="card-lift group p-5 md:text-right"
+            >
+              <span className="caption">Older →</span>
+              <h2 className="group-hover:text-indigo-text mt-2 max-w-[24ch] text-[1.0625rem] font-medium tracking-[-0.015em] transition-colors md:ml-auto">
+                {older.title}
+              </h2>
+            </Link>
+          )}
+        </div>
+      </section>
+
+      {/* ── CTA ── */}
+      <section className="wrap-tight py-14 md:py-16">
+        <Reveal>
+          <div className="card-cream p-7 md:p-9">
+            <span className="text-[0.6875rem] font-medium tracking-[0.09em] uppercase opacity-60">
+              If this was useful
+            </span>
+            <p className="mt-4 max-w-[52ch] text-[1.0625rem] leading-relaxed">
+              We run this kind of read against client accounts every week. If you want one
+              done on yours, send read-only access and we will come back in two weeks with the
+              same thing about your own numbers.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Link href="/contact/" className="btn btn-solid">
+                Request an audit
+              </Link>
+              <Link
+                href="/newsletter/"
+                className="btn border-[color-mix(in_oklab,var(--cream-ink)_25%,transparent)] text-[var(--cream-ink)] hover:border-[var(--cream-ink)]"
+              >
+                All notes
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </section>
     </main>
   );
 }

@@ -52,7 +52,6 @@ export async function POST(request: NextRequest, ctx: Ctx): Promise<Response> {
     return adminRedirect(backTo(slug, 'error=' + encodeURIComponent(result.reason)));
   }
 
-  const updated = result.slot;
   audit({ kind: 'admin.access', username: session.username, ip, path: `slot.update:${slug}` });
   return adminRedirect(backTo(slug, 'updated=' + encodeURIComponent(slug)));
 }

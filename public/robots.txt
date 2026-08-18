@@ -1,7 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /_next/
-Disallow: /404
-
-Sitemap: https://growthvirex.com/sitemap.xml

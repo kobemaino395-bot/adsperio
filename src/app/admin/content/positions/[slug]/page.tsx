@@ -6,6 +6,7 @@ import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getPosition } from '@/server/content/positions';
 import PositionForm from '../PositionForm';
 import ContentTabs from '../../ContentTabs';
+import { Notice } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -30,24 +31,27 @@ export default async function EditPositionPage({
 
   return (
     <div className="space-y-6">
-      <header className="flex items-baseline justify-between">
+      <header className="flex flex-wrap items-baseline justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Edit position</h1>
-          <p className="mt-1 text-sm text-zinc-500">
-            Public URL: <Link href={`/careers/${position.slug}/`} className="font-mono text-zinc-700 underline">/careers/{esc(position.slug)}/</Link>
+          <h1 className="display-3">Edit position</h1>
+          <p className="text-ink-mute mt-2 text-sm">
+            Public URL:{' '}
+            <Link href={`/careers/${position.slug}/`} className="link-inline font-mono text-xs">
+              /careers/{esc(position.slug)}/
+            </Link>
           </p>
         </div>
-        <Link href="/admin/content/positions" className="text-xs text-zinc-500 hover:text-zinc-900">← Back to list</Link>
+        <Link href="/admin/content/positions" className="eyebrow text-ink hover:text-ink-mute transition-colors">
+          ← Back to list
+        </Link>
       </header>
       <ContentTabs active="positions" />
 
-      {ok && (
-        <div className="rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-800">Saved.</div>
-      )}
+      {ok && <Notice tone="ok" label="Saved">Changes saved.</Notice>}
       {error && (
-        <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <Notice tone="error" label="Error">
           {esc(decodeURIComponent(error))}
-        </div>
+        </Notice>
       )}
 
       <PositionForm position={position} isNew={false} csrf={session.csrf} />

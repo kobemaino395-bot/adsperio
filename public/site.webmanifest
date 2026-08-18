@@ -1,35 +1,13 @@
 {
-  "name": "Your Application Name",
-  "short_name": "App",
-  "description": "Application description",
+  "name": "AdsPerio",
+  "short_name": "AdsPerio",
+  "description": "Performance advertising, reconciled against revenue you can verify.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#ffffff",
-  "orientation": "portrait-primary",
+  "theme_color": "#0d253d",
   "icons": [
-    {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    }
-  ],
-  "categories": [
-    "productivity"
-  ],
-  "lang": "en",
-  "dir": "ltr"
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
 }

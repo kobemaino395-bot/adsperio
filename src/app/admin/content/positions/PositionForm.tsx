@@ -60,11 +60,11 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
               type="checkbox"
               name="hidden"
               defaultChecked={position.hidden}
-              className="h-4 w-4"
+              className="accent-ink h-4 w-4"
             />
             <span>
               <span className="font-medium">Hidden</span>
-              <span className="ml-2 text-xs text-zinc-500">When checked, no public page and not in /careers list.</span>
+              <span className="text-ink-mute ml-2 text-xs">When checked, no public page and not in /careers list.</span>
             </span>
           </label>
         </div>
@@ -80,20 +80,20 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
       <Section title="Stat cards (4)">
         <div className="grid gap-3 md:grid-cols-2">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="grid grid-cols-[1fr_2fr] gap-2 rounded-md border border-zinc-200 bg-zinc-50 p-3">
+            <div key={i} className="border-hairline bg-canvas-soft grid grid-cols-[1fr_2fr] gap-2 border p-3">
               <input
                 type="text"
                 name={`statKey${i}`}
                 defaultValue={position.statCards[i]?.key ?? ''}
                 placeholder="Key (e.g. Location)"
-                className="rounded border border-zinc-300 bg-white px-2 py-1 text-xs"
+                className="field px-2 py-1.5 text-xs"
               />
               <input
                 type="text"
                 name={`statValue${i}`}
                 defaultValue={position.statCards[i]?.value ?? ''}
                 placeholder="Value"
-                className="rounded border border-zinc-300 bg-white px-2 py-1 text-xs"
+                className="field px-2 py-1.5 text-xs"
               />
             </div>
           ))}
@@ -113,11 +113,11 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
             type="checkbox"
             name="showDownload"
             defaultChecked={position.showDownload}
-            className="h-4 w-4"
+            className="accent-ink h-4 w-4"
           />
           <span>
             <span className="font-medium">Show download</span>
-            <span className="ml-2 text-xs text-zinc-500">When checked, the download card is visible on the job page.</span>
+            <span className="text-ink-mute ml-2 text-xs">When checked, the download card is visible on the job page.</span>
           </span>
         </label>
         <div className="grid gap-4 md:grid-cols-2">
@@ -257,14 +257,11 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
-      <div className="flex items-center gap-3 border-t border-zinc-200 pt-6">
-        <button
-          type="submit"
-          className="rounded-md bg-zinc-900 px-5 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-        >
+      <div className="border-hairline flex items-center gap-4 border-t pt-6">
+        <button type="submit" className="btn btn-solid">
           {isNew ? 'Create position' : 'Save changes'}
         </button>
-        <a href="/admin/content/positions" className="text-xs text-zinc-500 hover:text-zinc-900">
+        <a href="/admin/content/positions" className="eyebrow text-ink hover:text-ink-mute transition-colors">
           Cancel
         </a>
       </div>
@@ -274,8 +271,8 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <fieldset className="space-y-4 rounded-lg border border-zinc-200 bg-white p-5">
-      <legend className="px-2 text-xs font-semibold uppercase tracking-wider text-zinc-600">{title}</legend>
+    <fieldset className="card space-y-4 p-5">
+      <legend className="eyebrow text-ink px-2">{title}</legend>
       {children}
     </fieldset>
   );
@@ -299,12 +296,12 @@ function Field({
   label, name, type = 'text', defaultValue, placeholder, required, disabled, mono, rows, hint, options,
 }: FieldProps) {
   const cls =
-    'mt-1 w-full rounded-md border border-zinc-300 bg-white px-3 py-2 text-sm ' +
+    'field text-sm ' +
     (mono ? 'font-mono ' : '') +
-    (disabled ? 'bg-zinc-100 text-zinc-500' : '');
+    (disabled ? 'bg-canvas-deep text-ink-mute' : '');
   return (
     <label className="block">
-      <span className="block text-xs font-medium uppercase tracking-wider text-zinc-600">{label}</span>
+      <span className="field-label">{label}</span>
       {type === 'textarea' ? (
         <textarea
           name={name}
@@ -332,7 +329,7 @@ function Field({
           className={cls}
         />
       )}
-      {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
+      {hint && <p className="text-ink-mute mt-1.5 text-xs">{hint}</p>}
     </label>
   );
 }

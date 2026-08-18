@@ -1,149 +1,224 @@
 import type { Metadata } from 'next';
-import { Mail, Phone, MapPin } from 'lucide-react';
-import { site } from '@/content/site';
+import Link from 'next/link';
 import Reveal from '@/components/ui/Reveal';
+import PageHero from '@/components/layout/PageHero';
+import { site } from '@/content/site';
+
+const DESCRIPTION =
+  'Send read-only access to an ad account and we will tell you what is wrong with it. Two weeks, no fee, no obligation.';
 
 export const metadata: Metadata = {
-  title: 'Contact — Let\'s Build Your Growth Engine',
-  description:
-    'Get in touch with GrowthVireX. Free 30-minute strategy call, no commitment. Response within one business day, guaranteed.',
-  keywords: ['contact GrowthVireX', 'growth marketing studio contact', 'book a growth consultation'],
+  title: 'Contact',
+  description: DESCRIPTION,
   alternates: { canonical: '/contact/' },
+  openGraph: {
+    type: 'website',
+    url: `${site.url}/contact/`,
+    siteName: site.name,
+    title: `Contact · ${site.name}`,
+    description: DESCRIPTION,
+  },
 };
+
+const WHAT_HAPPENS = [
+  {
+    n: '01',
+    t: 'You send access',
+    d: 'Read-only is enough — Google Ads, Meta, whichever worries you most. If you can add one month of revenue from your finance system, the audit gets considerably more useful.',
+  },
+  {
+    n: '02',
+    t: 'We read it',
+    d: 'Two weeks. A named person goes through the account history, search terms or creative, and the tracking setup. There is no discovery call unless something needs explaining.',
+  },
+  {
+    n: '03',
+    t: 'You get it in writing',
+    d: 'A ranked list of what is costing you money, with the exports attached, and an estimate of what each item is worth per month. Yours to keep either way.',
+  },
+  {
+    n: '04',
+    t: 'We both decide',
+    d: 'About a third of the companies we audit do not become clients. Sometimes the answer is that the account is already fine, and occasionally it is that you need a different kind of help entirely.',
+  },
+];
+
+const ROUTES = [
+  { k: 'New business', v: site.contact.newBusiness },
+  { k: 'Careers', v: site.contact.careers },
+  { k: 'Press', v: site.contact.press },
+  { k: 'Anything else', v: site.contact.email },
+];
 
 export default function ContactPage() {
   return (
     <main>
-      <section className="relative">
-        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[440px]" />
-        <div className="container-zest relative pt-40 pb-14 text-center md:pt-48">
-          <Reveal>
-            <h1 className="mx-auto max-w-3xl text-5xl font-light leading-[1.04] tracking-[-0.04em] md:text-7xl">
-              Let&apos;s talk <span className="hl">growth.</span>
-            </h1>
-          </Reveal>
-          <Reveal delay={140}>
-            <p className="mx-auto mt-6 max-w-xl text-lg font-light text-[var(--color-fg-muted)]">
-              Tell us where you are and where you want to be. We&apos;ll reply within one business day.
-            </p>
-          </Reveal>
+      <PageHero
+        eyebrow="Contact"
+        title="Send us an account. We’ll tell you what’s wrong with it."
+        titleMax="max-w-[15ch]"
+        lede="No deck, no discovery call, no fee. If the account is in good shape we will say that instead, and the audit is still yours."
+      />
+
+      {/* ── Form + details ── */}
+      <section>
+        <div className="wrap grid gap-12 pb-20 md:pb-24 lg:grid-cols-12 lg:gap-12">
+          {/* Web3Forms — endpoint and field names must stay exactly as they are.
+              The access key is a placeholder and needs replacing before launch. */}
+          <div className="lg:col-span-7">
+            <Reveal>
+              <form
+                action="https://api.web3forms.com/submit"
+                method="POST"
+                className="card shadow-lift-1 p-6 md:p-8"
+              >
+                <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
+                <input type="hidden" name="subject" value="New enquiry from adsperio.com" />
+                <input
+                  type="checkbox"
+                  name="botcheck"
+                  className="hidden"
+                  style={{ display: 'none' }}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+
+                <span className="text-ink text-[1.0625rem] font-medium">Enquiry</span>
+
+                <div className="mt-6 grid gap-5 sm:grid-cols-2">
+                  <div>
+                    <label htmlFor="name" className="field-label">
+                      Name
+                    </label>
+                    <input id="name" name="name" type="text" required className="field" />
+                  </div>
+                  <div>
+                    <label htmlFor="email" className="field-label">
+                      Work email
+                    </label>
+                    <input id="email" name="email" type="email" required className="field" />
+                  </div>
+                  <div>
+                    <label htmlFor="company" className="field-label">
+                      Company
+                    </label>
+                    <input id="company" name="company" type="text" className="field" />
+                  </div>
+                  <div>
+                    <label htmlFor="spend" className="field-label">
+                      Monthly media spend
+                    </label>
+                    <input
+                      id="spend"
+                      name="spend"
+                      type="text"
+                      placeholder="e.g. $60K"
+                      className="field"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-5">
+                  <label htmlFor="message" className="field-label">
+                    What is the problem?
+                  </label>
+                  <textarea
+                    id="message"
+                    name="message"
+                    rows={6}
+                    required
+                    placeholder="Which accounts, what you think is wrong, and what you have already tried."
+                    className="field resize-none"
+                  />
+                </div>
+
+                <div className="border-hairline mt-6 flex flex-wrap items-center gap-4 border-t pt-6">
+                  <button type="submit" className="btn btn-solid">
+                    Send enquiry
+                  </button>
+                  <p className="caption">
+                    A person replies within two working days.
+                  </p>
+                </div>
+              </form>
+            </Reveal>
+          </div>
+
+          {/* ── Direct routes ── */}
+          <div className="lg:col-span-5">
+            <Reveal delay={110}>
+              <div className="card overflow-hidden">
+                <div className="border-hairline bg-canvas-soft border-b px-5 py-3">
+                  <span className="text-ink text-[0.8125rem] font-medium">Direct</span>
+                </div>
+                <dl className="divide-hairline divide-y">
+                  {ROUTES.map((r) => (
+                    <div key={r.k} className="flex items-baseline gap-4 px-5 py-3.5">
+                      <dt className="caption w-[7.5rem] shrink-0">{r.k}</dt>
+                      <dd className="min-w-0">
+                        <a
+                          href={`mailto:${r.v}`}
+                          className="link-inline text-[0.875rem] break-all"
+                        >
+                          {r.v}
+                        </a>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </div>
+
+              <div className="card mt-6 overflow-hidden">
+                <div className="border-hairline bg-canvas-soft border-b px-5 py-3">
+                  <span className="text-ink text-[0.8125rem] font-medium">Office</span>
+                </div>
+                <div className="space-y-2.5 px-5 py-4">
+                  <p className="text-[0.875rem] leading-relaxed">{site.contact.address}</p>
+                  <p className="caption">{site.contact.hours}</p>
+                  <a
+                    href={`tel:${site.contact.phoneHref}`}
+                    className="link-inline block text-[0.875rem] tabular-nums"
+                  >
+                    {site.contact.phone}
+                  </a>
+                </div>
+              </div>
+
+              <p className="text-ink-mute mt-6 leading-relaxed">
+                Looking for a job rather than an agency?{' '}
+                <Link href="/careers/" className="link-inline">
+                  Open roles are here
+                </Link>
+                .
+              </p>
+            </Reveal>
+          </div>
         </div>
       </section>
 
-      <section className="container-zest pb-28">
-        <Reveal>
-        <div className="mx-auto grid max-w-6xl gap-10 md:grid-cols-[2fr_1fr]">
-          {/* FORM */}
-          <form
-            action="https://api.web3forms.com/submit"
-            method="POST"
-            className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8 md:p-12"
-          >
-            {/* Replace with your Web3Forms access key from https://web3forms.com */}
-            <input type="hidden" name="access_key" value="YOUR_WEB3FORMS_ACCESS_KEY" />
-            <input type="hidden" name="subject" value="New contact from growthvirex.com" />
-            <input type="checkbox" name="botcheck" className="hidden" style={{ display: 'none' }} />
+      {/* ── What happens next ── */}
+      <section className="border-hairline bg-canvas-soft border-y">
+        <div className="wrap py-20 md:py-24">
+          <Reveal>
+            <span className="eyebrow">What happens next</span>
+            <h2 className="display-2 mt-4 max-w-[16ch]">The whole process, start to finish.</h2>
+          </Reveal>
 
-            <div className="grid gap-6 md:grid-cols-2">
-              <Field label="Your name" name="name" required />
-              <Field label="Work email" name="email" type="email" required />
-              <Field label="Company" name="company" required />
-              <Field label="Website" name="website" type="url" placeholder="https://" />
-            </div>
-
-            <div className="mt-6">
-              <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
-                Monthly marketing budget
-              </label>
-              <select
-                name="budget"
-                required
-                className="w-full rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
-              >
-                <option value="">Select a range</option>
-                <option>Under $10K / month</option>
-                <option>$10K – $30K / month</option>
-                <option>$30K – $100K / month</option>
-                <option>$100K+ / month</option>
-              </select>
-            </div>
-
-            <div className="mt-6">
-              <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-ink-muted">
-                What are you trying to solve?
-              </label>
-              <textarea
-                name="message"
-                rows={5}
-                required
-                className="w-full resize-none rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
-                placeholder="Tell us about your goals, current marketing setup, and where you're feeling stuck."
-              />
-            </div>
-
-            <button type="submit" className="btn-primary mt-8 w-full md:w-auto">
-              Send message →
-            </button>
-
-            <p className="mt-4 text-xs text-ink-muted">
-              By submitting, you agree to our privacy policy. We&apos;ll never spam you or share your info.
-            </p>
-          </form>
-
-          {/* SIDEBAR */}
-          <aside className="space-y-6">
-            <ContactCard icon={<Mail size={16} />} label="Email" value={site.contact.email} href={`mailto:${site.contact.email}`} />
-            <ContactCard icon={<Phone size={16} />} label="Phone" value={site.contact.phone} href={`tel:${site.contact.phoneHref}`} />
-            <ContactCard icon={<MapPin size={16} />} label="Based in" value={site.contact.address} />
-
-            <div className="card bg-[var(--color-bg-sunken)] p-8">
-              <div className="label-tech">Response time</div>
-              <div className="tnum mt-3 text-3xl font-light tracking-tight">&lt; 24 hours</div>
-              <p className="mt-2 text-sm font-light text-[var(--color-fg-muted)]">
-                Every inquiry gets a real reply from a senior strategist — not a sales bot.
-              </p>
-            </div>
-          </aside>
+          <ol className="mt-12 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+            {WHAT_HAPPENS.map((s, i) => (
+              <Reveal key={s.n} delay={i * 55} as="li">
+                <div className="card h-full p-6">
+                  <span className="pill-tag tabular-nums">{s.n}</span>
+                  <h3 className="mt-4 text-[1.125rem] leading-tight font-light tracking-[-0.015em]">
+                    {s.t}
+                  </h3>
+                  <p className="text-ink-mute mt-3 leading-relaxed">{s.d}</p>
+                </div>
+              </Reveal>
+            ))}
+          </ol>
         </div>
-        </Reveal>
       </section>
     </main>
-  );
-}
-
-function Field({
-  label, name, type = 'text', required = false, placeholder,
-}: { label: string; name: string; type?: string; required?: boolean; placeholder?: string }) {
-  return (
-    <div>
-      <label className="mb-2 block text-xs font-medium uppercase tracking-widest text-[var(--color-fg-muted)]">
-        {label} {required && <span className="text-[var(--color-accent)]">*</span>}
-      </label>
-      <input
-        type={type}
-        name={name}
-        required={required}
-        placeholder={placeholder}
-        className="w-full rounded-xl border border-[var(--color-border-input)] bg-[var(--color-bg)] px-4 py-3 text-base font-light transition focus:border-[var(--color-accent)] focus:outline-none"
-      />
-    </div>
-  );
-}
-
-function ContactCard({
-  icon, label, value, href,
-}: { icon: React.ReactNode; label: string; value: string; href?: string }) {
-  const content = (
-    <>
-      <div className="flex items-center gap-2 text-xs uppercase tracking-widest text-[var(--color-fg-muted)]">
-        {icon} {label}
-      </div>
-      <div className="mt-2 text-lg font-normal">{value}</div>
-    </>
-  );
-  return (
-    <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-6 transition hover:border-[var(--color-accent)]">
-      {href ? <a href={href} className="block">{content}</a> : content}
-    </div>
   );
 }

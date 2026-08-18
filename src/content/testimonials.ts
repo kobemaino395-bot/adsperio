@@ -5,38 +5,45 @@ export type Testimonial = {
   company: string;
   caseSlug?: string;
   quote: string;
-  image: string;
 };
 
+/** Kept short and specific. No portraits — see MonogramPlate. A quote that
+ *  could have been written about any agency has been cut. */
 export const testimonials: Testimonial[] = [
   {
-    slug: 'lila-park',
-    author: 'Lila Park',
-    role: 'Marketing Director',
-    company: 'Aura Wellness',
-    caseSlug: 'aura-wellness',
-    quote:
-      'GrowthVireX took our paid social from break-even to 4x blended ROAS in eight months. Their team thinks like operators, not vendors — every recommendation is tied to a number we agreed on up front.',
-    image: '/images/testimonials/lila-park.jpg',
-  },
-  {
-    slug: 'marcus-wong',
-    author: 'Marcus Wong',
+    slug: 'dana-whitfield',
+    author: 'Dana Whitfield',
     role: 'Founder',
-    company: 'EduTech Academy',
-    caseSlug: 'edutech-academy',
+    company: 'Harlow Supply',
+    caseSlug: 'harlow-supply',
     quote:
-      'Course enrollments tripled in the first quarter. What I value most is how transparent the reporting is — I see exactly where every dollar is going and why.',
-    image: '/images/testimonials/marcus-wong.jpg',
+      'They talked us out of spending more money. I have worked with nine agencies and that had never once happened.',
   },
   {
-    slug: 'aisha-rashid',
-    author: 'Aisha Rashid',
-    role: 'VP Growth',
-    company: 'Finova',
-    caseSlug: 'finova',
+    slug: 'priya-raghunathan',
+    author: 'Priya Raghunathan',
+    role: 'Chief Revenue Officer',
+    company: 'Northbeam Freight',
+    caseSlug: 'northbeam-freight',
     quote:
-      'We worked with three agencies before GrowthVireX. They are the first one that actually understood our SaaS metrics and built campaigns around LTV, not just clicks.',
-    image: '/images/testimonials/aisha-rashid.jpg',
+      'The first six weeks were genuinely unpleasant. They had warned us it would be, in writing, which is the only reason we held our nerve.',
+  },
+  {
+    slug: 'marguerite-osei',
+    author: 'Marguerite Osei',
+    role: 'Chief Operating Officer',
+    company: 'Castellan Legal',
+    caseSlug: 'castellan-legal',
+    quote:
+      'The monthly ledger did more for internal alignment than two years of partner meetings. Nobody argues with their own numbers in a shared column.',
+  },
+  {
+    slug: 'tomas-egede',
+    author: 'Tomas Egede',
+    role: 'VP Commercial',
+    company: 'Orpheus Audio',
+    caseSlug: 'orpheus-audio',
+    quote:
+      'They spent less than we authorised and told us why. That is not the usual direction of that conversation.',
   },
 ];

@@ -1,26 +1,40 @@
 export const site = {
-  name: 'GrowthVireX',
-  shortName: 'GrowthVireX',
-  tagline: 'We make growth contagious.',
-  url: 'https://www.growthvirex.com',
+  name: 'AdsPerio',
+  shortName: 'AdsPerio',
+  legalName: 'AdsPerio LLC',
+  tagline: 'Ads, laid bare.',
+  url: 'https://www.adsperio.com',
   description:
-    'GrowthVireX is a growth studio that turns ambitious brands into category leaders. We engineer paid media, creative, and conversion systems that spread — turning every win into the next one.',
+    'AdsPerio is a performance advertising firm. We buy the media, build the creative, and reconcile every dollar of spend against revenue you can verify in the bank.',
   keywords: [
-    'growth marketing studio',
+    'performance advertising agency',
     'paid media agency',
-    'creative ad production',
-    'conversion optimization',
-    'performance marketing',
-    'Meta advertising',
-    'Google advertising',
-    'TikTok advertising',
-    'GrowthVireX',
+    'marketing measurement',
+    'media mix modeling',
+    'incrementality testing',
+    'Google Ads management',
+    'Meta ads agency',
+    'creative production',
+    'AdsPerio',
   ],
   locale: 'en_US',
-  twitter: '@growthvirex',
-  ogImage: '/images/og/default.jpg', // 1200x630
+  twitter: '@adsperio',
+  founded: '2019',
+
+  /** The name is Ads + *aperio* (Latin: to uncover, to lay open). The
+   *  about page tells this story; keeping it here stops it drifting. */
+  brand: {
+    etymology: 'aperio',
+    etymologyLanguage: 'Latin',
+    etymologyGloss: 'to uncover; to lay open; to bring to light',
+    pronunciation: 'ads-PEER-ee-oh',
+  },
+
   contact: {
-    email: 'contact@growthvirex.com',
+    email: 'hello@adsperio.com',
+    newBusiness: 'newbusiness@adsperio.com',
+    careers: 'careers@adsperio.com',
+    press: 'press@adsperio.com',
     phone: '+1 (212) 695 1180',
     /** E.164, for `tel:` hrefs and schema.org. */
     phoneHref: '+12126951180',
@@ -32,13 +46,25 @@ export const site = {
       postalCode: '10017',
       addressCountry: 'US',
     },
+    hours: 'Monday to Friday, 9:00–18:00 ET',
   },
+
   legal: {
     governingLaw: 'the State of New York',
     venue: 'New York County, New York',
   },
+
   social: {
     linkedin: '#',
     twitter: '#',
   },
 } as const;
+
+/** The four numbers we are willing to be held to. Used on the home page
+ *  and in the footer; kept in one place so they can never disagree. */
+export const houseNumbers = [
+  { value: '$84M', label: 'Media under management', note: 'Trailing 12 months' },
+  { value: '1.9pt', label: 'Median reporting variance', note: 'Platform vs. reconciled' },
+  { value: '31', label: 'Active accounts', note: 'Across 6 categories' },
+  { value: '6.4 yr', label: 'Median client tenure', note: 'Of accounts still open' },
+] as const;

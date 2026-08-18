@@ -1,298 +1,553 @@
 @import "tailwindcss";
 
-@theme {
-  /* ── Indigo accent ramp ("zest" name retained for compatibility) ── */
-  --color-zest-50:  #eef0ff;
-  --color-zest-100: #dcdcfd;
-  --color-zest-200: #b9b9f9;  /* primary-bg-subdued */
-  --color-zest-300: #8f86fd;
-  --color-zest-400: #665efd;  /* primary-soft */
-  --color-zest-500: #533afd;  /* primary */
-  --color-zest-600: #4434d4;  /* primary-deep */
-  --color-zest-700: #2e2b8c;  /* primary-press */
+/* Theme is driven by a `.dark` class on <html>, set before paint by the
+   inline script in layout.tsx. Tailwind v4 defaults `dark:` to the media
+   query, so the variant is re-pointed at the class here. */
+@custom-variant dark (&:where(.dark, .dark *));
 
-  /* ── Ink text scale (deep navy, never pure black) ── */
-  --color-ink:       #0d253d;
-  --color-ink-soft:  #273951;
-  --color-ink-muted: #64748d;
+/* ═══════════════════════════════════════════════════════════════════════
+   AdsPerio — Stripe-inspired design system
+   Implemented from design-md/stripe/DESIGN.md (VoltAgent/awesome-design-md).
 
-  --font-sans: var(--font-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-serif: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", "Fira Code", monospace;
-}
+   Three things carry the identity, and everything else stays out of the
+   way: the gradient mesh over the fold, deep-navy ink (never black), and
+   exactly one indigo filled pill per band. Numbers are always tabular —
+   that is the quiet signal that this is a business about money.
+   ═══════════════════════════════════════════════════════════════════════ */
 
 :root {
   /* Surfaces */
-  --color-bg:        #ffffff;   /* canvas */
-  --color-bg-alt:    #f6f9fc;   /* canvas-soft — feature bands */
-  --color-bg-sunken: #eef2f7;   /* deeper wells */
-  --color-bg-cream:  #f5e9d4;   /* warm interlude band */
-  --color-bg-navy:   #1c1e54;   /* brand-dark-900 — featured / dark surfaces */
-  --color-ink-warm:  #1c1e54;   /* navy fill for inverted CTA buttons */
+  --canvas:      #ffffff;
+  --canvas-soft: #f6f9fc;   /* feature bands beneath the hero */
+  --canvas-deep: #eef3f9;   /* table zebra, sunken wells */
+  --cream:       #f5e9d4;   /* the warm interlude band */
+  --cream-ink:   #0d253d;   /* cream keeps navy text in both themes */
 
-  /* Text */
-  --color-fg:        #0d253d;   /* ink — body & display */
-  --color-fg-soft:   #273951;   /* ink-secondary */
-  --color-fg-muted:  #64748d;   /* ink-mute */
+  /* Polarity-flipped plate: navy on light, near-white on dark. */
+  --surface-inv: #0d253d;
+  --ink-inv:     #ffffff;
 
-  /* Lines */
-  --color-border:       #e3e8ee;   /* hairline */
-  --color-border-input: #a8c3de;   /* hairline-input */
+  /* Dashboard chrome. Constant across themes — it is a product surface,
+     not a page surface. */
+  --navy-900: #1c1e54;
+  --navy-800: #24276b;
 
-  /* Brand */
-  --color-accent:       #533afd;   /* indigo primary */
-  --color-accent-deep:  #4434d4;   /* primary-deep */
-  --color-accent-press: #2e2b8c;   /* primary-press */
-  --color-accent-soft:  #665efd;   /* primary-soft */
-  --color-accent-fg:    #ffffff;   /* on-primary */
-  --color-ruby:         #ea2261;
-  --color-magenta:      #f96bee;
+  /* Text — deep navy, never pure black. */
+  --ink:      #0d253d;
+  --ink-2:    #273951;
+  --ink-mute: #64748d;
 
-  /* Blue-tinted elevation (Level 1 / 2) */
-  --shadow-xs:     0 1px 2px rgba(0,55,112,0.06);
-  --shadow-sm:     0 1px 3px rgba(0,55,112,0.08);
-  --shadow-md:     0 8px 24px rgba(0,55,112,0.08), 0 2px 6px rgba(0,55,112,0.04);
-  --shadow-lg:     0 24px 60px rgba(0,55,112,0.12), 0 6px 18px rgba(0,55,112,0.06);
-  --shadow-brutal: 0 8px 24px rgba(0,55,112,0.08), 0 2px 6px rgba(0,55,112,0.04);
+  /* Hairlines */
+  --hairline:        #e3e8ee;
+  --hairline-soft:   #eef2f7;
+  --hairline-strong: #a8c3de;   /* form inputs, emphasis rules */
 
-  --radius: 12px;   /* rounded.lg — cards */
+  /* Indigo — the CTA colour. One filled pill per band, and inline links.
+     Never a body-text colour. */
+  --indigo:         #533afd;
+  --indigo-deep:    #4434d4;
+  --indigo-press:   #2e2b8c;
+  --indigo-soft:    #665efd;
+  --indigo-subdued: #b9b9f9;
+  --indigo-ink:     #ffffff;
+  /* Indigo as *type*: bright enough to read on whichever canvas is live. */
+  --indigo-text:    #533afd;
+
+  /* Gradient-mesh stops. Only these. No new accents. */
+  --ruby:    #ea2261;
+  --magenta: #f96bee;
+  --lemon:   #f5c26b;
+  --sherbet: #ff8a5b;
+  --lavender:#a78bfa;
+
+  /* …and the same six as the mesh reads them, plus the base wash it sits on.
+     Split out so the dark theme can re-ground the band without a second SVG. */
+  --mesh-base-1:  #fbf3e7;
+  --mesh-base-2:  #f0ecff;
+  --mesh-base-3:  #e6edff;
+  --mesh-cream:   #f7d9a8;
+  --mesh-sherbet: #ff8a5b;
+  --mesh-lavender:#a78bfa;
+  --mesh-indigo:  #533afd;
+  --mesh-ruby:    #ea2261;
+  --mesh-magenta: #f96bee;
+
+  /* Elevation. The mesh is the real depth medium; shadows stay subtle and
+     are tinted with the brand's shadow blue (#003770). */
+  --lift-1: rgba(0, 55, 112, 0.08) 0 1px 3px;
+  --lift-2: rgba(0, 55, 112, 0.08) 0 8px 24px, rgba(0, 55, 112, 0.04) 0 2px 6px;
+
+  --r-xs: 4px;
+  --r-sm: 6px;
+  --r-md: 8px;
+  --r-lg: 12px;
+  --r-xl: 16px;
 }
 
-/* ── Dark theme — deep-navy app shell, indigo accent lifted for contrast ── */
 .dark {
-  --color-bg:        #0b1020;   /* deep navy canvas */
-  --color-bg-alt:    #121833;   /* panels / feature bands */
-  --color-bg-sunken: #080b18;   /* deeper wells */
-  --color-bg-cream:  #2a2418;   /* warm interlude, muted for dark */
-  --color-bg-navy:   #161b3d;   /* featured / inverted band */
-  --color-ink-warm:  #eef1fb;   /* light fill for inverted CTA buttons */
+  /* The dashboard track's dark-app shell, used as the site's dark theme. */
+  --canvas:      #0a1a2f;
+  --canvas-soft: #0f2439;
+  --canvas-deep: #071324;
+  --cream:       #f5e9d4;
+  --cream-ink:   #0d253d;
 
-  --color-fg:        #eef1fb;
-  --color-fg-soft:   #c2c8e0;
-  --color-fg-muted:  #8a93b4;
+  --surface-inv: #f6f9fc;
+  --ink-inv:     #0d253d;
 
-  --color-border:       rgba(255,255,255,0.10);
-  --color-border-input: rgba(255,255,255,0.20);
+  --navy-900: #1c1e54;
+  --navy-800: #24276b;
 
-  --color-accent:       #6f63ff;
-  --color-accent-deep:  #9a90ff;   /* lighter for links / eyebrows on dark */
-  --color-accent-press: #5a4ef0;
-  --color-accent-soft:  #8f86fd;
-  --color-accent-fg:    #ffffff;
-  --color-ruby:         #ff4d82;
-  --color-magenta:      #f96bee;
+  --ink:      #eef4fb;
+  --ink-2:    #bfcfe2;
+  --ink-mute: #8298b3;
 
-  /* soft-indigo chip background becomes a translucent tint */
-  --color-zest-50: rgba(111,99,255,0.16);
+  --hairline:        rgba(227, 232, 238, 0.14);
+  --hairline-soft:   rgba(227, 232, 238, 0.07);
+  --hairline-strong: rgba(168, 195, 222, 0.38);
 
-  --shadow-xs:     0 1px 2px rgba(0,0,0,0.5);
-  --shadow-sm:     0 1px 3px rgba(0,0,0,0.5);
-  --shadow-md:     0 8px 24px rgba(0,0,0,0.55), 0 2px 6px rgba(0,0,0,0.4);
-  --shadow-lg:     0 24px 60px rgba(0,0,0,0.6), 0 6px 18px rgba(0,0,0,0.4);
-  --shadow-brutal: 0 8px 24px rgba(0,0,0,0.55);
+  --indigo:         #533afd;
+  --indigo-deep:    #665efd;
+  --indigo-press:   #4434d4;
+  --indigo-soft:    #8b83ff;
+  --indigo-subdued: #2b2b6e;
+  --indigo-ink:     #ffffff;
+  --indigo-text:    #a49bff;
+
+  /* The mesh keeps its hues on dark, but grounds on navy instead of cream,
+     and the component drops the blob group to 70% so it stays a backdrop. */
+  --mesh-base-1:  #16243c;
+  --mesh-base-2:  #1b1d4a;
+  --mesh-base-3:  #0e2340;
+  --mesh-cream:   #c99a4e;
+  --mesh-sherbet: #e2653a;
+  --mesh-lavender:#7c5cf0;
+  --mesh-indigo:  #4a33e8;
+  --mesh-ruby:    #c01a52;
+  --mesh-magenta: #b845b0;
+
+  /* Shadows do almost nothing on navy — hairlines carry the edges. */
+  --lift-1: rgba(0, 0, 0, 0.30) 0 1px 3px;
+  --lift-2: rgba(0, 0, 0, 0.38) 0 8px 24px, rgba(0, 0, 0, 0.24) 0 2px 6px;
 
   color-scheme: dark;
 }
 
+/* `inline` keeps these as var() references at the point of use, so every
+   generated utility (bg-canvas, text-ink-mute, border-hairline …) follows
+   `.dark` on its own. Never hand-write a `dark:` colour override. */
+@theme inline {
+  --color-canvas:      var(--canvas);
+  --color-canvas-soft: var(--canvas-soft);
+  --color-canvas-deep: var(--canvas-deep);
+  --color-cream:       var(--cream);
+  --color-cream-ink:   var(--cream-ink);
+
+  --color-surface-inv: var(--surface-inv);
+  --color-ink-inv:     var(--ink-inv);
+
+  --color-navy-900: var(--navy-900);
+  --color-navy-800: var(--navy-800);
+
+  --color-ink:      var(--ink);
+  --color-ink-2:    var(--ink-2);
+  --color-ink-mute: var(--ink-mute);
+
+  --color-hairline:        var(--hairline);
+  --color-hairline-soft:   var(--hairline-soft);
+  --color-hairline-strong: var(--hairline-strong);
+
+  --color-indigo:         var(--indigo);
+  --color-indigo-deep:    var(--indigo-deep);
+  --color-indigo-press:   var(--indigo-press);
+  --color-indigo-soft:    var(--indigo-soft);
+  --color-indigo-subdued: var(--indigo-subdued);
+  --color-indigo-ink:     var(--indigo-ink);
+  --color-indigo-text:    var(--indigo-text);
+
+  --color-ruby:    var(--ruby);
+  --color-magenta: var(--magenta);
+  --color-lemon:   var(--lemon);
+
+  --font-sans: var(--font-inter), "SF Pro Display", system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+
+  --shadow-lift-1: var(--lift-1);
+  --shadow-lift-2: var(--lift-2);
+}
+
+/* ── Base ──────────────────────────────────────────────────────────── */
+
 html {
-  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
 body {
-  background: var(--color-bg);
-  color: var(--color-fg);
+  background: var(--canvas);
+  color: var(--ink);
   font-family: var(--font-sans);
-  font-weight: 300;                          /* thin is the brand */
-  line-height: 1.5;
-  font-feature-settings: "ss01";             /* stylistic set, globally */
-}
-
-/* Display tiers render thin (300) with negative tracking — the signature. */
-h1, h2, h3, h4 {
-  font-family: var(--font-serif);
-  font-weight: 300;
-  letter-spacing: -0.03em;
-  line-height: 1.05;
-}
-
-/* tabular figures for money / numeric content */
-.tnum { font-feature-settings: "tnum"; letter-spacing: -0.02em; }
-
-::selection { background: var(--color-accent); color: var(--color-accent-fg); }
-:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
-
-@utility container-zest {
-  margin-inline: auto;
-  width: 100%;
-  max-width: 75rem;
-  padding-inline: 1.5rem;
-  @media (min-width: 768px) { padding-inline: 2rem; }
-}
-
-/* ── Buttons: tight-radius pills ── */
-@utility btn-primary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 9999px;
-  background: var(--color-accent);
-  padding: 0.7rem 1.4rem;
   font-weight: 400;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--color-accent-fg);
-  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 1px 2px rgba(46,43,140,0.25);
-  &:hover { background: var(--color-accent-deep); transform: translateY(-1px); }
-  &:active { background: var(--color-accent-press); transform: translateY(0); }
-}
-
-@utility btn-ghost {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 9999px;
-  border: 1px solid var(--color-accent);
-  background: var(--color-bg);
-  padding: 0.7rem 1.4rem;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1;
-  color: var(--color-accent);
-  transition: background 0.18s ease, border-color 0.18s ease;
-  &:hover { background: var(--color-zest-50); }
-}
-
-/* button used on the navy band — always a light pill, both themes */
-@utility btn-on-dark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  border-radius: 9999px;
-  background: #ffffff;
-  padding: 0.7rem 1.4rem;
-  font-weight: 400;
-  font-size: 1rem;
-  line-height: 1;
-  color: #0d253d;
-  transition: transform 0.18s ease, opacity 0.18s ease;
-  &:hover { transform: translateY(-1px); opacity: 0.92; }
-}
-
-/* emphasized phrase — same ink as the headline; restrained, no color or bar */
-@utility hl {
-  color: inherit;
-}
-
-/* all-caps micro eyebrow */
-@utility label-tech {
-  font-size: 0.7rem;
-  font-weight: 400;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--color-accent-deep);
+  font-size: 0.9375rem;   /* body-md, 15px */
+  line-height: 1.6;
+  /* ss01 globally, per the spec. On Inter this is the disambiguation set —
+     it is what keeps the substitute from reading as default-Inter. */
   font-feature-settings: "ss01";
 }
 
-/* soft indigo tag pill */
+/* Display tier is weight 300 with negative tracking. That pairing is the
+   whole typographic signature; bumping the weight collapses it. */
+h1, h2, h3, h4, h5 {
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
+  text-wrap: balance;
+}
+
+h1 { letter-spacing: -0.025em; line-height: 1.03; }
+
+p { text-wrap: pretty; }
+
+/* Money, counts, dates, table cells. The spec is emphatic about this and
+   it is the cheapest credibility signal on the site. */
+.tnum,
+table td,
+table th {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "tnum";
+}
+
+::selection { background: var(--indigo); color: var(--indigo-ink); }
+
+:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Layout ────────────────────────────────────────────────────────── */
+
+@utility wrap {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 75rem;       /* ~1200px, the spec's marketing container */
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) { padding-inline: 1.5rem; }
+  @media (min-width: 1280px) { padding-inline: 2rem; }
+}
+
+@utility wrap-tight {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 46rem;
+  padding-inline: 1.25rem;
+  @media (min-width: 768px) { padding-inline: 1.5rem; }
+}
+
+/* ── Type ──────────────────────────────────────────────────────────── */
+
+/* display-xxl / xl / lg. Clamped so the 56 → 36px mobile stair-step in the
+   spec happens without breakpoint classes in the markup. */
+@utility display-1 {
+  font-size: clamp(2.25rem, 1.55rem + 2.9vw, 3.5rem);
+  font-weight: 300;
+  line-height: 1.03;
+  letter-spacing: -0.025em;
+}
+@utility display-2 {
+  font-size: clamp(1.875rem, 1.42rem + 1.9vw, 3rem);
+  font-weight: 300;
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+}
+@utility display-3 {
+  font-size: clamp(1.5rem, 1.32rem + 0.75vw, 2rem);
+  font-weight: 300;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+/* Big tabular figures — the stat that carries a band. */
+@utility figure-xl {
+  font-size: clamp(2rem, 1.6rem + 1.7vw, 3rem);
+  font-weight: 300;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "tnum";
+}
+
+/* Lead paragraph. Thin reads elegant at this size, so the display weight
+   carries down to 300 here and stops. */
+@utility lede {
+  font-size: clamp(1.0625rem, 1rem + 0.35vw, 1.25rem);
+  font-weight: 300;
+  line-height: 1.5;
+  letter-spacing: -0.005em;
+  color: var(--ink-2);
+}
+
+/* All-caps micro label above a headline (micro-cap). */
+@utility eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  line-height: 1.15;
+  color: var(--indigo-text);
+}
+
+/* Helper text, table labels, metadata (caption). */
+@utility caption {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: var(--ink-mute);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "tnum";
+}
+
+/* Inline emphasis inside prose. Indigo is a link/CTA colour, so emphasis
+   gets weight and ink, not colour. */
+@utility emph {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+@utility tnum {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "ss01", "tnum";
+}
+
+/* ── Buttons ───────────────────────────────────────────────────────── */
+/* Pills, 8px 16px, label at weight 400. Short and transactional. */
+
+@utility btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.625rem 1.125rem;
+  min-height: 2.5rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
+  border: 1px solid transparent;
+  transition: background-color 0.15s ease, color 0.15s ease,
+              border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+@utility btn-sm {
+  padding: 0.4375rem 0.875rem;
+  min-height: 2.125rem;
+  font-size: 0.875rem;
+}
+
+/* The one filled pill in a band. */
+@utility btn-solid {
+  background: var(--indigo);
+  color: var(--indigo-ink);
+  border-color: var(--indigo);
+  &:hover { background: var(--indigo-deep); border-color: var(--indigo-deep); }
+  &:active { background: var(--indigo-press); border-color: var(--indigo-press); }
+}
+
+@utility btn-line {
+  background: var(--canvas);
+  color: var(--indigo-text);
+  border-color: color-mix(in oklab, var(--indigo-text) 45%, transparent);
+  &:hover { border-color: var(--indigo-text); background: color-mix(in oklab, var(--indigo) 7%, var(--canvas)); }
+}
+
+/* Quiet tertiary — nav, "read more" rows. */
+@utility btn-ghost {
+  background: transparent;
+  color: var(--ink-2);
+  border-color: transparent;
+  &:hover { background: color-mix(in oklab, var(--ink) 6%, transparent); color: var(--ink); }
+}
+
+/* On a navy / mesh-dark band. */
+@utility btn-invert {
+  background: var(--canvas);
+  color: var(--ink);
+  border-color: var(--canvas);
+  &:hover { background: color-mix(in oklab, #ffffff 88%, var(--indigo)); }
+}
+
+@utility btn-invert-line {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.4);
+  &:hover { border-color: #ffffff; background: rgba(255, 255, 255, 0.08); }
+}
+
+/* ── Links ─────────────────────────────────────────────────────────── */
+
+/* Indigo, no underline, arrow that steps forward on hover. */
+@utility link-arrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--indigo-text);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  transition: color 0.15s ease;
+  & svg { transition: transform 0.15s ease; }
+  &:hover { color: var(--indigo-deep); }
+  &:hover svg { transform: translateX(3px); }
+}
+
+@utility link-inline {
+  color: var(--indigo-text);
+  text-decoration: none;
+  transition: text-decoration-color 0.15s ease;
+  &:hover { text-decoration: underline; text-underline-offset: 0.18em; }
+}
+
+/* ── Surfaces ──────────────────────────────────────────────────────── */
+
+@utility card {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+}
+
+@utility card-lift {
+  background: var(--canvas);
+  border: 1px solid var(--hairline);
+  border-radius: var(--r-lg);
+  box-shadow: var(--lift-1);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  &:hover { box-shadow: var(--lift-2); }
+}
+
+/* The polarity-flipped tier — featured pricing, closing CTA bands. */
+@utility card-navy {
+  background: var(--navy-900);
+  color: #ffffff;
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+}
+
+/* The warm interlude. Always navy text, in either theme. */
+@utility card-cream {
+  background: var(--cream);
+  color: var(--cream-ink);
+  border: 1px solid transparent;
+  border-radius: var(--r-lg);
+}
+
+/* Product-UI mockup chrome: 16px radius, level-2 shadow, no hairline. */
+@utility panel {
+  background: var(--canvas);
+  border-radius: var(--r-xl);
+  box-shadow: var(--lift-2);
+  overflow: hidden;
+}
+
 @utility pill-tag {
   display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.3rem;
   border-radius: 9999px;
-  background: var(--color-zest-200);
-  color: var(--color-accent-deep);
-  padding: 0.25rem 0.65rem;
-  font-size: 0.7rem;
-  font-weight: 400;
+  padding: 0.1875rem 0.5rem;
+  background: var(--indigo-subdued);
+  color: var(--indigo-deep);
+  font-size: 0.625rem;
+  font-weight: 500;
   letter-spacing: 0.06em;
   text-transform: uppercase;
+  line-height: 1.15;
 }
 
-/* feature / content card — white surface on hairline */
-@utility card {
-  border: 1px solid var(--color-border);
-  background: var(--color-bg);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow-sm);
-}
+.dark .pill-tag { color: #cfcaff; }
 
-/* faint navy grid */
-@utility bg-grid {
-  background-image:
-    linear-gradient(rgba(13,37,61,0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(13,37,61,0.045) 1px, transparent 1px);
-  background-size: 60px 60px;
-}
+/* ── The gradient mesh ─────────────────────────────────────────────── */
+/* The mesh itself is SVG (src/components/mesh/GradientMesh.tsx) because the
+   real thing has organic blob shapes a CSS gradient cannot make. These two
+   utilities are the mounting hardware. */
 
-/* ── Gradient mesh backdrop — cream → orange → lavender → indigo → ruby ── */
-@utility glow {
-  background:
-    radial-gradient(40% 60% at 8% 30%,  rgba(245,233,212,0.85), transparent 70%),
-    radial-gradient(38% 55% at 30% 12%, rgba(249,168,90,0.40),  transparent 70%),
-    radial-gradient(42% 60% at 52% 24%, rgba(185,185,249,0.70), transparent 72%),
-    radial-gradient(46% 64% at 74% 14%, rgba(83,58,253,0.40),   transparent 70%),
-    radial-gradient(40% 60% at 94% 34%, rgba(234,34,97,0.34),   transparent 72%),
-    radial-gradient(60% 80% at 50% -10%, rgba(102,94,253,0.18), transparent 75%);
-  filter: saturate(1.05);
-}
-
-@utility mesh {
-  background:
-    radial-gradient(40% 60% at 8% 30%,  rgba(245,233,212,0.85), transparent 70%),
-    radial-gradient(38% 55% at 30% 12%, rgba(249,168,90,0.40),  transparent 70%),
-    radial-gradient(42% 60% at 52% 24%, rgba(185,185,249,0.70), transparent 72%),
-    radial-gradient(46% 64% at 74% 14%, rgba(83,58,253,0.40),   transparent 70%),
-    radial-gradient(40% 60% at 94% 34%, rgba(234,34,97,0.34),   transparent 72%),
-    radial-gradient(60% 80% at 50% -10%, rgba(102,94,253,0.18), transparent 75%);
-  filter: saturate(1.05);
-}
-
-@utility photo-tinted {
+/* Full-bleed backdrop behind a hero, clipped to a shallow skew so the band
+   ends on a hard diagonal instead of fading into nothing. */
+@utility mesh-host {
   position: relative;
-  overflow: hidden;
   isolation: isolate;
-  background: var(--color-bg-sunken);
-}
-@utility photo-tinted-img {
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
 }
 
-/* Dark-mode tweaks for decorative layers */
-.dark .bg-grid {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+@utility mesh-layer {
+  position: absolute;
+  inset: 0 0 auto 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 3.5rem), 0 100%);
 }
-.dark .glow,
-.dark .mesh { opacity: 0.5; }
+
+/* ── Forms ─────────────────────────────────────────────────────────── */
+
+@utility field {
+  width: 100%;
+  border: 1px solid var(--hairline-strong);
+  border-radius: var(--r-sm);
+  background: var(--canvas);
+  color: var(--ink);
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  &::placeholder { color: var(--ink-mute); }
+  &:hover { border-color: color-mix(in oklab, var(--hairline-strong) 70%, var(--ink)); }
+  &:focus {
+    outline: none;
+    border-color: var(--indigo);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--indigo) 22%, transparent);
+  }
+}
+
+@utility field-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--ink-2);
+  margin-bottom: 0.375rem;
+}
+
+/* ── Motion ────────────────────────────────────────────────────────── */
+
+@theme {
+  --animate-rise:   rise 0.5s cubic-bezier(0.16, 0.84, 0.44, 1) both;
+  --animate-ticker: ticker 42s linear infinite;
+  --animate-caret:  caret 1.1s steps(2) infinite;
+  /* Read inline by DownloadButton's spinner, which is styled from JS. */
+  --animate-dl-spin: dl-spin 0.7s linear infinite;
+
+  @keyframes rise    { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes ticker  { to { transform: translateX(-50%); } }
+  @keyframes caret   { 50% { opacity: 0.15; } }
+  @keyframes dl-spin { to { transform: rotate(360deg); } }
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-}
-
-@theme {
-  --animate-marquee:   marquee 34s linear infinite;
-  --animate-blink:     blink 1.4s steps(2) infinite;
-  --animate-fade-in:   fade-in 0.6s ease-out both;
-  --animate-float-y:   float-y 7s ease-in-out infinite;
-
-  @keyframes marquee   { to { transform: translateX(-50%); } }
-  @keyframes blink     { 50% { opacity: 0.2; } }
-  @keyframes fade-in   { from { opacity: 0; } to { opacity: 1; } }
-  @keyframes float-y   { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-  @keyframes dl-spin   { to { transform: rotate(360deg); } }
-
-  --animate-dl-spin: dl-spin 0.7s linear infinite;
 }

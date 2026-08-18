@@ -2,6 +2,8 @@ import { redirect } from 'next/navigation';
 import { headers } from 'next/headers';
 import { readSessionFromCookies } from '@/server/admin/auth';
 import { esc } from '@/server/admin/security';
+import { site } from '@/content/site';
+import { Notice } from '@/components/admin/ui';
 
 export const dynamic = 'force-dynamic';
 
@@ -16,45 +18,40 @@ export default async function LoginPage({ searchParams }: { searchParams: Search
   const csrf = h.get('x-adn-pcsrf') ?? '';
 
   return (
-    <div className="mx-auto mt-12 max-w-sm rounded-lg border border-zinc-200 bg-white p-8 shadow-sm">
-      <h1 className="text-lg font-semibold tracking-tight">GrowthVireX · Admin sign-in</h1>
-      <p className="mt-1 text-sm text-zinc-500">Restricted area. Activity is logged.</p>
+    <div className="card mx-auto mt-12 max-w-sm p-8">
+      <span className="eyebrow">{site.name} · Admin</span>
+      <h1 className="display-3 mt-3">Sign in</h1>
+      <p className="text-ink-mute mt-2 text-sm">Restricted area. Activity is logged.</p>
 
       {error && (
-        <div
-          className="mt-4 rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700"
-          role="alert"
-        >
-          {esc(error === 'ratelimit' ? 'Too many attempts. Try again in 15 minutes.' : 'Invalid credentials.')}
+        <div className="mt-5">
+          <Notice tone="error" label="Denied">
+            {esc(
+              error === 'ratelimit'
+                ? 'Too many attempts. Try again in 15 minutes.'
+                : 'Invalid credentials.',
+            )}
+          </Notice>
         </div>
       )}
 
-      <form method="POST" action="/admin/login/submit" className="mt-6 space-y-4">
+      <form method="POST" action="/admin/login/submit" className="mt-7 space-y-5">
         <input type="hidden" name="_csrf" value={csrf} />
         <div>
-          <label className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Username</label>
-          <input
-            type="text"
-            name="username"
-            required
-            autoComplete="username"
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
-          />
+          <label className="field-label">Username</label>
+          <input type="text" name="username" required autoComplete="username" className="field" />
         </div>
         <div>
-          <label className="block text-xs font-medium uppercase tracking-wider text-zinc-600">Password</label>
+          <label className="field-label">Password</label>
           <input
             type="password"
             name="password"
             required
             autoComplete="current-password"
-            className="mt-1 w-full rounded-md border border-zinc-300 px-3 py-2 text-sm"
+            className="field"
           />
         </div>
-        <button
-          type="submit"
-          className="w-full rounded-md bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800"
-        >
+        <button type="submit" className="btn btn-solid w-full">
           Sign in
         </button>
       </form>

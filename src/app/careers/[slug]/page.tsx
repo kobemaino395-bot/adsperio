@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import Reveal from '@/components/ui/Reveal';
+import GradientMesh from '@/components/mesh/GradientMesh';
+import CtaPanel from '@/components/layout/CtaPanel';
 import ApplicationForm from '@/components/ApplicationForm';
 import DownloadButton from '@/components/DownloadButton';
 import { getPosition, listPositions, type Position } from '@/server/content/positions';
@@ -71,12 +73,14 @@ function buildJsonLd(p: Position): Record<string, unknown> {
   return jl;
 }
 
+/* The tint is editorial metadata on the position, so it has to keep working —
+   but it is remapped onto the mesh stops. No colour outside that set. */
 const TINTS: Record<Position['heroTint'], string> = {
-  accent: 'var(--color-accent)',
-  ink: 'var(--color-ink-warm)',
-  sky: '#4f9cf9',
-  rose: '#e85a82',
-  lime: '#a3d33b',
+  accent: 'var(--indigo)',
+  ink: 'var(--navy-900)',
+  sky: 'var(--lavender)',
+  rose: 'var(--ruby)',
+  lime: 'var(--sherbet)',
 };
 
 export default async function PositionPage({ params }: { params: Params }) {
@@ -84,8 +88,9 @@ export default async function PositionPage({ params }: { params: Params }) {
   const p = await getPosition(slug);
   if (!p || p.hidden) notFound();
 
+  // The filename comes back on the response's content-disposition header, so
+  // DownloadButton resolves it client-side; nothing to thread through here.
   let downloadUrl = '';
-  let downloadFilename = '';
   // Redirect slots forward the browser cross-origin, so they need a plain
   // navigation rather than the fetch-into-a-blob download flow.
   let downloadDirect = false;
@@ -94,13 +99,11 @@ export default async function PositionPage({ params }: { params: Params }) {
     if (slot) {
       if (isRemoteKind(slot.kind) && slot.remoteUrl) {
         downloadUrl = await downloadPathFor(slot.slug);
-        downloadFilename = slot.publicFilename || slot.slug;
         downloadDirect = slot.kind === 'redirect';
       } else if (slot.kind === 'local') {
         const status = await readSlotStatus(slot.slug);
         if (status.hasFile) {
           downloadUrl = await downloadPathFor(slot.slug);
-          downloadFilename = slot.publicFilename || status.meta?.originalFilename || slot.slug;
         }
       }
     }
@@ -123,30 +126,32 @@ export default async function PositionPage({ params }: { params: Params }) {
       />
 
       {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div aria-hidden className="glow absolute inset-x-0 top-0 h-[560px]" />
-        <div aria-hidden className="bg-grid absolute inset-0 [mask-image:linear-gradient(to_bottom,black,transparent_55%)]" />
+      <section className="mesh-host overflow-hidden pt-16">
+        <GradientMesh height="h-[30rem] md:h-[34rem]" />
 
-        <div className="container-zest relative pt-48 pb-20">
+        <div className="wrap py-16 md:py-20">
           <Reveal>
             <Link
               href="/careers/"
-              className="inline-flex items-center gap-2 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted transition hover:text-[var(--color-fg)]"
+              className="eyebrow hover:text-indigo-deep inline-flex items-center gap-2 transition-colors"
             >
               ← Careers
             </Link>
           </Reveal>
           <Reveal delay={100}>
-            <div className="mt-6 flex items-center gap-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-              <span className="h-2 w-2 animate-blink rounded-full" style={{ background: tint }} />
-              {p.eyebrow || 'Now hiring'}
+            <div className="mt-5 flex items-center gap-2.5">
+              <span
+                className="animate-caret h-2 w-2 shrink-0 rounded-full"
+                style={{ background: tint }}
+              />
+              <span className="caption">{p.eyebrow || 'Now hiring'}</span>
             </div>
           </Reveal>
           <Reveal delay={200}>
-            <h1 className="mt-6 max-w-4xl text-[2.5rem] font-light leading-[1.02] tracking-[-0.04em] md:text-[5rem]">
+            <h1 className="display-1 mt-4 max-w-[16ch]">
               {p.title}
               {p.subtitle && (
-                <span className="ml-3 align-baseline text-[1.5rem] italic font-light text-ink-muted md:text-[2.5rem]">
+                <span className="text-ink-mute ml-3 align-baseline text-[0.55em]">
                   {p.subtitle}
                 </span>
               )}
@@ -154,18 +159,13 @@ export default async function PositionPage({ params }: { params: Params }) {
           </Reveal>
           {p.tagline && (
             <Reveal delay={300}>
-              <p className="mt-6 max-w-2xl text-lg font-light leading-relaxed text-ink-muted">{p.tagline}</p>
+              <p className="lede mt-6 max-w-[54ch]">{p.tagline}</p>
             </Reveal>
           )}
           <Reveal delay={400}>
-            <div className="mt-10 flex flex-wrap items-center gap-4">
-              <a
-                href="#apply"
-                className="group relative inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-8 py-4 text-sm font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-                style={{ boxShadow: 'var(--shadow-brutal)' }}
-              >
+            <div className="mt-8">
+              <a href="#apply" className="btn btn-solid">
                 Apply now
-                <span className="transition-transform group-hover:translate-x-1">→</span>
               </a>
             </div>
           </Reveal>
@@ -174,16 +174,16 @@ export default async function PositionPage({ params }: { params: Params }) {
 
       {/* STAT CARDS */}
       {p.statCards.some((s) => s.key || s.value) && (
-        <section className="border-y border-[var(--color-border)] bg-[var(--color-bg-alt)]">
-          <div className="container-zest py-10">
+        <section className="border-hairline bg-canvas-soft border-y">
+          <div className="wrap py-10">
             <Reveal>
               <dl className="flex flex-wrap gap-x-16 gap-y-6">
                 {p.statCards
                   .filter((s) => s.key || s.value)
                   .map((s, i) => (
                     <div key={i}>
-                      <dt className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-fg-muted)]">{s.key}</dt>
-                      <dd className="mt-1 text-base font-medium text-[var(--color-fg)]">{s.value}</dd>
+                      <dt className="caption">{s.key}</dt>
+                      <dd className="text-ink mt-1 text-base font-medium">{s.value}</dd>
                     </div>
                   ))}
               </dl>
@@ -193,18 +193,15 @@ export default async function PositionPage({ params }: { params: Params }) {
       )}
 
       {/* APPLY */}
-      <section id="apply" className="relative border-b border-[var(--color-border)] bg-[var(--color-bg)] py-24">
-        <div aria-hidden className="bg-dots absolute inset-0 opacity-30" />
-        <div className="container-zest relative">
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[1.4fr_1fr]">
+      <section id="apply" className="border-hairline bg-canvas border-b py-20 md:py-24">
+        <div className="wrap">
+          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.4fr_1fr]">
             <Reveal>
-              <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg)] p-8 md:p-10" style={{ boxShadow: 'var(--shadow-md)' }}>
+              <div className="card shadow-lift-1 p-7 md:p-10">
                 <SectionLabel>{p.applySubtitle}</SectionLabel>
-                <h2 className="mt-4 text-3xl font-light tracking-[-0.02em] md:text-4xl">
-                  Tell us about yourself.
-                </h2>
+                <h2 className="display-3 mt-3">Tell us about yourself.</h2>
                 {p.applyBlurb && (
-                  <p className="mt-3 max-w-xl text-sm leading-relaxed text-ink-muted">{p.applyBlurb}</p>
+                  <p className="text-ink-mute mt-3 max-w-xl leading-relaxed">{p.applyBlurb}</p>
                 )}
                 <div className="mt-8">
                   <ApplicationForm showTestUpload={showDownload} />
@@ -213,20 +210,20 @@ export default async function PositionPage({ params }: { params: Params }) {
             </Reveal>
 
             <Reveal delay={120}>
-              <aside className="space-y-6 lg:sticky lg:top-32 lg:self-start">
+              <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
                 {downloadUrl && showDownload && (
-                  <div className="card bg-[var(--color-bg-alt)] p-8">
-                    <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-[var(--color-accent)]">
+                  <div className="card bg-canvas-soft p-6">
+                    <div className="text-ink text-[0.9375rem] font-medium">
                       {p.downloadTitle || 'Download'}
                     </div>
                     {p.downloadBlurb && (
-                      <p className="mt-3 text-sm leading-relaxed text-[var(--color-fg-muted)]">{p.downloadBlurb}</p>
+                      <p className="text-ink-mute mt-2 leading-relaxed">{p.downloadBlurb}</p>
                     )}
                     <DownloadButton
                       href={downloadUrl}
                       direct={downloadDirect}
-                      className="mt-6 flex items-center justify-between gap-2 rounded-full border border-[var(--color-border)] px-5 py-3 text-sm font-medium transition hover:bg-[var(--color-bg-alt)]"
-                      messageClassName="mt-2 text-xs text-[var(--color-fg-muted)]"
+                      className="btn btn-line mt-5 w-full"
+                      messageClassName="caption mt-2"
                     >
                       <span>{p.downloadTitle || 'Download'}</span>
                       <span aria-hidden>↓</span>
@@ -235,14 +232,14 @@ export default async function PositionPage({ params }: { params: Params }) {
                 )}
 
                 {visibleProcessSteps.length > 0 && (
-                  <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
-                    <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
+                  <div className="card bg-canvas-soft p-6">
+                    <div className="text-ink text-[0.9375rem] font-medium">
                       {p.processHeading || 'Process'}
                     </div>
-                    <ol className="mt-4 space-y-3 text-sm leading-relaxed text-ink-muted">
+                    <ol className="text-ink-mute mt-4 space-y-3 leading-relaxed">
                       {visibleProcessSteps.map((step, i) => (
                         <li key={i} className="flex gap-3">
-                          <span className="font-mono text-xs text-[var(--color-accent)]">
+                          <span className="text-indigo-text shrink-0 text-[0.8125rem] font-medium tabular-nums">
                             {String(i + 1).padStart(2, '0')}
                           </span>
                           <span>{step}</span>
@@ -252,13 +249,13 @@ export default async function PositionPage({ params }: { params: Params }) {
                   </div>
                 )}
 
-                <div className="rounded-2xl border border-[var(--color-border)] p-8">
-                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Questions?</div>
+                <div className="card p-6">
+                  <div className="text-ink text-[0.9375rem] font-medium">Questions?</div>
                   <a
-                    href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
-                    className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
+                    href={`mailto:hiring@adsperio.com?subject=Question about ${encodeURIComponent(p.title)} role`}
+                    className="link-inline mt-3 inline-block"
                   >
-                    hiring@growthvirex.com
+                    hiring@adsperio.com
                   </a>
                 </div>
               </aside>
@@ -268,15 +265,17 @@ export default async function PositionPage({ params }: { params: Params }) {
       </section>
 
       {/* BODY */}
-      <section className="container-zest py-24">
-        <div className="mx-auto grid max-w-5xl gap-16 md:grid-cols-[2fr_1fr]">
+      <section className="wrap py-20 md:py-24">
+        <div className="mx-auto grid max-w-5xl gap-14 md:grid-cols-[2fr_1fr]">
           <div className="space-y-14">
             {p.aboutParagraphs.length > 0 && (
               <Reveal>
                 <div>
                   <SectionLabel>{p.aboutHeading || 'About the role'}</SectionLabel>
                   {p.aboutParagraphs.map((para, i) => (
-                    <p key={i} className="mt-4 text-lg leading-relaxed text-ink-muted">{para}</p>
+                    <p key={i} className="text-ink-mute mt-4 text-[1.0625rem] leading-relaxed">
+                      {para}
+                    </p>
                   ))}
                 </div>
               </Reveal>
@@ -286,10 +285,13 @@ export default async function PositionPage({ params }: { params: Params }) {
               <Reveal>
                 <div>
                   <SectionLabel>{p.responsibilitiesHeading || "What you'll do"}</SectionLabel>
-                  <ul className="mt-6 space-y-4">
+                  <ul className="mt-5 space-y-3">
                     {p.responsibilities.map((r, i) => (
-                      <li key={i} className="flex gap-4 text-ink-muted">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: tint }} />
+                      <li key={i} className="text-ink-mute flex gap-3.5">
+                        <span
+                          className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ background: tint }}
+                        />
                         <span className="leading-relaxed">{r}</span>
                       </li>
                     ))}
@@ -302,10 +304,13 @@ export default async function PositionPage({ params }: { params: Params }) {
               <Reveal>
                 <div>
                   <SectionLabel>{p.mustHaveHeading || "What we're looking for"}</SectionLabel>
-                  <ul className="mt-6 space-y-4">
+                  <ul className="mt-5 space-y-3">
                     {p.mustHave.map((r, i) => (
-                      <li key={i} className="flex gap-4 text-ink-muted">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: tint }} />
+                      <li key={i} className="text-ink-mute flex gap-3.5">
+                        <span
+                          className="mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full"
+                          style={{ background: tint }}
+                        />
                         <span className="leading-relaxed">{r}</span>
                       </li>
                     ))}
@@ -318,10 +323,10 @@ export default async function PositionPage({ params }: { params: Params }) {
               <Reveal>
                 <div>
                   <SectionLabel>{p.niceToHaveHeading || 'Nice to have'}</SectionLabel>
-                  <ul className="mt-6 space-y-4">
+                  <ul className="mt-5 space-y-3">
                     {p.niceToHave.map((r, i) => (
-                      <li key={i} className="flex gap-4 text-ink-muted">
-                        <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full border border-[var(--color-border)]" />
+                      <li key={i} className="text-ink-mute flex gap-3.5">
+                        <span className="border-hairline-strong mt-[0.55rem] h-1.5 w-1.5 shrink-0 rounded-full border" />
                         <span className="leading-relaxed">{r}</span>
                       </li>
                     ))}
@@ -332,7 +337,7 @@ export default async function PositionPage({ params }: { params: Params }) {
 
             {p.equalOpportunity && (
               <Reveal>
-                <p className="text-sm leading-relaxed text-ink-muted">{p.equalOpportunity}</p>
+                <p className="caption leading-relaxed">{p.equalOpportunity}</p>
               </Reveal>
             )}
           </div>
@@ -340,23 +345,23 @@ export default async function PositionPage({ params }: { params: Params }) {
           <aside className="space-y-5">
             {p.benefits.length > 0 && (
               <Reveal delay={80}>
-                <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-alt)] p-8">
-                  <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">
+                <div className="card bg-canvas-soft p-6">
+                  <div className="text-ink text-[0.9375rem] font-medium">
                     {p.benefitsHeading || 'What you get'}
                   </div>
                   {p.benefitsBlurb && (
-                    <p className="mt-3 text-sm leading-relaxed text-ink-muted">{p.benefitsBlurb}</p>
+                    <p className="text-ink-mute mt-2 leading-relaxed">{p.benefitsBlurb}</p>
                   )}
-                  <ul className="mt-5 space-y-5">
+                  <ul className="divide-hairline mt-4 divide-y">
                     {p.benefits.map((b, i) => (
-                      <li key={i}>
-                        <div className="text-sm font-semibold text-[var(--color-fg)]">{b.key}</div>
+                      <li key={i} className="py-3 first:pt-0 last:pb-0">
+                        <div className="text-ink text-[0.875rem] font-medium">{b.key}</div>
                         {b.value && (
-                          <div className="mt-0.5 text-xs leading-relaxed text-ink-muted">{b.value}</div>
+                          <div className="text-ink-mute mt-0.5 text-[0.8125rem] leading-relaxed">
+                            {b.value}
+                          </div>
                         )}
-                        {b.sub && (
-                          <div className="mt-0.5 text-[0.65rem] uppercase tracking-[0.15em] text-ink-muted/70">{b.sub}</div>
-                        )}
+                        {b.sub && <div className="caption mt-0.5">{b.sub}</div>}
                       </li>
                     ))}
                   </ul>
@@ -365,16 +370,17 @@ export default async function PositionPage({ params }: { params: Params }) {
             )}
 
             <Reveal delay={160}>
-              <div className="rounded-2xl border border-[var(--color-border)] p-8">
-                <div className="font-mono text-[0.65rem] uppercase tracking-[0.2em] text-ink-muted">Questions?</div>
-                <p className="mt-3 text-sm leading-relaxed text-ink-muted">
-                  Reach out before applying — we&apos;re happy to answer any questions about the role.
+              <div className="card p-6">
+                <div className="text-ink text-[0.9375rem] font-medium">Questions?</div>
+                <p className="text-ink-mute mt-2 leading-relaxed">
+                  Reach out before applying — we&apos;re happy to answer any questions about the
+                  role.
                 </p>
                 <a
-                  href={`mailto:hiring@growthvirex.com?subject=Question about ${encodeURIComponent(p.title)} role`}
-                  className="mt-4 inline-block text-sm font-medium text-[var(--color-accent)] hover:underline"
+                  href={`mailto:hiring@adsperio.com?subject=Question about ${encodeURIComponent(p.title)} role`}
+                  className="link-inline mt-3 inline-block"
                 >
-                  hiring@growthvirex.com
+                  hiring@adsperio.com
                 </a>
               </div>
             </Reveal>
@@ -382,33 +388,22 @@ export default async function PositionPage({ params }: { params: Params }) {
         </div>
       </section>
 
-      <section className="border-t border-[var(--color-border)] bg-[var(--color-bg-alt)] py-24 text-center">
-        <div className="container-zest max-w-2xl">
-          <Reveal>
-            <h2 className="text-4xl font-light tracking-[-0.03em] md:text-5xl">
-              Think you&apos;re the one?
-            </h2>
-          </Reveal>
-          <Reveal delay={250}>
-            <a
-              href="#apply"
-              className="group relative mt-10 inline-flex items-center gap-3 bg-[var(--color-ink-warm)] px-10 py-5 text-base font-medium text-[var(--color-bg)] transition-transform hover:-translate-x-0.5 hover:-translate-y-0.5"
-              style={{ boxShadow: `6px 6px 0 ${tint}` }}
-            >
-              Apply for {p.title}
-              <span className="transition-transform group-hover:translate-x-1">→</span>
-            </a>
-          </Reveal>
-        </div>
-      </section>
+      <CtaPanel
+        eyebrow="Last step"
+        title="Think you're the one?"
+        body="The form takes about ten minutes and a person reads every submission. We reply either way."
+      >
+        <a href="#apply" className="btn btn-invert">
+          Apply for {p.title}
+        </a>
+        <Link href="/careers/" className="btn btn-invert-line">
+          Other roles
+        </Link>
+      </CtaPanel>
     </main>
   );
 }
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-mono text-[0.7rem] uppercase tracking-[0.2em] text-ink-muted">
-      {children}
-    </div>
-  );
+  return <div className="eyebrow">{children}</div>;
 }
