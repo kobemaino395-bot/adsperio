@@ -5,7 +5,7 @@ import path from 'node:path';
 import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 
 export function dataDir(): string {
-  const env = process.env.GROWTHVIREX_DATA_DIR;
+  const env = process.env.ADSPERIO_DATA_DIR;
   if (env && env.trim()) return path.resolve(env);
   return path.resolve(process.cwd(), 'data');
 }

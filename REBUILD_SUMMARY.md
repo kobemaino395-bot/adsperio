@@ -327,10 +327,12 @@ OG image and 404 all render.
 - [ ] Admin panel untested locally (needs the two env vars set)
 - [ ] Turbopack build warning: `process.cwd()` in `src/server/storage.ts` widens
       the NFT file trace. Affects standalone output size, not correctness.
-- [ ] `GROWTHVIREX_DATA_DIR` is the last old-brand identifier in `src/`. Renaming
-      it breaks existing deployments, so it needs a coordinated change with
-      `DEPLOY.md` and the live server. `package.json` name and `DEPLOY.md` still
-      say growthvirex too.
+- [x] `GROWTHVIREX_DATA_DIR` renamed to `ADSPERIO_DATA_DIR` in `src/server/storage.ts`,
+      `package.json`/`package-lock.json` name fields updated to `adsperio`, `DEPLOY.md`
+      rewritten for AdsPerio, and the `origin` git remote repointed to
+      `kobemaino395-bot/adsperio`. Any server still running the old env var name
+      needs `override.conf` updated to `ADSPERIO_DATA_DIR` on next deploy (see
+      `DEPLOY.md` Part 4.2).
 
 ### 4. Content Review
 

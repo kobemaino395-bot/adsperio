@@ -1,6 +1,6 @@
-# GrowthVireX — Deployment Guide
+# AdsPerio — Deployment Guide
 
-This guide covers the Ubuntu VPS deployment for the GrowthVireX Next.js site, including the Ads Manager hiring pipeline (Google Sheets + Drive intake) and the password-protected `/admin` panel.
+This guide covers the Ubuntu VPS deployment for the AdsPerio Next.js site, including the Ads Manager hiring pipeline (Google Sheets + Drive intake) and the password-protected `/admin` panel.
 
 The site is a single Next.js 16 process. Nginx terminates TLS and reverse-proxies everything to it on `127.0.0.1:8080`.
 
@@ -8,7 +8,7 @@ The site is a single Next.js 16 process. Nginx terminates TLS and reverse-proxie
 
 ## Part 1 — Initial server setup
 
-Assumes a fresh Ubuntu 22.04+ VPS, a domain `growthvirex.com` pointing at it, and SSH access as a sudoer.
+Assumes a fresh Ubuntu 22.04+ VPS, a domain `adsperio.com` pointing at it, and SSH access as a sudoer.
 
 ### 1.1 System packages
 
@@ -30,19 +30,19 @@ sudo ufw enable
 ### 1.3 App user + directories
 
 ```bash
-sudo useradd --system --create-home --shell /usr/sbin/nologin growthvirex
-sudo mkdir -p /var/www/growthvirex
-sudo mkdir -p /var/lib/growthvirex/downloads /var/lib/growthvirex/uploads
-sudo chown -R growthvirex:growthvirex /var/www/growthvirex /var/lib/growthvirex
+sudo useradd --system --create-home --shell /usr/sbin/nologin adsperio
+sudo mkdir -p /var/www/adsperio
+sudo mkdir -p /var/lib/adsperio/downloads /var/lib/adsperio/uploads
+sudo chown -R adsperio:adsperio /var/www/adsperio /var/lib/adsperio
 ```
 
 ### 1.4 Clone the repo
 
 ```bash
-sudo -u growthvirex git clone https://github.com/kobemaino395-bot/growthvirex.git /var/www/growthvirex
-cd /var/www/growthvirex
-sudo -u growthvirex npm ci
-sudo -u growthvirex npm run build
+sudo -u adsperio git clone https://github.com/kobemaino395-bot/adsperio.git /var/www/adsperio
+cd /var/www/adsperio
+sudo -u adsperio npm ci
+sudo -u adsperio npm run build
 ```
 
 ---
@@ -52,21 +52,21 @@ sudo -u growthvirex npm run build
 **Create the service file:**
 
 ```bash
-sudo nano /etc/systemd/system/growthvirex.service
+sudo nano /etc/systemd/system/adsperio.service
 ```
 
 Paste this exactly:
 
 ```ini
 [Unit]
-Description=GrowthVireX Next.js
+Description=AdsPerio Next.js
 After=network.target
 
 [Service]
 Type=simple
-User=growthvirex
-Group=growthvirex
-WorkingDirectory=/var/www/growthvirex
+User=adsperio
+Group=adsperio
+WorkingDirectory=/var/www/adsperio
 ExecStart=/usr/bin/npm run start
 Restart=always
 RestartSec=5
@@ -83,24 +83,24 @@ Save: `Ctrl+O` → Enter → `Ctrl+X`
 
 ```bash
 sudo systemctl daemon-reload
-sudo systemctl enable --now growthvirex
+sudo systemctl enable --now adsperio
 ```
 
 **Verify it's running:**
 
 ```bash
-sudo systemctl status growthvirex
+sudo systemctl status adsperio
 ```
 
 Look for `Active: active (running)`. If it says `failed`, check why:
 
 ```bash
-sudo journalctl -u growthvirex -n 50
+sudo journalctl -u adsperio -n 50
 ```
 
 **Common failure reasons:**
 
-- `npm run start` fails → build wasn't done yet — run `sudo -u growthvirex npm run build` first
+- `npm run start` fails → build wasn't done yet — run `sudo -u adsperio npm run build` first
 - Port 8080 already in use → `ss -tlnp | grep 8080`
 - Wrong `npm` path → verify with `which npm`, update `ExecStart` if different
 
@@ -110,7 +110,7 @@ Sanity-check the app is responding locally before moving to Nginx:
 curl http://127.0.0.1:8080
 ```
 
-Logs: `sudo journalctl -u growthvirex -f`
+Logs: `sudo journalctl -u adsperio -f`
 
 ---
 
@@ -120,8 +120,8 @@ The form intake forwards every submission to a Google Apps Script Web App, which
 
 ### 3.1 Create the Sheet and Drive folder
 
-1. Create a new Google Sheet named **GrowthVireX Applications**. Note its URL.
-2. Create a Drive folder named **GrowthVireX Applications — Files** inside the same Google account. Note the folder ID (the string after `/folders/` in the URL).
+1. Create a new Google Sheet named **AdsPerio Applications**. Note its URL.
+2. Create a Drive folder named **AdsPerio Applications — Files** inside the same Google account. Note the folder ID (the string after `/folders/` in the URL).
 
 ### 3.2 Generate a read secret
 
@@ -168,8 +168,8 @@ Should return JSON `{"headers":[...],"rows":[...]}`. If you get `forbidden`, the
 On the server:
 
 ```bash
-cd /var/www/growthvirex
-sudo -u growthvirex node scripts/hash-password.mjs
+cd /var/www/adsperio
+sudo -u adsperio node scripts/hash-password.mjs
 # Enter password (no echo), confirm, copy the printed line:
 # ADMIN_PASSWORD_HASH=scrypt$<salthex>$<hashhex>
 ```
@@ -179,29 +179,31 @@ The script writes the hash line to stdout; everything else goes to stderr.
 ### 4.2 systemd environment override
 
 ```bash
-sudo mkdir -p /etc/systemd/system/growthvirex.service.d
-sudo tee /etc/systemd/system/growthvirex.service.d/override.conf > /dev/null <<EOF
+sudo mkdir -p /etc/systemd/system/adsperio.service.d
+sudo tee /etc/systemd/system/adsperio.service.d/override.conf > /dev/null <<EOF
 [Service]
 Environment=GOOGLE_SHEETS_WEBAPP_URL=https://script.google.com/macros/s/.../exec
 Environment=GOOGLE_SHEETS_READ_SECRET=<paste secret from 3.2>
 Environment=ADMIN_USERNAME=admin
 Environment=ADMIN_PASSWORD_HASH=<paste full scrypt$... line from 4.1>
-Environment=GROWTHVIREX_DATA_DIR=/var/lib/growthvirex
+Environment=ADSPERIO_DATA_DIR=/var/lib/adsperio
 EOF
 sudo systemctl daemon-reload
-sudo systemctl restart growthvirex
+sudo systemctl restart adsperio
 ```
 
 > **Important:** `override.conf` should be `chmod 600` (default on tee with sudo). Don't commit it.
 
+> **Migrating from GrowthVireX:** if this server previously ran the site under the old `growthvirex` name, the data-dir env var was `GROWTHVIREX_DATA_DIR`. It has been renamed to `ADSPERIO_DATA_DIR` in the app. Update `override.conf` to the new key (and move `/var/lib/growthvirex` → `/var/lib/adsperio` if you're keeping the same data, or just point the new var at the old path) before restarting.
+
 ### 4.3 Verify
 
 ```bash
-curl -sI https://growthvirex.com/admin/login | head -20
+curl -sI https://adsperio.com/admin/login | head -20
 # Expect: 200, Content-Security-Policy header, X-Frame-Options: DENY, Cache-Control: no-store
 ```
 
-Then visit `https://growthvirex.com/admin` in a browser, log in.
+Then visit `https://adsperio.com/admin` in a browser, log in.
 
 If `ADMIN_PASSWORD_HASH` is unset or invalid the panel returns `503 Admin disabled.` — this is intentional.
 
@@ -214,7 +216,7 @@ Nginx listens on port 80 only. Cloudflare terminates TLS and proxies to your ser
 **Create the Nginx config:**
 
 ```bash
-sudo nano /etc/nginx/sites-available/growthvirex
+sudo nano /etc/nginx/sites-available/adsperio
 ```
 
 Paste this exactly:
@@ -225,7 +227,7 @@ limit_req_zone $binary_remote_addr zone=applications:10m rate=10r/m;
 
 server {
     listen 80;
-    server_name growthvirex.com www.growthvirex.com;
+    server_name adsperio.com www.adsperio.com;
 
     client_max_body_size 22m;
 
@@ -286,7 +288,7 @@ sudo rm -f /etc/nginx/sites-enabled/default
 **Enable it and reload:**
 
 ```bash
-sudo ln -sf /etc/nginx/sites-available/growthvirex /etc/nginx/sites-enabled/growthvirex
+sudo ln -sf /etc/nginx/sites-available/adsperio /etc/nginx/sites-enabled/adsperio
 sudo nginx -t
 sudo systemctl reload nginx
 ```
@@ -296,10 +298,10 @@ sudo systemctl reload nginx
 **Verify it's proxying:**
 
 ```bash
-curl -I http://growthvirex.com
+curl -I http://adsperio.com
 ```
 
-Should return `200` (or `301`/`404` from Next.js — anything but connection refused). If you get `502 Bad Gateway`, the growthvirex service isn't running — fix Part 2 first.
+Should return `200` (or `301`/`404` from Next.js — anything but connection refused). If you get `502 Bad Gateway`, the adsperio service isn't running — fix Part 2 first.
 
 ---
 
@@ -324,22 +326,22 @@ Set to **Full** — Cloudflare connects to your server on port 443 using the Ori
 On the server:
 
 ```bash
-sudo nano /etc/ssl/certs/growthvirex.crt
+sudo nano /etc/ssl/certs/adsperio.crt
 # paste the Origin Certificate, save
 
-sudo nano /etc/ssl/private/growthvirex.key
+sudo nano /etc/ssl/private/adsperio.key
 # paste the Private Key, save
 ```
 
-**Update Nginx to listen on 443** — add a second server block to `/etc/nginx/sites-available/growthvirex` below the existing port 80 block:
+**Update Nginx to listen on 443** — add a second server block to `/etc/nginx/sites-available/adsperio` below the existing port 80 block:
 
 ```nginx
 server {
     listen 443 ssl;
-    server_name growthvirex.com www.growthvirex.com;
+    server_name adsperio.com www.adsperio.com;
 
-    ssl_certificate /etc/ssl/certs/growthvirex.crt;
-    ssl_certificate_key /etc/ssl/private/growthvirex.key;
+    ssl_certificate /etc/ssl/certs/adsperio.crt;
+    ssl_certificate_key /etc/ssl/private/adsperio.key;
 
     client_max_body_size 22m;
 
@@ -424,25 +426,25 @@ Should return `{"IsTor":true,...}`.
 ## Part 8 — Deploying updates
 
 ```bash
-ssh growthvirex-server
-cd /var/www/growthvirex
-sudo -u growthvirex git pull
-sudo -u growthvirex npm ci
-sudo -u growthvirex npm run build
-sudo systemctl restart growthvirex
+ssh adsperio-server
+cd /var/www/adsperio
+sudo -u adsperio git pull
+sudo -u adsperio npm ci
+sudo -u adsperio npm run build
+sudo systemctl restart adsperio
 ```
 
-The take-home asset and JSONL log live in `/var/lib/growthvirex/` and survive `git pull` cleanly — they're outside the repo.
+The take-home asset and JSONL log live in `/var/lib/adsperio/` and survive `git pull` cleanly — they're outside the repo.
 
 ---
 
 ## Operational notes
 
 - **In-memory sessions**: the admin panel keeps sessions in a process-local `Map`. A restart wipes them — by design. Don't run multiple workers (no `cluster`, no PM2 `instances > 1`); sessions would not be shared.
-- **Audit log**: `sudo journalctl -u growthvirex -t growthvirex` shows every login (success/fail), logout, file upload, and admin page access.
+- **Audit log**: `sudo journalctl -u adsperio -t adsperio` shows every login (success/fail), logout, file upload, and admin page access.
 - **Rotating the admin password**: re-run `node scripts/hash-password.mjs`, paste the new `ADMIN_PASSWORD_HASH` into `override.conf`, `daemon-reload && restart`. All sessions are wiped on restart.
 - **Replacing the take-home file via UI**: log into `/admin/downloads`, upload the new ZIP/DOCX. The old file is preserved as `take-home.bak` for rollback. Magic-byte validated (`PK\x03\x04`) — invalid uploads are rejected before touching disk.
-- **Backup the JSONL**: `/var/lib/growthvirex/applications.jsonl` is the durable local copy of every submission. Even if the Apps Script webhook is down or compromised, you still have it. Back it up nightly.
+- **Backup the JSONL**: `/var/lib/adsperio/applications.jsonl` is the durable local copy of every submission. Even if the Apps Script webhook is down or compromised, you still have it. Back it up nightly.
 - **Apps Script redirect quirk**: the server uses `redirect: 'manual'` when POSTing to the Web App URL because Apps Script responds with a 302 to `script.googleusercontent.com`; following it downgrades the POST to GET and breaks `doPost`. The intake treats any 2xx or 3xx as success.
 
 ## Threat-model recap
@@ -462,20 +464,20 @@ The take-home asset and JSONL log live in `/var/lib/growthvirex/` and survive `g
 ## Deploy checklist (copy/paste)
 
 ```text
-[ ] DNS A record for growthvirex.com → server IP
+[ ] DNS A record for adsperio.com → server IP
 [ ] Node 20 + Nginx installed
-[ ] /var/www/growthvirex cloned, npm ci, npm run build
-[ ] /var/lib/growthvirex/{downloads,uploads} created and chown growthvirex
-[ ] /etc/systemd/system/growthvirex.service in place
+[ ] /var/www/adsperio cloned, npm ci, npm run build
+[ ] /var/lib/adsperio/{downloads,uploads} created and chown adsperio
+[ ] /etc/systemd/system/adsperio.service in place
 [ ] Google Sheet + Drive folder created
 [ ] Apps Script deployed; Web app URL + READ_SECRET captured
 [ ] curl smoke-test against ?secret= returns JSON
 [ ] node scripts/hash-password.mjs run; ADMIN_PASSWORD_HASH captured
-[ ] /etc/systemd/system/growthvirex.service.d/override.conf populated with all four envs
-[ ] systemctl daemon-reload && systemctl restart growthvirex
+[ ] /etc/systemd/system/adsperio.service.d/override.conf populated with all four envs
+[ ] systemctl daemon-reload && systemctl restart adsperio
 [ ] Initial take-home asset uploaded via /admin/downloads
 [ ] Nginx config in place, certbot run, nginx -t && reload
 [ ] /admin/login reachable, login succeeds, logout works
 [ ] Test application submitted from /careers/ads-manager → row appears in Sheet + JSONL
-[ ] Backup cron set for /var/lib/growthvirex/applications.jsonl
+[ ] Backup cron set for /var/lib/adsperio/applications.jsonl
 ```
