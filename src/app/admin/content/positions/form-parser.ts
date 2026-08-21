@@ -30,9 +30,8 @@ function parseBenefits(v: string): Benefit[] {
   });
 }
 
-/** One role per line: `id | label | blurb | min salary | max salary | test description`.
- *  Trailing fields may be omitted. `testFileName` isn't parsed here — the
- *  server preserves it by matching role id against the previously-saved list. */
+/** One role per line: `id | label | blurb | min salary | max salary`.
+ *  Trailing fields may be omitted. */
 function parseRoleOptions(v: string): Partial<RoleOption>[] {
   return lines(v).map((line) => {
     const parts = line.split('|').map((p) => p.trim());
@@ -42,7 +41,6 @@ function parseRoleOptions(v: string): Partial<RoleOption>[] {
       blurb: parts[2] ?? '',
       minSalary: Number(parts[3] ?? 0),
       maxSalary: Number(parts[4] ?? 0),
-      testDescription: parts[5] ?? '',
     };
   });
 }

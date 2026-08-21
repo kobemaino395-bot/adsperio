@@ -5,19 +5,14 @@ import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import Reveal from '@/components/ui/Reveal';
 import ApplicationForm, { type RoleOptionLite } from '@/components/ApplicationForm';
 
-// Mirrors POSITION_FALLBACK_KEY in src/server/content/position-files.ts — kept
-// as a literal here since that module is 'server-only' and can't be imported
-// from a client component.
-const POSITION_FALLBACK_KEY = '_position';
-
 export type ApplyPanelProps = {
   positionSlug: string;
   positionTitle: string;
   applySubtitle: string;
   applyBlurb: string;
   roleOptions: RoleOptionLite[];
-  positionTestFileName: string;
-  positionTestDescription: string;
+  testFileName: string;
+  testDescription: string;
   downloadTitle: string;
   downloadBlurb: string;
   showDownload: boolean;
@@ -44,8 +39,8 @@ export default function ApplyPanel({
   applySubtitle,
   applyBlurb,
   roleOptions,
-  positionTestFileName,
-  positionTestDescription,
+  testFileName,
+  testDescription,
   downloadTitle,
   downloadBlurb,
   showDownload,
@@ -82,12 +77,7 @@ export default function ApplyPanel({
     document.getElementById('apply')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  const role = roleOptions.length > 0 ? roleOptions.find((r) => r.id === selectedRole) : undefined;
-
-  const testFileName = role?.testFileName || positionTestFileName;
-  const testDescription = (role?.testFileName ? role.testDescription : '') || positionTestDescription;
-  const downloadKey = role?.testFileName ? role.id : POSITION_FALLBACK_KEY;
-  const downloadUrl = testFileName ? `/careers/${positionSlug}/take-home/${downloadKey}` : '';
+  const downloadUrl = testFileName ? `/careers/${positionSlug}/take-home` : '';
   const hasFile = showDownload && !!downloadUrl;
   const visibleProcessSteps = hasFile ? processSteps : processStepsNoDownload;
 
@@ -167,8 +157,7 @@ export default function ApplyPanel({
             <span className="eyebrow">Open roles · {roleOptions.length}</span>
             <h2 className="display-2 mt-3">The roles, in detail</h2>
             <p className="text-ink-mute mt-4 max-w-2xl leading-relaxed">
-              Every role uses the application form above. Pick one here and it&apos;s selected for you, along
-              with the take-home brief that goes with it.
+              Every role uses the application form above. Pick one here and it&apos;s selected for you.
             </p>
             <ul className="mt-12 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
               {roleOptions.map((r, i) => {

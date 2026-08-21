@@ -18,8 +18,6 @@ export type RoleOptionLite = {
   blurb: string;
   minSalary: number;
   maxSalary: number;
-  testFileName: string;
-  testDescription: string;
 };
 
 async function fileToBase64(file: File): Promise<string> {

@@ -199,8 +199,8 @@ export default async function PositionPage({ params }: { params: Params }) {
           applySubtitle={p.applySubtitle}
           applyBlurb={p.applyBlurb}
           roleOptions={p.roleOptions}
-          positionTestFileName={p.testFileName}
-          positionTestDescription={p.testDescription}
+          testFileName={p.testFileName}
+          testDescription={p.testDescription}
           downloadTitle={p.downloadTitle}
           downloadBlurb={p.downloadBlurb}
           showDownload={p.showDownload}

@@ -4,10 +4,8 @@ import path from 'node:path';
 import { dataDir } from '@/server/storage';
 import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
 import {
-  deleteAllTakeHomeFiles,
-  isValidTakeHomeKey,
+  deleteTakeHomeFile,
   migrateLegacySlotFile,
-  POSITION_FALLBACK_KEY,
   renameTakeHomeFiles,
 } from '@/server/content/position-files';
 
@@ -20,16 +18,14 @@ export type Benefit = { key: string; value: string; sub: string };
 /** One selectable job on a shared application page. A position with role
  *  options renders a role picker instead of a single apply button — the
  *  visitor chooses which one they're applying for and the form forwards it.
- *  `testFileName` is the sanitized filename of the take-home uploaded for
- *  this role (empty = none; falls back to the position-level file). */
+ *  All roles on a position share the same take-home file (if any) — there's
+ *  no per-role file. */
 export type RoleOption = {
   id: string;
   label: string;
   blurb: string;
   minSalary: number;
   maxSalary: number;
-  testFileName: string;
-  testDescription: string;
 };
 
 export type Position = {
@@ -43,8 +39,7 @@ export type Position = {
   applySubtitle: string;
   applyBlurb: string;
   roleOptions: RoleOption[];
-  /** Position-level take-home, used when there's no role picker or the
-   *  selected role doesn't have its own file. */
+  /** The position's one take-home file, shared across all its roles. */
   testFileName: string;
   testDescription: string;
   downloadTitle: string;
@@ -111,8 +106,6 @@ function seed(): Position[] {
           blurb: 'Own Google and Microsoft Ads accounts rebuilt around margin — Search, Shopping, and Performance Max.',
           minSalary: 38000,
           maxSalary: 46000,
-          testFileName: '',
-          testDescription: '',
         },
         {
           id: 'paid-social-specialist',
@@ -120,8 +113,6 @@ function seed(): Position[] {
           blurb: 'Run Meta, TikTok, and LinkedIn buying end to end, with server-side conversions handled properly, not guessed at.',
           minSalary: 38000,
           maxSalary: 46000,
-          testFileName: '',
-          testDescription: '',
         },
         {
           id: 'measurement-analyst',
@@ -129,8 +120,6 @@ function seed(): Position[] {
           blurb: 'Build the incrementality tests and MMM work that tell clients what actually moved revenue.',
           minSalary: 42000,
           maxSalary: 52000,
-          testFileName: '',
-          testDescription: '',
         },
         {
           id: 'creative-strategist',
@@ -138,8 +127,6 @@ function seed(): Position[] {
           blurb: 'Brief and ship static, video, and UGC at the volume real testing requires.',
           minSalary: 36000,
           maxSalary: 44000,
-          testFileName: '',
-          testDescription: '',
         },
       ],
       testFileName: '',
@@ -228,8 +215,6 @@ async function migrateRecord(raw: Position & { downloadSlotSlug?: string }): Pro
         blurb: String(r.blurb ?? ''),
         minSalary: Number.isFinite(Number(r.minSalary)) ? Number(r.minSalary) : 0,
         maxSalary: Number.isFinite(Number(r.maxSalary)) ? Number(r.maxSalary) : 0,
-        testFileName: String(r.testFileName ?? ''),
-        testDescription: String(r.testDescription ?? ''),
       }))
     : [];
 
@@ -394,10 +379,6 @@ function benefits(v: unknown): Benefit[] {
   return out;
 }
 
-/** Normalizes a submitted role-options list. `testFileName` is never taken
- *  from raw input here — callers (create/update) fill it in from the
- *  previously-saved role with the same id, since the file upload UI is a
- *  separate small form that operates on an already-saved position. */
 function roleOptions(v: unknown): RoleOption[] {
   if (!Array.isArray(v)) return [];
   const out: RoleOption[] = [];
@@ -414,8 +395,6 @@ function roleOptions(v: unknown): RoleOption[] {
       blurb: String(o.blurb ?? '').trim().slice(0, 400),
       minSalary: Number.isFinite(Number(o.minSalary)) ? Math.max(0, Math.floor(Number(o.minSalary))) : 0,
       maxSalary: Number.isFinite(Number(o.maxSalary)) ? Math.max(0, Math.floor(Number(o.maxSalary))) : 0,
-      testFileName: '',
-      testDescription: String(o.testDescription ?? '').trim().slice(0, 400),
     });
   }
   return out;
@@ -473,16 +452,6 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
   };
 }
 
-/** Carries forward each role's uploaded take-home filename by matching role
- *  id, since the text-based role editor can't submit file data. A role id
- *  that no longer exists after the edit loses its file reference (the
- *  uploaded bytes stay on disk but become unreachable, matching how the old
- *  slot system also orphaned files on slug changes). */
-function preserveRoleFiles(previous: RoleOption[], next: RoleOption[]): RoleOption[] {
-  const byId = new Map(previous.map((r) => [r.id, r.testFileName]));
-  return next.map((r) => ({ ...r, testFileName: byId.get(r.id) ?? '' }));
-}
-
 export async function createPosition(slug: string, input: Partial<Position>): Promise<SavePositionResult> {
   const cleanSlug = slug.trim().toLowerCase();
   if (!SLUG_RE.test(cleanSlug)) {
@@ -524,11 +493,9 @@ export async function updatePosition(slug: string, input: Partial<Position>): Pr
   const merged = normalizePositionInput(nextSlug, { ...current, ...input });
   merged.createdAt = current.createdAt;
   merged.updatedAt = new Date().toISOString();
-  // The role editor is text-only; keep whatever files were already uploaded
-  // for roles that still exist, and don't let a plain content save wipe the
-  // position-level file (input.testFileName is only ever set by the small
-  // upload/delete routes, which patch through this same function).
-  merged.roleOptions = preserveRoleFiles(current.roleOptions, merged.roleOptions);
+  // Don't let a plain content save wipe the take-home file — input.testFileName
+  // is only ever set by the small upload/delete routes, which patch through
+  // this same function.
   if (input.testFileName === undefined) merged.testFileName = current.testFileName;
   if (!merged.title) return { ok: false, reason: 'Title is required' };
 
@@ -544,7 +511,7 @@ export async function deletePosition(slug: string): Promise<{ ok: true } | { ok:
   if (!list.some((p) => p.slug === slug)) return { ok: false, reason: 'Position not found' };
   const next = list.filter((p) => p.slug !== slug);
   await save(next);
-  await deleteAllTakeHomeFiles(slug);
+  await deleteTakeHomeFile(slug);
   return { ok: true };
 }
 
@@ -571,13 +538,12 @@ export async function copyPosition(slug: string): Promise<SavePositionResult> {
     if (n > 50) return { ok: false, reason: 'Too many copies' };
   }
   const now = new Date().toISOString();
-  // Take-home files aren't duplicated on disk, so a copy starts without them.
+  // The take-home file isn't duplicated on disk, so a copy starts without one.
   const next: Position = {
     ...src,
     slug: candidate,
     title: `${src.title} (copy)`,
     testFileName: '',
-    roleOptions: src.roleOptions.map((r) => ({ ...r, testFileName: '' })),
     hidden: true,
     createdAt: now,
     updatedAt: now,
@@ -587,28 +553,19 @@ export async function copyPosition(slug: string): Promise<SavePositionResult> {
   return { ok: true, position: next };
 }
 
-/** Sets (or clears, when filename is '') the take-home filename recorded
- *  against a position or one of its roles. Used by the small upload/delete
- *  routes after they've written or removed the underlying file. */
+/** Sets (or clears, when filename is '') the position's take-home filename.
+ *  Used by the small upload/delete routes after they've written or removed
+ *  the underlying file. */
 export async function setPositionTakeHomeFilename(
   slug: string,
-  key: string,
   filename: string,
 ): Promise<SavePositionResult> {
-  if (!isValidTakeHomeKey(key)) return { ok: false, reason: 'Invalid file key' };
   const list = await load();
   const idx = list.findIndex((p) => p.slug === slug);
   if (idx < 0) return { ok: false, reason: 'Position not found' };
   const current = list[idx]!;
 
-  const next: Position =
-    key === POSITION_FALLBACK_KEY
-      ? { ...current, testFileName: filename, updatedAt: new Date().toISOString() }
-      : {
-          ...current,
-          roleOptions: current.roleOptions.map((r) => (r.id === key ? { ...r, testFileName: filename } : r)),
-          updatedAt: new Date().toISOString(),
-        };
+  const next: Position = { ...current, testFileName: filename, updatedAt: new Date().toISOString() };
 
   list[idx] = next;
   await save(list);

@@ -1,15 +1,14 @@
 import type { NextRequest } from 'next/server';
-import { isValidTakeHomeKey, readTakeHomeBytes, readTakeHomeMeta } from '@/server/content/position-files';
+import { readTakeHomeBytes, readTakeHomeMeta } from '@/server/content/position-files';
 
 export const dynamic = 'force-dynamic';
 
-type Ctx = { params: Promise<{ slug: string; key: string }> };
+type Ctx = { params: Promise<{ slug: string }> };
 
 export async function GET(_request: NextRequest, ctx: Ctx): Promise<Response> {
-  const { slug, key } = await ctx.params;
-  if (!isValidTakeHomeKey(key)) return new Response('Not found', { status: 404 });
+  const { slug } = await ctx.params;
 
-  const [meta, bytes] = await Promise.all([readTakeHomeMeta(slug, key), readTakeHomeBytes(slug, key)]);
+  const [meta, bytes] = await Promise.all([readTakeHomeMeta(slug), readTakeHomeBytes(slug)]);
   if (!meta || !bytes) return new Response('Not found', { status: 404 });
 
   return new Response(new Uint8Array(bytes), {

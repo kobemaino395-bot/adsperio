@@ -12,7 +12,7 @@ function joinLines(arr: string[]): string {
 
 function joinRoles(roles: Position['roleOptions']): string {
   return roles
-    .map((r) => [r.id, r.label, r.blurb, r.minSalary || '', r.maxSalary || '', r.testDescription].join(' | '))
+    .map((r) => [r.id, r.label, r.blurb, r.minSalary || '', r.maxSalary || ''].join(' | '))
     .join('\n');
 }
 
@@ -106,25 +106,25 @@ export default function PositionForm({ position, isNew, csrf }: Props) {
       <Section title="Role options (optional)">
         <p className="text-ink-mute text-xs leading-relaxed">
           Leave empty for a single-role page. Add rows to turn this into one shared application page covering
-          several jobs — the visitor picks one from a dropdown and it&apos;s forwarded to the hiring sheet. Each role
-          can get its own take-home file below (once this position is saved). Salary of 0 falls back to the
-          position&apos;s own salary range.
+          several jobs — the visitor picks one from a dropdown and it&apos;s forwarded to the hiring sheet. All
+          roles share the same take-home file below — there&apos;s no per-role file. Salary of 0 falls back to
+          the position&apos;s own salary range.
         </p>
         <Field
-          label="Roles — one per line: id | label | blurb | min salary | max salary | test description"
+          label="Roles — one per line: id | label | blurb | min salary | max salary"
           name="roleOptions"
           type="textarea"
           rows={6}
           defaultValue={joinRoles(position.roleOptions)}
-          hint='Id is lowercase-with-dashes and doubles as the ?role= deep link, e.g. "senior-media-buyer | Senior Media Buyer | Owns spend at $250k+/mo | 95000 | 130000 | Strategy brief".'
+          hint='Id is lowercase-with-dashes and doubles as the ?role= deep link, e.g. "senior-media-buyer | Senior Media Buyer | Owns spend at $250k+/mo | 95000 | 130000".'
           mono
         />
       </Section>
 
-      <Section title="Take-home test — position-level fallback (optional)">
+      <Section title="Take-home test (optional)">
         <p className="text-ink-mute text-xs leading-relaxed">
-          Shown when there&apos;s no role picker, or the selected role doesn&apos;t have its own file. Upload the
-          file itself below (once this position is saved).
+          One file for the whole position, shared across every role. Upload the file itself below (once this
+          position is saved).
         </p>
         <div className="grid gap-4 md:grid-cols-2">
           <label className="flex items-center gap-3 text-sm">
