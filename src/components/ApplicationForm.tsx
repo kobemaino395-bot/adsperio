@@ -9,8 +9,9 @@ const CV_TYPES = [
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
+const TEST_TYPES = ['application/pdf'];
 
-type FilePayload = { field: 'cv'; filename: string; contentType: string; base64: string };
+type FilePayload = { field: 'cv' | 'testAnswer'; filename: string; contentType: string; base64: string };
 
 export type RoleOptionLite = {
   id: string;
@@ -47,6 +48,9 @@ type ApplicationFormProps = {
   onSelectRole?: (id: string) => void;
   /** Lets the API check the chosen role against this position's own list. */
   positionSlug?: string;
+  /** Shows the required "Technical Assessment" upload — true exactly when
+   *  the position's take-home download card is actually showing. */
+  showTestUpload?: boolean;
 };
 
 export default function ApplicationForm({
@@ -54,6 +58,7 @@ export default function ApplicationForm({
   selectedRole = '',
   onSelectRole,
   positionSlug = '',
+  showTestUpload = false,
 }: ApplicationFormProps) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
@@ -98,6 +103,20 @@ export default function ApplicationForm({
         { field: 'cv', filename: cvFile.name, contentType: cvFile.type, base64: await fileToBase64(cvFile) },
       ];
 
+      if (showTestUpload) {
+        const testFile = fd.get('testAnswer') as File | null;
+        if (!testFile || testFile.size === 0) {
+          throw new Error('Please attach your completed Technical Assessment answer.');
+        }
+        if (!TEST_TYPES.includes(testFile.type)) {
+          throw new Error('Assessment answer must be a PDF.');
+        }
+        if (testFile.size > PER_FILE_MAX) {
+          throw new Error('Assessment answer exceeds 8 MB.');
+        }
+        files.push({ field: 'testAnswer', filename: testFile.name, contentType: testFile.type, base64: await fileToBase64(testFile) });
+      }
+
       const payload = {
         startedAt,
         honeypot,
@@ -138,7 +157,7 @@ export default function ApplicationForm({
       <div className="card bg-canvas-soft p-8">
         <h3 className="display-3">Thanks — we&apos;ve received your application.</h3>
         <p className="text-ink-mute mt-3 leading-relaxed">
-          We review every submission{chosenRole ? ` for ${chosenRole.label}` : ''} carefully. If you&apos;re a
+          We review every submission{chosenRole ? ` for ${chosenRole.label}` : ''}{showTestUpload ? ' and your Technical Assessment' : ''} carefully. If you&apos;re a
           fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
@@ -187,6 +206,16 @@ export default function ApplicationForm({
       <TextArea label="Cover note (max 2000 chars)" name="coverNote" optional maxLength={2000} rows={6} />
 
       <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
+
+      {showTestUpload && (
+        <FileField
+          label="Technical Assessment answer"
+          name="testAnswer"
+          required
+          accept="application/pdf,.pdf"
+          hint="PDF only · max 8 MB"
+        />
+      )}
 
       <label className="text-ink-mute flex items-start gap-3 text-[0.875rem] leading-relaxed">
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--indigo)]" />

@@ -4,7 +4,7 @@ import { appendJsonLine, applicationsLogPath, bumpStat } from '@/server/storage'
 import { getPosition } from '@/server/content/positions';
 
 export type IncomingFile = {
-  field: 'cv';
+  field: 'cv' | 'testAnswer';
   filename: string;
   contentType: string;
   base64: string;
@@ -45,8 +45,9 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_STR = 500;
 const MAX_NOTE = 2000;
 const PER_FILE_MAX = 8 * 1024 * 1024;
-const ALLOWED_FILES: Record<IncomingFile['field'], { required: boolean; mimes: RegExp }> = {
-  cv: { required: true, mimes: /^(application\/pdf|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
+const ALLOWED_FILES: Record<IncomingFile['field'], { mimes: RegExp }> = {
+  cv: { mimes: /^(application\/pdf|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
+  testAnswer: { mimes: /^application\/pdf$/ },
 };
 
 function s(v: unknown, max = MAX_STR): string {
@@ -98,18 +99,25 @@ export async function validateIncoming(
   // Resolve the chosen role against the position's own list — a page with a
   // role picker only accepts ids it actually offers, and the human-readable
   // label that reaches the hiring sheet is derived here, never trusted from
-  // the client.
+  // the client. The same lookup tells us whether this position's take-home
+  // download card is actually showing, which is what makes the assessment
+  // upload required — never taken from the client's own claim.
   let role = s(b.role, 64).toLowerCase();
   let roleLabel = '';
+  let requiresAssessment = false;
   if (positionSlug) {
     const position = await getPosition(positionSlug);
-    if (position && position.roleOptions.length > 0) {
-      const match = position.roleOptions.find((r) => r.id === role);
-      if (!match) return { ok: false, error: 'Choose a valid role' };
-      roleLabel = match.label;
+    if (position) {
+      requiresAssessment = position.showDownload && !!position.testFileName;
+      if (position.roleOptions.length > 0) {
+        const match = position.roleOptions.find((r) => r.id === role);
+        if (!match) return { ok: false, error: 'Choose a valid role' };
+        roleLabel = match.label;
+      } else {
+        role = '';
+      }
     } else {
-      // Single-role page (or a submission naming a position that no longer
-      // exists) — there's no picker to validate against.
+      // Submission naming a position that no longer exists.
       role = '';
     }
   } else {
@@ -123,7 +131,7 @@ export async function validateIncoming(
     if (!item || typeof item !== 'object') continue;
     const f = item as Record<string, unknown>;
     const field = f.field as IncomingFile['field'];
-    if (field !== 'cv') continue;
+    if (field !== 'cv' && field !== 'testAnswer') continue;
     if (seen.has(field)) return { ok: false, error: `Duplicate file field: ${field}` };
 
     const filename = s(f.filename, 200);
@@ -143,8 +151,11 @@ export async function validateIncoming(
     seen.add(field);
   }
 
-  if (ALLOWED_FILES.cv.required && !seen.has('cv')) {
+  if (!seen.has('cv')) {
     return { ok: false, error: 'CV file is required' };
+  }
+  if (requiresAssessment && !seen.has('testAnswer')) {
+    return { ok: false, error: 'Take-home test answer is required' };
   }
 
   return {

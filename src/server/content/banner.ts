@@ -15,8 +15,8 @@ export type BannerConfig = {
 const DEFAULT_BANNER: BannerConfig = {
   enabled: true,
   badge: "We're hiring",
-  message: 'Paid Search, Paid Social, Measurement, and Creative — one application form',
-  ctaText: 'See the roles →',
+  message: '4 roles open in paid media',
+  ctaText: 'See them →',
   ctaUrl: '/careers/apply/',
 };
 

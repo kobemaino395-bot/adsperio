@@ -97,6 +97,7 @@ export default function ApplyPanel({
                     selectedRole={selectedRole}
                     onSelectRole={selectRole}
                     positionSlug={positionSlug}
+                    showTestUpload={hasFile}
                   />
                 </div>
               </div>
