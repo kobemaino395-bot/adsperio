@@ -31,7 +31,7 @@ export const site = {
   },
 
   contact: {
-    email: 'hello@adsperio.com',
+    email: 'contact@adsperio.com',
     newBusiness: 'newbusiness@adsperio.com',
     careers: 'careers@adsperio.com',
     press: 'press@adsperio.com',

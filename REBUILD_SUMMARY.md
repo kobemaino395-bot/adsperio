@@ -12,7 +12,7 @@ Complete redesign from GrowthVireX to AdsPerio — brand, design system, content
 - **New brand identity**: AdsPerio (Ads + *aperio*, Latin: "to uncover, to lay open")
 - **Tagline**: "Ads, laid bare."
 - **Positioning**: "We buy media, and we tell you what it actually did."
-- **Contact**: hello@adsperio.com, +1 (212) 695 1180, 450 Lexington Ave, NYC
+- **Contact**: contact@adsperio.com, +1 (212) 695 1180, 450 Lexington Ave, NYC
 - **House numbers**: $84M under management, 1.9pt median variance, 31 accounts, 6.4yr tenure
 - **Design principles**: Anti-AI-slop aesthetic documented in DESIGN.md
   - Banned: gradient meshes, pills, thin type, stock photos, AI vocabulary
