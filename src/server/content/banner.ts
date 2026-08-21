@@ -15,9 +15,9 @@ export type BannerConfig = {
 const DEFAULT_BANNER: BannerConfig = {
   enabled: true,
   badge: "We're hiring",
-  message: 'Meta Ads Specialist',
-  ctaText: '→',
-  ctaUrl: '/careers/meta-ads-specialist/',
+  message: 'Paid Search, Paid Social, Measurement, and Creative — one application form',
+  ctaText: 'See the roles →',
+  ctaUrl: '/careers/apply/',
 };
 
 function bannerPath(): string {

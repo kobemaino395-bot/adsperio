@@ -59,8 +59,51 @@ function stat(cards: { key: string; value: string }[], re: RegExp): string {
   return cards.find((c) => re.test(c.key))?.value ?? '';
 }
 
+type ListingRow = {
+  key: string;
+  href: string;
+  title: string;
+  subtitle?: string;
+  meta: string;
+};
+
+/** A position with role options is one shared application page covering
+ *  several jobs — list each role on its own row so "open roles" reflects
+ *  what's actually hiring, not the number of underlying pages. */
+function buildListingRows(positions: Awaited<ReturnType<typeof listPositions>>): ListingRow[] {
+  const rows: ListingRow[] = [];
+  for (const p of positions) {
+    const team = stat(p.statCards, /team/i);
+    const level = stat(p.statCards, /level|seniority/i);
+    const location = stat(p.statCards, /location/i);
+    const type = stat(p.statCards, /type/i);
+    const meta = [team, level, location, type].filter(Boolean).join(' · ');
+
+    if (p.roleOptions.length > 0) {
+      for (const role of p.roleOptions) {
+        rows.push({
+          key: `${p.slug}:${role.id}`,
+          href: `/careers/${p.slug}/?role=${role.id}`,
+          title: role.label,
+          meta,
+        });
+      }
+    } else {
+      rows.push({
+        key: p.slug,
+        href: `/careers/${p.slug}/`,
+        title: p.title,
+        subtitle: p.subtitle,
+        meta,
+      });
+    }
+  }
+  return rows;
+}
+
 export default async function CareersPage() {
-  const openings = await listPositions({ visibleOnly: true });
+  const positions = await listPositions({ visibleOnly: true });
+  const openings = buildListingRows(positions);
 
   return (
     <main>
@@ -101,35 +144,27 @@ export default async function CareersPage() {
             </Reveal>
           ) : (
             <ul className="mt-12 space-y-4">
-              {openings.map((r, i) => {
-                const team = stat(r.statCards, /team/i);
-                const level = stat(r.statCards, /level|seniority/i);
-                const location = stat(r.statCards, /location/i);
-                const type = stat(r.statCards, /type/i);
-                return (
-                  <Reveal key={r.slug} delay={i * 60} as="li">
-                    <Link
-                      href={`/careers/${r.slug}/`}
-                      className="card-lift group flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:gap-8"
-                    >
-                      <span className="min-w-0">
-                        <span className="group-hover:text-indigo-text block text-[1.25rem] font-light tracking-[-0.02em] transition-colors">
-                          {r.title}
-                          {r.subtitle && (
-                            <span className="text-ink-mute ml-2 text-[0.7em]">{r.subtitle}</span>
-                          )}
-                        </span>
-                        <span className="caption mt-2 block">
-                          {[team, level, location, type].filter(Boolean).join(' · ')}
-                        </span>
+              {openings.map((r, i) => (
+                <Reveal key={r.key} delay={i * 60} as="li">
+                  <Link
+                    href={r.href}
+                    className="card-lift group flex flex-col gap-4 p-6 md:flex-row md:items-center md:justify-between md:gap-8"
+                  >
+                    <span className="min-w-0">
+                      <span className="group-hover:text-indigo-text block text-[1.25rem] font-light tracking-[-0.02em] transition-colors">
+                        {r.title}
+                        {r.subtitle && (
+                          <span className="text-ink-mute ml-2 text-[0.7em]">{r.subtitle}</span>
+                        )}
                       </span>
-                      <span className="link-arrow shrink-0 text-[0.875rem]">
-                        View role <Arrow />
-                      </span>
-                    </Link>
-                  </Reveal>
-                );
-              })}
+                      {r.meta && <span className="caption mt-2 block">{r.meta}</span>}
+                    </span>
+                    <span className="link-arrow shrink-0 text-[0.875rem]">
+                      View role <Arrow />
+                    </span>
+                  </Link>
+                </Reveal>
+              ))}
             </ul>
           )}
         </div>

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import Reveal from '@/components/ui/Reveal';
 import GradientMesh from '@/components/mesh/GradientMesh';
@@ -189,26 +190,25 @@ export default async function PositionPage({ params }: { params: Params }) {
         </section>
       )}
 
-      {/* APPLY */}
-      <section id="apply" className="border-hairline bg-canvas border-b py-20 md:py-24">
-        <div className="wrap">
-          <ApplyPanel
-            positionSlug={p.slug}
-            positionTitle={p.title}
-            applySubtitle={p.applySubtitle}
-            applyBlurb={p.applyBlurb}
-            roleOptions={p.roleOptions}
-            positionTestFileName={p.testFileName}
-            positionTestDescription={p.testDescription}
-            downloadTitle={p.downloadTitle}
-            downloadBlurb={p.downloadBlurb}
-            showDownload={p.showDownload}
-            processHeading={p.processHeading}
-            processSteps={p.processSteps}
-            processStepsNoDownload={p.processStepsNoDownload}
-          />
-        </div>
-      </section>
+      {/* APPLY + ROLES (client island — owns the role-picker state shared
+          between the download card, the form, and the roles-detail grid) */}
+      <Suspense fallback={null}>
+        <ApplyPanel
+          positionSlug={p.slug}
+          positionTitle={p.title}
+          applySubtitle={p.applySubtitle}
+          applyBlurb={p.applyBlurb}
+          roleOptions={p.roleOptions}
+          positionTestFileName={p.testFileName}
+          positionTestDescription={p.testDescription}
+          downloadTitle={p.downloadTitle}
+          downloadBlurb={p.downloadBlurb}
+          showDownload={p.showDownload}
+          processHeading={p.processHeading}
+          processSteps={p.processSteps}
+          processStepsNoDownload={p.processStepsNoDownload}
+        />
+      </Suspense>
 
       {/* BODY */}
       <section className="wrap py-20 md:py-24">
