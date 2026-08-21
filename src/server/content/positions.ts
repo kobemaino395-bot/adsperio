@@ -3,12 +3,34 @@ import { existsSync, mkdirSync } from 'node:fs';
 import path from 'node:path';
 import { dataDir } from '@/server/storage';
 import { readJsonResilient, withFileLock, writeJsonAtomic } from '@/server/json-store';
+import {
+  deleteAllTakeHomeFiles,
+  isValidTakeHomeKey,
+  migrateLegacySlotFile,
+  POSITION_FALLBACK_KEY,
+  renameTakeHomeFiles,
+} from '@/server/content/position-files';
 
 export const HERO_TINTS = ['accent', 'ink', 'sky', 'rose', 'lime'] as const;
 export type HeroTint = (typeof HERO_TINTS)[number];
 
 export type StatCard = { key: string; value: string };
 export type Benefit = { key: string; value: string; sub: string };
+
+/** One selectable job on a shared application page. A position with role
+ *  options renders a role picker instead of a single apply button — the
+ *  visitor chooses which one they're applying for and the form forwards it.
+ *  `testFileName` is the sanitized filename of the take-home uploaded for
+ *  this role (empty = none; falls back to the position-level file). */
+export type RoleOption = {
+  id: string;
+  label: string;
+  blurb: string;
+  minSalary: number;
+  maxSalary: number;
+  testFileName: string;
+  testDescription: string;
+};
 
 export type Position = {
   slug: string;
@@ -20,7 +42,11 @@ export type Position = {
   statCards: StatCard[];
   applySubtitle: string;
   applyBlurb: string;
-  downloadSlotSlug: string;
+  roleOptions: RoleOption[];
+  /** Position-level take-home, used when there's no role picker or the
+   *  selected role doesn't have its own file. */
+  testFileName: string;
+  testDescription: string;
   downloadTitle: string;
   downloadBlurb: string;
   showDownload: boolean;
@@ -52,6 +78,7 @@ export type Position = {
 };
 
 export const SLUG_RE = /^[a-z][a-z0-9-]{1,60}$/;
+export const ROLE_ID_RE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 function positionsPath(): string {
   return path.join(dataDir(), 'content', 'positions.json');
@@ -77,11 +104,13 @@ function seed(): Position[] {
       applySubtitle: 'Apply for this role',
       applyBlurb:
         'Submissions go straight to the hiring team. We review every one and reply within 5 business days.',
-      downloadSlotSlug: 'take-home',
-      showDownload: true,
+      roleOptions: [],
+      testFileName: '',
+      testDescription: '',
       downloadTitle: 'Technical Assessment',
       downloadBlurb:
-        'Download the strategic assignment, complete it within 2 days, and upload your answer with the form. PDF, DOCX, or ZIP accepted.',
+        'Download the strategic assignment and complete it within 2 days. PDF, DOCX, or ZIP accepted.',
+      showDownload: false,
       aboutHeading: 'About the role',
       aboutParagraphs: [
         "AdsPerio manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We're growing fast and need a Meta Ads Specialist who can take full ownership of client accounts — from strategy to reporting — and drive the kind of results that make clients stay for years.",
@@ -122,7 +151,7 @@ function seed(): Position[] {
       processSteps: [
         'Download the Technical Assessment from the panel above.',
         'Complete it within 2 days.',
-        'Submit the form with your CV and completed assessment.',
+        'Submit the form with your CV.',
         '30-minute call with the team.',
         'Offer.',
       ],
@@ -162,6 +191,35 @@ function seed(): Position[] {
 const CACHE_KEY = '__adnovara_positions_cache__';
 const globalAny = globalThis as unknown as Record<string, Position[] | undefined>;
 
+/** Fills in fields that didn't exist in records written before this feature
+ *  shipped, and best-effort migrates a legacy slot-linked take-home file
+ *  into the new per-position store. Safe to run on already-migrated data. */
+async function migrateRecord(raw: Position & { downloadSlotSlug?: string }): Promise<Position> {
+  const roleOptions = Array.isArray(raw.roleOptions)
+    ? raw.roleOptions.map((r) => ({
+        id: String(r.id ?? ''),
+        label: String(r.label ?? ''),
+        blurb: String(r.blurb ?? ''),
+        minSalary: Number.isFinite(Number(r.minSalary)) ? Number(r.minSalary) : 0,
+        maxSalary: Number.isFinite(Number(r.maxSalary)) ? Number(r.maxSalary) : 0,
+        testFileName: String(r.testFileName ?? ''),
+        testDescription: String(r.testDescription ?? ''),
+      }))
+    : [];
+
+  const legacySlot = typeof raw.downloadSlotSlug === 'string' ? raw.downloadSlotSlug : '';
+  if (legacySlot) await migrateLegacySlotFile(raw.slug, legacySlot);
+
+  const { downloadSlotSlug: _legacy, ...rest } = raw;
+  void _legacy;
+  return {
+    ...rest,
+    roleOptions,
+    testFileName: typeof raw.testFileName === 'string' ? raw.testFileName : '',
+    testDescription: typeof raw.testDescription === 'string' ? raw.testDescription : '',
+  };
+}
+
 async function load(): Promise<Position[]> {
   const cached = globalAny[CACHE_KEY];
   if (cached) return cached;
@@ -176,7 +234,8 @@ async function load(): Promise<Position[]> {
     const parsed = await readJsonResilient<Position[] | null>(file, null);
     let records: Position[];
     if (Array.isArray(parsed)) {
-      records = parsed;
+      records = await Promise.all(parsed.map(migrateRecord));
+      await writeJsonAtomic(file, records, { pretty: true });
     } else {
       records = seed();
       await writeJsonAtomic(file, records, { pretty: true });
@@ -227,7 +286,9 @@ function emptyPosition(slug: string): Position {
     ],
     applySubtitle: 'Apply for this role',
     applyBlurb: '',
-    downloadSlotSlug: '',
+    roleOptions: [],
+    testFileName: '',
+    testDescription: '',
     downloadTitle: '',
     downloadBlurb: '',
     showDownload: false,
@@ -307,6 +368,33 @@ function benefits(v: unknown): Benefit[] {
   return out;
 }
 
+/** Normalizes a submitted role-options list. `testFileName` is never taken
+ *  from raw input here — callers (create/update) fill it in from the
+ *  previously-saved role with the same id, since the file upload UI is a
+ *  separate small form that operates on an already-saved position. */
+function roleOptions(v: unknown): RoleOption[] {
+  if (!Array.isArray(v)) return [];
+  const out: RoleOption[] = [];
+  const seen = new Set<string>();
+  for (const item of v.slice(0, 20)) {
+    if (!item || typeof item !== 'object') continue;
+    const o = item as Record<string, unknown>;
+    const id = String(o.id ?? '').trim().toLowerCase().slice(0, 64);
+    if (!ROLE_ID_RE.test(id) || seen.has(id)) continue;
+    seen.add(id);
+    out.push({
+      id,
+      label: String(o.label ?? '').trim().slice(0, 120),
+      blurb: String(o.blurb ?? '').trim().slice(0, 400),
+      minSalary: Number.isFinite(Number(o.minSalary)) ? Math.max(0, Math.floor(Number(o.minSalary))) : 0,
+      maxSalary: Number.isFinite(Number(o.maxSalary)) ? Math.max(0, Math.floor(Number(o.maxSalary))) : 0,
+      testFileName: '',
+      testDescription: String(o.testDescription ?? '').trim().slice(0, 400),
+    });
+  }
+  return out;
+}
+
 export function normalizePositionInput(slug: string, input: Partial<Position>): Position {
   const base = emptyPosition(slug);
   const num = (v: unknown): number => {
@@ -327,7 +415,9 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
     statCards: statCards(input.statCards),
     applySubtitle: str(input.applySubtitle, 200) || base.applySubtitle,
     applyBlurb: str(input.applyBlurb, 1000),
-    downloadSlotSlug: str(input.downloadSlotSlug, 120),
+    roleOptions: roleOptions(input.roleOptions),
+    testFileName: str(input.testFileName, 200),
+    testDescription: str(input.testDescription, 400),
     downloadTitle: str(input.downloadTitle, 200),
     downloadBlurb: str(input.downloadBlurb, 1000),
     showDownload: !!input.showDownload,
@@ -357,6 +447,16 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
   };
 }
 
+/** Carries forward each role's uploaded take-home filename by matching role
+ *  id, since the text-based role editor can't submit file data. A role id
+ *  that no longer exists after the edit loses its file reference (the
+ *  uploaded bytes stay on disk but become unreachable, matching how the old
+ *  slot system also orphaned files on slug changes). */
+function preserveRoleFiles(previous: RoleOption[], next: RoleOption[]): RoleOption[] {
+  const byId = new Map(previous.map((r) => [r.id, r.testFileName]));
+  return next.map((r) => ({ ...r, testFileName: byId.get(r.id) ?? '' }));
+}
+
 export async function createPosition(slug: string, input: Partial<Position>): Promise<SavePositionResult> {
   const cleanSlug = slug.trim().toLowerCase();
   if (!SLUG_RE.test(cleanSlug)) {
@@ -382,16 +482,10 @@ export async function updatePosition(slug: string, input: Partial<Position>): Pr
   if (idx < 0) return { ok: false, reason: 'Position not found' };
   const current = list[idx]!;
 
-  // Slug is locked once a download slot is associated.
-  // Treat empty/missing slug as "no change" so a disabled UI field doesn't
-  // get interpreted as an attempted rename.
   let nextSlug = current.slug;
   const submitted = typeof input.slug === 'string' ? input.slug.trim().toLowerCase() : '';
   const requestedSlug = submitted || current.slug;
   if (requestedSlug !== current.slug) {
-    if (current.downloadSlotSlug) {
-      return { ok: false, reason: 'Slug is locked because a downloadable file is linked to this position' };
-    }
     if (!SLUG_RE.test(requestedSlug)) {
       return { ok: false, reason: 'New slug is invalid' };
     }
@@ -404,7 +498,15 @@ export async function updatePosition(slug: string, input: Partial<Position>): Pr
   const merged = normalizePositionInput(nextSlug, { ...current, ...input });
   merged.createdAt = current.createdAt;
   merged.updatedAt = new Date().toISOString();
+  // The role editor is text-only; keep whatever files were already uploaded
+  // for roles that still exist, and don't let a plain content save wipe the
+  // position-level file (input.testFileName is only ever set by the small
+  // upload/delete routes, which patch through this same function).
+  merged.roleOptions = preserveRoleFiles(current.roleOptions, merged.roleOptions);
+  if (input.testFileName === undefined) merged.testFileName = current.testFileName;
   if (!merged.title) return { ok: false, reason: 'Title is required' };
+
+  if (nextSlug !== current.slug) await renameTakeHomeFiles(current.slug, nextSlug);
 
   list[idx] = merged;
   await save(list);
@@ -416,6 +518,7 @@ export async function deletePosition(slug: string): Promise<{ ok: true } | { ok:
   if (!list.some((p) => p.slug === slug)) return { ok: false, reason: 'Position not found' };
   const next = list.filter((p) => p.slug !== slug);
   await save(next);
+  await deleteAllTakeHomeFiles(slug);
   return { ok: true };
 }
 
@@ -442,16 +545,46 @@ export async function copyPosition(slug: string): Promise<SavePositionResult> {
     if (n > 50) return { ok: false, reason: 'Too many copies' };
   }
   const now = new Date().toISOString();
+  // Take-home files aren't duplicated on disk, so a copy starts without them.
   const next: Position = {
     ...src,
     slug: candidate,
     title: `${src.title} (copy)`,
-    downloadSlotSlug: '',
+    testFileName: '',
+    roleOptions: src.roleOptions.map((r) => ({ ...r, testFileName: '' })),
     hidden: true,
     createdAt: now,
     updatedAt: now,
   };
   list.push(next);
+  await save(list);
+  return { ok: true, position: next };
+}
+
+/** Sets (or clears, when filename is '') the take-home filename recorded
+ *  against a position or one of its roles. Used by the small upload/delete
+ *  routes after they've written or removed the underlying file. */
+export async function setPositionTakeHomeFilename(
+  slug: string,
+  key: string,
+  filename: string,
+): Promise<SavePositionResult> {
+  if (!isValidTakeHomeKey(key)) return { ok: false, reason: 'Invalid file key' };
+  const list = await load();
+  const idx = list.findIndex((p) => p.slug === slug);
+  if (idx < 0) return { ok: false, reason: 'Position not found' };
+  const current = list[idx]!;
+
+  const next: Position =
+    key === POSITION_FALLBACK_KEY
+      ? { ...current, testFileName: filename, updatedAt: new Date().toISOString() }
+      : {
+          ...current,
+          roleOptions: current.roleOptions.map((r) => (r.id === key ? { ...r, testFileName: filename } : r)),
+          updatedAt: new Date().toISOString(),
+        };
+
+  list[idx] = next;
   await save(list);
   return { ok: true, position: next };
 }

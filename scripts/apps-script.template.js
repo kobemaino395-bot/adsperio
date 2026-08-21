@@ -1,5 +1,5 @@
 /**
- * Adnovara hiring pipeline — Google Apps Script.
+ * AdsPerio hiring pipeline — Google Apps Script.
  *
  * Deploy as Web App:
  *   - "Execute as": Me (the Drive/Sheet owner)
@@ -25,9 +25,12 @@ const HEADERS = [
   'submittedAt', 'id', 'fullName', 'email', 'country', 'phone',
   'portfolioUrl', 'currentCompany', 'yearsExperience', 'expectedSalary',
   'noticePeriod', 'coverNote', 'clientIp', 'userAgent', 'forwarded',
-  'cvDriveUrl', 'testAnswerDriveUrl',
+  'cvDriveUrl', 'testAnswerDriveUrl', 'role', 'roleLabel', 'positionSlug',
 ];
 
+// testAnswer is vestigial — the current form never sends one — but the
+// column stays so upgrading an existing sheet is a pure append, never a
+// reshuffle of columns already-written rows rely on positionally.
 function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
@@ -54,7 +57,7 @@ function doPost(e) {
       body.submittedAt, body.id, body.fullName, body.email, body.country, body.phone,
       body.portfolioUrl, body.currentCompany, body.yearsExperience, body.expectedSalary,
       body.noticePeriod, body.coverNote, body.clientIp, body.userAgent, body.forwarded,
-      driveUrls.cv, driveUrls.testAnswer,
+      driveUrls.cv, driveUrls.testAnswer, body.role || '', body.roleLabel || '', body.positionSlug || '',
     ]);
 
     return jsonOut({ ok: true });

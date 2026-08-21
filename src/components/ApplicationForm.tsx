@@ -9,9 +9,18 @@ const CV_TYPES = [
   'application/msword',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
-const TEST_TYPES = ['application/pdf'];
 
-type FilePayload = { field: 'cv' | 'testAnswer'; filename: string; contentType: string; base64: string };
+type FilePayload = { field: 'cv'; filename: string; contentType: string; base64: string };
+
+export type RoleOptionLite = {
+  id: string;
+  label: string;
+  blurb: string;
+  minSalary: number;
+  maxSalary: number;
+  testFileName: string;
+  testDescription: string;
+};
 
 async function fileToBase64(file: File): Promise<string> {
   const buf = await file.arrayBuffer();
@@ -24,15 +33,49 @@ async function fileToBase64(file: File): Promise<string> {
   return btoa(binary);
 }
 
-export default function ApplicationForm({ showTestUpload = true }: { showTestUpload?: boolean }) {
+function salaryBand(min: number, max: number): string {
+  const fmt = (n: number) => `$${Math.round(n / 1000)}k`;
+  if (min > 0 && max > 0) return `${fmt(min)}–${fmt(max)}`;
+  if (min > 0) return `${fmt(min)}+`;
+  if (max > 0) return `up to ${fmt(max)}`;
+  return '';
+}
+
+type ApplicationFormProps = {
+  /** Non-empty renders a role picker; the parent owns the selection so the
+   *  take-home download card next to the form can follow it too. */
+  roleOptions?: RoleOptionLite[];
+  selectedRole?: string;
+  onSelectRole?: (id: string) => void;
+  /** Lets the API check the chosen role against this position's own list. */
+  positionSlug?: string;
+};
+
+export default function ApplicationForm({
+  roleOptions = [],
+  selectedRole = '',
+  onSelectRole,
+  positionSlug = '',
+}: ApplicationFormProps) {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string>('');
+  const [roleError, setRoleError] = useState('');
   const startedAt = useMemo(() => Date.now(), []);
 
   useEffect(() => { setStatus('idle'); }, []);
 
+  const hasPicker = roleOptions.length > 0;
+  const chosenRole = hasPicker ? roleOptions.find((r) => r.id === selectedRole) : undefined;
+
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    setRoleError('');
+
+    if (hasPicker && !selectedRole) {
+      setRoleError('Choose the role you are applying for.');
+      return;
+    }
+
     setStatus('submitting');
     setErrorMsg('');
     const form = e.currentTarget;
@@ -43,7 +86,6 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
 
     try {
       const cvFile = fd.get('cv') as File | null;
-      const testFile = fd.get('testAnswer') as File | null;
 
       if (!cvFile || cvFile.size === 0) {
         throw new Error('Please attach your CV.');
@@ -57,22 +99,13 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
       const files: FilePayload[] = [
         { field: 'cv', filename: cvFile.name, contentType: cvFile.type, base64: await fileToBase64(cvFile) },
       ];
-      if (showTestUpload) {
-        if (!testFile || testFile.size === 0) {
-          throw new Error('Please attach your completed Technical Assessment answer.');
-        }
-        if (!TEST_TYPES.includes(testFile.type)) {
-          throw new Error('Test answer must be a PDF.');
-        }
-        if (testFile.size > PER_FILE_MAX) {
-          throw new Error('Test answer exceeds 8 MB.');
-        }
-        files.push({ field: 'testAnswer', filename: testFile.name, contentType: testFile.type, base64: await fileToBase64(testFile) });
-      }
 
       const payload = {
         startedAt,
         honeypot,
+        role: hasPicker ? selectedRole : '',
+        roleLabel: chosenRole?.label ?? '',
+        positionSlug,
         fullName: String(fd.get('fullName') ?? ''),
         email: String(fd.get('email') ?? ''),
         country: String(fd.get('country') ?? ''),
@@ -107,7 +140,8 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
       <div className="card bg-canvas-soft p-8">
         <h3 className="display-3">Thanks — we&apos;ve received your application.</h3>
         <p className="text-ink-mute mt-3 leading-relaxed">
-          We review every submission{showTestUpload ? ' and your Technical Assessment' : ''} carefully. If you&apos;re a fit we&apos;ll be in touch within 5 business days with next steps.
+          We review every submission{chosenRole ? ` for ${chosenRole.label}` : ''} carefully. If you&apos;re a
+          fit we&apos;ll be in touch within 5 business days with next steps.
         </p>
       </div>
     );
@@ -116,6 +150,29 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       <input type="text" name="website" tabIndex={-1} autoComplete="off" className="absolute left-[-9999px] h-0 w-0 opacity-0" aria-hidden />
+
+      {hasPicker && (
+        <label className="block">
+          <LabelRow label="Role you're applying for" />
+          <select
+            value={selectedRole}
+            onChange={(e) => onSelectRole?.(e.target.value)}
+            className="field"
+          >
+            <option value="" disabled>Select a role…</option>
+            {roleOptions.map((r) => {
+              const band = salaryBand(r.minSalary, r.maxSalary);
+              return (
+                <option key={r.id} value={r.id}>
+                  {band ? `${r.label} · ${band}` : r.label}
+                </option>
+              );
+            })}
+          </select>
+          {chosenRole?.blurb && <p className="caption mt-2">{chosenRole.blurb}</p>}
+          {roleError && <p className="text-[var(--ruby)] mt-1.5 text-xs">{roleError}</p>}
+        </label>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         <Field label="Full name" name="fullName" required />
@@ -131,12 +188,7 @@ export default function ApplicationForm({ showTestUpload = true }: { showTestUpl
 
       <TextArea label="Cover note (max 2000 chars)" name="coverNote" optional maxLength={2000} rows={6} />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
-        {showTestUpload && (
-          <FileField label="Technical Assessment answer" name="testAnswer" required accept="application/pdf,.pdf" hint="PDF only · max 8 MB" />
-        )}
-      </div>
+      <FileField label="CV" name="cv" required accept=".pdf,.doc,.docx" hint="PDF or DOCX · max 8 MB" />
 
       <label className="text-ink-mute flex items-start gap-3 text-[0.875rem] leading-relaxed">
         <input type="checkbox" name="consent" required className="mt-1 h-4 w-4 accent-[var(--indigo)]" />

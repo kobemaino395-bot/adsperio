@@ -4,12 +4,8 @@ import { notFound } from 'next/navigation';
 import Reveal from '@/components/ui/Reveal';
 import GradientMesh from '@/components/mesh/GradientMesh';
 import CtaPanel from '@/components/layout/CtaPanel';
-import ApplicationForm from '@/components/ApplicationForm';
-import DownloadButton from '@/components/DownloadButton';
+import ApplyPanel from '@/components/ApplyPanel';
 import { getPosition, listPositions, type Position } from '@/server/content/positions';
-import { getSlot, isRemoteKind } from '@/server/slot-registry';
-import { readSlotStatus } from '@/server/files';
-import { downloadPathFor } from '@/server/app-settings';
 import { site } from '@/content/site';
 
 type Params = Promise<{ slug: string }>;
@@ -32,7 +28,7 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
   };
 }
 
-function buildJsonLd(p: Position): Record<string, unknown> {
+function jobPosting(p: Position, opts: { title: string; description: string; url: string; minSalary: number; maxSalary: number }): Record<string, unknown> {
   const location = p.statCards.find((c) => /location/i.test(c.key))?.value ?? '';
   const employmentType =
     (p.statCards.find((c) => /type/i.test(c.key))?.value ?? '').toUpperCase().replace(/[\s-]+/g, '_') ||
@@ -41,9 +37,8 @@ function buildJsonLd(p: Position): Record<string, unknown> {
   const jl: Record<string, unknown> = {
     '@context': 'https://schema.org',
     '@type': 'JobPosting',
-    title: p.title,
-    description:
-      p.jobPostingDescription || p.aboutParagraphs.join(' ') || p.tagline,
+    title: opts.title,
+    description: opts.description || p.tagline,
     datePosted: p.datePosted || p.createdAt.slice(0, 10),
     employmentType,
     hiringOrganization: {
@@ -51,26 +46,52 @@ function buildJsonLd(p: Position): Record<string, unknown> {
       name: site.name,
       sameAs: site.url,
     },
+    directApply: true,
   };
   if (p.validThrough) jl.validThrough = p.validThrough;
   if (location) {
     jl.jobLocationType = /remote/i.test(location) ? 'TELECOMMUTE' : undefined;
     jl.applicantLocationRequirements = { '@type': 'Country', name: 'Worldwide' };
   }
-  if (p.salaryMin > 0 || p.salaryMax > 0) {
+  if (opts.minSalary > 0 || opts.maxSalary > 0) {
     jl.baseSalary = {
       '@type': 'MonetaryAmount',
       currency: 'USD',
       value: {
         '@type': 'QuantitativeValue',
-        minValue: p.salaryMin || undefined,
-        maxValue: p.salaryMax || undefined,
+        minValue: opts.minSalary || undefined,
+        maxValue: opts.maxSalary || undefined,
         unitText: 'YEAR',
       },
     };
   }
-  jl.directApply = true;
   return jl;
+}
+
+/* One JobPosting per advertised role. A shared application page still needs a
+   posting per role, each pointing at its own ?role= URL, or search engines
+   only ever see one of them. */
+function buildJsonLd(p: Position): Record<string, unknown>[] {
+  if (p.roleOptions.length > 0) {
+    return p.roleOptions.map((r) =>
+      jobPosting(p, {
+        title: r.label,
+        description: r.blurb ? `${r.blurb} ${p.jobPostingDescription}` : p.jobPostingDescription,
+        url: `/careers/${p.slug}/?role=${r.id}`,
+        minSalary: r.minSalary || p.salaryMin,
+        maxSalary: r.maxSalary || p.salaryMax,
+      }),
+    );
+  }
+  return [
+    jobPosting(p, {
+      title: p.title,
+      description: p.jobPostingDescription,
+      url: `/careers/${p.slug}/`,
+      minSalary: p.salaryMin,
+      maxSalary: p.salaryMax,
+    }),
+  ];
 }
 
 /* The tint is editorial metadata on the position, so it has to keep working —
@@ -88,42 +109,18 @@ export default async function PositionPage({ params }: { params: Params }) {
   const p = await getPosition(slug);
   if (!p || p.hidden) notFound();
 
-  // The filename comes back on the response's content-disposition header, so
-  // DownloadButton resolves it client-side; nothing to thread through here.
-  let downloadUrl = '';
-  // Redirect slots forward the browser cross-origin, so they need a plain
-  // navigation rather than the fetch-into-a-blob download flow.
-  let downloadDirect = false;
-  if (p.downloadSlotSlug) {
-    const slot = await getSlot(p.downloadSlotSlug);
-    if (slot) {
-      if (isRemoteKind(slot.kind) && slot.remoteUrl) {
-        downloadUrl = await downloadPathFor(slot.slug);
-        downloadDirect = slot.kind === 'redirect';
-      } else if (slot.kind === 'local') {
-        const status = await readSlotStatus(slot.slug);
-        if (status.hasFile) {
-          downloadUrl = await downloadPathFor(slot.slug);
-        }
-      }
-    }
-  }
-
-  // Backward compat: showDownload may be absent in data written before this field was added.
-  // Positions that already had a slot configured default to showing it.
-  const showDownload = typeof p.showDownload === 'boolean' ? p.showDownload : !!p.downloadSlotSlug;
-
-  const visibleProcessSteps = showDownload ? p.processSteps : (p.processStepsNoDownload ?? []);
-
   const tint = TINTS[p.heroTint] ?? TINTS.accent;
   const jsonLd = buildJsonLd(p);
 
   return (
     <main>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      {jsonLd.map((jl, i) => (
+        <script
+          key={i}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jl) }}
+        />
+      ))}
 
       {/* HERO */}
       <section className="mesh-host overflow-hidden pt-16">
@@ -195,72 +192,21 @@ export default async function PositionPage({ params }: { params: Params }) {
       {/* APPLY */}
       <section id="apply" className="border-hairline bg-canvas border-b py-20 md:py-24">
         <div className="wrap">
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.4fr_1fr]">
-            <Reveal>
-              <div className="card shadow-lift-1 p-7 md:p-10">
-                <SectionLabel>{p.applySubtitle}</SectionLabel>
-                <h2 className="display-3 mt-3">Tell us about yourself.</h2>
-                {p.applyBlurb && (
-                  <p className="text-ink-mute mt-3 max-w-xl leading-relaxed">{p.applyBlurb}</p>
-                )}
-                <div className="mt-8">
-                  <ApplicationForm showTestUpload={showDownload} />
-                </div>
-              </div>
-            </Reveal>
-
-            <Reveal delay={120}>
-              <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
-                {downloadUrl && showDownload && (
-                  <div className="card bg-canvas-soft p-6">
-                    <div className="text-ink text-[0.9375rem] font-medium">
-                      {p.downloadTitle || 'Download'}
-                    </div>
-                    {p.downloadBlurb && (
-                      <p className="text-ink-mute mt-2 leading-relaxed">{p.downloadBlurb}</p>
-                    )}
-                    <DownloadButton
-                      href={downloadUrl}
-                      direct={downloadDirect}
-                      className="btn btn-line mt-5 w-full"
-                      messageClassName="caption mt-2"
-                    >
-                      <span>{p.downloadTitle || 'Download'}</span>
-                      <span aria-hidden>↓</span>
-                    </DownloadButton>
-                  </div>
-                )}
-
-                {visibleProcessSteps.length > 0 && (
-                  <div className="card bg-canvas-soft p-6">
-                    <div className="text-ink text-[0.9375rem] font-medium">
-                      {p.processHeading || 'Process'}
-                    </div>
-                    <ol className="text-ink-mute mt-4 space-y-3 leading-relaxed">
-                      {visibleProcessSteps.map((step, i) => (
-                        <li key={i} className="flex gap-3">
-                          <span className="text-indigo-text shrink-0 text-[0.8125rem] font-medium tabular-nums">
-                            {String(i + 1).padStart(2, '0')}
-                          </span>
-                          <span>{step}</span>
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
-                )}
-
-                <div className="card p-6">
-                  <div className="text-ink text-[0.9375rem] font-medium">Questions?</div>
-                  <a
-                    href={`mailto:hiring@adsperio.com?subject=Question about ${encodeURIComponent(p.title)} role`}
-                    className="link-inline mt-3 inline-block"
-                  >
-                    hiring@adsperio.com
-                  </a>
-                </div>
-              </aside>
-            </Reveal>
-          </div>
+          <ApplyPanel
+            positionSlug={p.slug}
+            positionTitle={p.title}
+            applySubtitle={p.applySubtitle}
+            applyBlurb={p.applyBlurb}
+            roleOptions={p.roleOptions}
+            positionTestFileName={p.testFileName}
+            positionTestDescription={p.testDescription}
+            downloadTitle={p.downloadTitle}
+            downloadBlurb={p.downloadBlurb}
+            showDownload={p.showDownload}
+            processHeading={p.processHeading}
+            processSteps={p.processSteps}
+            processStepsNoDownload={p.processStepsNoDownload}
+          />
         </div>
       </section>
 

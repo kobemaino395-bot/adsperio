@@ -1,9 +1,10 @@
 import 'server-only';
 import { randomBytes } from 'node:crypto';
 import { appendJsonLine, applicationsLogPath, bumpStat } from '@/server/storage';
+import { getPosition } from '@/server/content/positions';
 
 export type IncomingFile = {
-  field: 'cv' | 'testAnswer';
+  field: 'cv';
   filename: string;
   contentType: string;
   base64: string;
@@ -11,6 +12,11 @@ export type IncomingFile = {
 };
 
 export type IncomingApplication = {
+  /** Role id from the position's roleOptions, or '' for a single-role page. */
+  role: string;
+  /** Derived server-side from the matched role — never trusts the client's label. */
+  roleLabel: string;
+  positionSlug: string;
   fullName: string;
   email: string;
   country: string;
@@ -41,7 +47,6 @@ const MAX_NOTE = 2000;
 const PER_FILE_MAX = 8 * 1024 * 1024;
 const ALLOWED_FILES: Record<IncomingFile['field'], { required: boolean; mimes: RegExp }> = {
   cv: { required: true, mimes: /^(application\/pdf|application\/(msword|vnd\.openxmlformats-officedocument\.wordprocessingml\.document))$/ },
-  testAnswer: { required: false, mimes: /^application\/pdf$/ },
 };
 
 function s(v: unknown, max = MAX_STR): string {
@@ -50,7 +55,9 @@ function s(v: unknown, max = MAX_STR): string {
   return t.length > max ? t.slice(0, max) : t;
 }
 
-export function validateIncoming(body: unknown): { ok: true; value: IncomingApplication } | { ok: false; error: string } {
+export async function validateIncoming(
+  body: unknown,
+): Promise<{ ok: true; value: IncomingApplication } | { ok: false; error: string }> {
   if (!body || typeof body !== 'object') return { ok: false, error: 'Invalid body' };
   const b = body as Record<string, unknown>;
 
@@ -73,6 +80,7 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   const noticePeriod = s(b.noticePeriod, 80);
   const coverNote = s(b.coverNote, MAX_NOTE);
   const consent = b.consent === true;
+  const positionSlug = s(b.positionSlug, 120);
 
   if (fullName.length < 2) return { ok: false, error: 'Full name is required' };
   if (!EMAIL_RE.test(email)) return { ok: false, error: 'Valid email is required' };
@@ -87,6 +95,27 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   if (noticePeriod.length < 1) return { ok: false, error: 'Notice period is required' };
   if (!consent) return { ok: false, error: 'GDPR consent is required' };
 
+  // Resolve the chosen role against the position's own list — a page with a
+  // role picker only accepts ids it actually offers, and the human-readable
+  // label that reaches the hiring sheet is derived here, never trusted from
+  // the client.
+  let role = s(b.role, 64).toLowerCase();
+  let roleLabel = '';
+  if (positionSlug) {
+    const position = await getPosition(positionSlug);
+    if (position && position.roleOptions.length > 0) {
+      const match = position.roleOptions.find((r) => r.id === role);
+      if (!match) return { ok: false, error: 'Choose a valid role' };
+      roleLabel = match.label;
+    } else {
+      // Single-role page (or a submission naming a position that no longer
+      // exists) — there's no picker to validate against.
+      role = '';
+    }
+  } else {
+    role = '';
+  }
+
   const rawFiles = Array.isArray(b.files) ? b.files : [];
   const files: IncomingFile[] = [];
   const seen = new Set<IncomingFile['field']>();
@@ -94,7 +123,7 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
     if (!item || typeof item !== 'object') continue;
     const f = item as Record<string, unknown>;
     const field = f.field as IncomingFile['field'];
-    if (field !== 'cv' && field !== 'testAnswer') continue;
+    if (field !== 'cv') continue;
     if (seen.has(field)) return { ok: false, error: `Duplicate file field: ${field}` };
 
     const filename = s(f.filename, 200);
@@ -117,13 +146,11 @@ export function validateIncoming(body: unknown): { ok: true; value: IncomingAppl
   if (ALLOWED_FILES.cv.required && !seen.has('cv')) {
     return { ok: false, error: 'CV file is required' };
   }
-  if (ALLOWED_FILES.testAnswer.required && !seen.has('testAnswer')) {
-    return { ok: false, error: 'Take-home test answer is required' };
-  }
 
   return {
     ok: true,
     value: {
+      role, roleLabel, positionSlug,
       fullName, email, country, phone, portfolioUrl, currentCompany,
       yearsExperience, expectedSalary, noticePeriod, coverNote, consent: true, files,
     },

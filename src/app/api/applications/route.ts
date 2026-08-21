@@ -23,7 +23,7 @@ export async function POST(request: NextRequest): Promise<Response> {
     return Response.json({ error: 'Invalid JSON' }, { status: 400 });
   }
 
-  const v = validateIncoming(raw);
+  const v = await validateIncoming(raw);
   if (!v.ok) return Response.json({ error: v.error }, { status: 400 });
 
   try {

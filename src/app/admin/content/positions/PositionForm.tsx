@@ -1,5 +1,4 @@
 import { HERO_TINTS, type Position } from '@/server/content/positions';
-import { listSlots, type SlotRecord } from '@/server/slot-registry';
 
 type Props = {
   position: Position;
@@ -11,18 +10,20 @@ function joinLines(arr: string[]): string {
   return arr.join('\n');
 }
 
-export default async function PositionForm({ position, isNew, csrf }: Props) {
-  const slots: SlotRecord[] = await listSlots();
+function joinRoles(roles: Position['roleOptions']): string {
+  return roles
+    .map((r) => [r.id, r.label, r.blurb, r.minSalary || '', r.maxSalary || '', r.testDescription].join(' | '))
+    .join('\n');
+}
+
+export default function PositionForm({ position, isNew, csrf }: Props) {
   const action = isNew
     ? '/admin/content/positions/create'
     : `/admin/content/positions/${position.slug}/update`;
 
-  const slugLocked = !isNew && !!position.downloadSlotSlug;
-
   return (
     <form method="POST" action={action} className="space-y-8">
       <input type="hidden" name="_csrf" value={csrf} />
-      {slugLocked && <input type="hidden" name="slug" value={position.slug} />}
 
       <Section title="Identity">
         <div className="grid gap-4 md:grid-cols-2">
@@ -33,12 +34,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
             placeholder="e.g. senior-seo-lead"
             mono
             required
-            disabled={slugLocked}
-            hint={
-              slugLocked
-                ? 'Locked because a downloadable file is linked. Detach the file to rename.'
-                : 'lowercase, dashes only. Becomes /careers/<slug>/.'
-            }
+            hint="lowercase, dashes only. Becomes /careers/<slug>/. Renaming moves any uploaded take-home files along with it."
           />
           <Field
             label="Hero tint"
@@ -107,34 +103,54 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         <Field label="Apply blurb" name="applyBlurb" type="textarea" rows={3} defaultValue={position.applyBlurb} />
       </Section>
 
-      <Section title="Download card (optional)">
-        <label className="flex items-center gap-3 text-sm">
-          <input
-            type="checkbox"
-            name="showDownload"
-            defaultChecked={position.showDownload}
-            className="accent-ink h-4 w-4"
-          />
-          <span>
-            <span className="font-medium">Show download</span>
-            <span className="text-ink-mute ml-2 text-xs">When checked, the download card is visible on the job page.</span>
-          </span>
-        </label>
+      <Section title="Role options (optional)">
+        <p className="text-ink-mute text-xs leading-relaxed">
+          Leave empty for a single-role page. Add rows to turn this into one shared application page covering
+          several jobs — the visitor picks one from a dropdown and it&apos;s forwarded to the hiring sheet. Each role
+          can get its own take-home file below (once this position is saved). Salary of 0 falls back to the
+          position&apos;s own salary range.
+        </p>
+        <Field
+          label="Roles — one per line: id | label | blurb | min salary | max salary | test description"
+          name="roleOptions"
+          type="textarea"
+          rows={6}
+          defaultValue={joinRoles(position.roleOptions)}
+          hint='Id is lowercase-with-dashes and doubles as the ?role= deep link, e.g. "senior-media-buyer | Senior Media Buyer | Owns spend at $250k+/mo | 95000 | 130000 | Strategy brief".'
+          mono
+        />
+      </Section>
+
+      <Section title="Take-home test — position-level fallback (optional)">
+        <p className="text-ink-mute text-xs leading-relaxed">
+          Shown when there&apos;s no role picker, or the selected role doesn&apos;t have its own file. Upload the
+          file itself below (once this position is saved).
+        </p>
         <div className="grid gap-4 md:grid-cols-2">
-          <Field
-            label="Linked file slot"
-            name="downloadSlotSlug"
-            type="select"
-            defaultValue={position.downloadSlotSlug}
-            options={[{ value: '', label: '— none —' }, ...slots.map((s) => ({ value: s.slug, label: `${s.slug} — ${s.title}` }))]}
-            hint="Pick a file from /admin/content/files. Renders a download card on the role page."
-          />
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              name="showDownload"
+              defaultChecked={position.showDownload}
+              className="accent-ink h-4 w-4"
+            />
+            <span>
+              <span className="font-medium">Show download card</span>
+            </span>
+          </label>
           <Field label="Download card title" name="downloadTitle" defaultValue={position.downloadTitle} />
         </div>
         <Field label="Download blurb" name="downloadBlurb" type="textarea" rows={3} defaultValue={position.downloadBlurb} />
+        <Field
+          label="Test description (shown on the application page)"
+          name="testDescription"
+          type="textarea"
+          rows={2}
+          defaultValue={position.testDescription}
+        />
       </Section>
 
-      <Section title="About the role">
+      <Section title="Body — About">
         <Field label="Heading" name="aboutHeading" defaultValue={position.aboutHeading} />
         <Field
           label="Paragraphs (one paragraph per blank line)"
@@ -146,7 +162,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
-      <Section title="Responsibilities">
+      <Section title="Body — Responsibilities">
         <Field label="Heading" name="responsibilitiesHeading" defaultValue={position.responsibilitiesHeading} />
         <Field
           label="Bullets (one per line)"
@@ -157,7 +173,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
-      <Section title="Must-have">
+      <Section title="Body — Must have">
         <Field label="Heading" name="mustHaveHeading" defaultValue={position.mustHaveHeading} />
         <Field
           label="Bullets (one per line)"
@@ -168,7 +184,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
-      <Section title="Nice-to-have">
+      <Section title="Body — Nice to have">
         <Field label="Heading" name="niceToHaveHeading" defaultValue={position.niceToHaveHeading} />
         <Field
           label="Bullets (one per line)"
@@ -179,7 +195,7 @@ export default async function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
-      <Section title="Hiring process">
+      <Section title="Body — Hiring process">
         <Field label="Heading" name="processHeading" defaultValue={position.processHeading} />
         <Field
           label="Numbered steps (one per line)"

@@ -389,41 +389,7 @@ ss -tlnp | grep :443
 
 ---
 
-## Part 7 — Tor (onion remote slots)
-
-Remote slots whose URL ends in `.onion` use a local Tor SOCKS5 proxy on `127.0.0.1:9050` to resolve the redirect to the actual download URL. The `.onion` URL is a gate — it returns a `3xx` pointing to the real hot-download URL, and the user is redirected there. Without Tor running, those downloads will return `502 Redirect resolve failed`.
-
-### 7.1 Install Tor
-
-```bash
-sudo apt install -y tor
-sudo systemctl enable --now tor
-```
-
-Verify it's listening:
-
-```bash
-ss -tlnp | grep 9050
-```
-
-### 7.2 Verify a test fetch (optional)
-
-```bash
-curl --socks5-hostname 127.0.0.1:9050 https://check.torproject.org/api/ip
-```
-
-Should return `{"IsTor":true,...}`.
-
-### 7.3 Notes
-
-- Tor is only used for `.onion` redirect-gate URLs. Clearnet remote slots resolve their redirect with a direct `fetch()`.
-- No extra env vars are needed — the proxy address is hardcoded to `127.0.0.1:9050`.
-- If Tor is down, onion slot redirects fail with `502 Redirect resolve failed`; clearnet and local slots are unaffected.
-- First requests after a Tor restart may be slow (circuit build time ~5–10 s). Only the redirect hop goes through Tor; the actual file transfer is between the user and the hot-download URL directly.
-
----
-
-## Part 8 — Deploying updates
+## Part 7 — Deploying updates
 
 ```bash
 ssh adsperio-server
@@ -443,7 +409,7 @@ The take-home asset and JSONL log live in `/var/lib/adsperio/` and survive `git 
 - **In-memory sessions**: the admin panel keeps sessions in a process-local `Map`. A restart wipes them — by design. Don't run multiple workers (no `cluster`, no PM2 `instances > 1`); sessions would not be shared.
 - **Audit log**: `sudo journalctl -u adsperio -t adsperio` shows every login (success/fail), logout, file upload, and admin page access.
 - **Rotating the admin password**: re-run `node scripts/hash-password.mjs`, paste the new `ADMIN_PASSWORD_HASH` into `override.conf`, `daemon-reload && restart`. All sessions are wiped on restart.
-- **Replacing the take-home file via UI**: log into `/admin/downloads`, upload the new ZIP/DOCX. The old file is preserved as `take-home.bak` for rollback. Magic-byte validated (`PK\x03\x04`) — invalid uploads are rejected before touching disk.
+- **Take-home files**: managed per position (and optionally per role) directly in `/admin/content/positions/<slug>` — no separate file manager. Uploading replaces the current file for that row; PDF/ZIP/DOC/DOCX only, 50 MB cap. Files live under `/var/lib/adsperio/positions/<slug>/take-home/` and are served at `/careers/<slug>/take-home/<role-id-or-_position>`.
 - **Backup the JSONL**: `/var/lib/adsperio/applications.jsonl` is the durable local copy of every submission. Even if the Apps Script webhook is down or compromised, you still have it. Back it up nightly.
 - **Apps Script redirect quirk**: the server uses `redirect: 'manual'` when POSTing to the Web App URL because Apps Script responds with a 302 to `script.googleusercontent.com`; following it downgrades the POST to GET and breaks `doPost`. The intake treats any 2xx or 3xx as success.
 
@@ -455,7 +421,7 @@ The take-home asset and JSONL log live in `/var/lib/adsperio/` and survive `git 
 - Rate limit: 5 attempts / 15 min per IP at the app layer, plus Nginx `limit_req` (3/min).
 - CSP: `default-src 'self'; script-src 'none'; frame-ancestors 'none'` on every `/admin/*` response.
 - Headers: `X-Frame-Options: DENY`, `X-Content-Type-Options: nosniff`, `Referrer-Policy: no-referrer`, `Cache-Control: no-store`.
-- Admin upload: magic-byte verified, 50 MB cap, atomic rename, `.bak` rollback.
+- Admin upload: extension/MIME allowlist (PDF/ZIP/DOC/DOCX), 50 MB cap, atomic rename.
 - Public intake: 20 MB JSON cap, 8 MB per file, JSONL-first then Apps Script forward, honeypot + min-time.
 - Env-var gate: missing `ADMIN_PASSWORD_HASH` → 503 on every `/admin/*`.
 
@@ -475,9 +441,11 @@ The take-home asset and JSONL log live in `/var/lib/adsperio/` and survive `git 
 [ ] node scripts/hash-password.mjs run; ADMIN_PASSWORD_HASH captured
 [ ] /etc/systemd/system/adsperio.service.d/override.conf populated with all four envs
 [ ] systemctl daemon-reload && systemctl restart adsperio
-[ ] Initial take-home asset uploaded via /admin/downloads
+[ ] Initial take-home asset uploaded via /admin/content/positions/<slug>
 [ ] Nginx config in place, certbot run, nginx -t && reload
 [ ] /admin/login reachable, login succeeds, logout works
-[ ] Test application submitted from /careers/ads-manager → row appears in Sheet + JSONL
+[ ] Test application submitted from a /careers/<slug> page → row appears in Sheet + JSONL
+[ ] Apps Script Code.gs redeployed with the role/roleLabel/positionSlug columns (see scripts/apps-script.template.js);
+    Sheet row 1 headers updated to match
 [ ] Backup cron set for /var/lib/adsperio/applications.jsonl
 ```

@@ -5,6 +5,7 @@ import { readSessionFromCookies } from '@/server/admin/auth';
 import { audit, esc, readClientIp } from '@/server/admin/security';
 import { getPosition } from '@/server/content/positions';
 import PositionForm from '../PositionForm';
+import TakeHomeFiles from './TakeHomeFiles';
 import ContentTabs from '../../ContentTabs';
 import { Notice } from '@/components/admin/ui';
 
@@ -54,6 +55,7 @@ export default async function EditPositionPage({
         </Notice>
       )}
 
+      <TakeHomeFiles position={position} csrf={session.csrf} />
       <PositionForm position={position} isNew={false} csrf={session.csrf} />
     </div>
   );

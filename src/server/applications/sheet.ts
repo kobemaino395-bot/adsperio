@@ -53,7 +53,7 @@ async function fallbackToJsonl(error: string): Promise<SheetData> {
   const headers = [
     'submittedAt', 'id', 'fullName', 'email', 'country', 'phone',
     'portfolioUrl', 'currentCompany', 'yearsExperience', 'expectedSalary',
-    'noticePeriod', 'coverNote', 'clientIp', 'forwarded',
+    'noticePeriod', 'coverNote', 'clientIp', 'forwarded', 'role', 'roleLabel', 'positionSlug',
   ];
   const rows = records.map((r) => headers.map((h) => String(r[h] ?? '')));
   return { headers, rows, source: 'jsonl', fetchedAt: Date.now(), error };

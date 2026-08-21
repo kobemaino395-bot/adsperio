@@ -1,12 +1,11 @@
 import Link from 'next/link';
 
-type Tab = 'banner' | 'positions' | 'files';
+type Tab = 'banner' | 'positions';
 
 export default function ContentTabs({ active }: { active: Tab }) {
   const tabs: { id: Tab; label: string; href: string }[] = [
     { id: 'banner', label: 'Hiring banner', href: '/admin/content/banner' },
     { id: 'positions', label: 'Positions', href: '/admin/content/positions' },
-    { id: 'files', label: 'Files', href: '/admin/content/files' },
   ];
   return (
     <nav className="border-hairline flex gap-7 border-b">

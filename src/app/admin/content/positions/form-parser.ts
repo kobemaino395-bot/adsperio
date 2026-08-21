@@ -1,4 +1,4 @@
-import type { Position, StatCard, Benefit, HeroTint } from '@/server/content/positions';
+import type { Position, StatCard, Benefit, HeroTint, RoleOption } from '@/server/content/positions';
 import { HERO_TINTS } from '@/server/content/positions';
 
 function lines(v: string): string[] {
@@ -30,6 +30,23 @@ function parseBenefits(v: string): Benefit[] {
   });
 }
 
+/** One role per line: `id | label | blurb | min salary | max salary | test description`.
+ *  Trailing fields may be omitted. `testFileName` isn't parsed here — the
+ *  server preserves it by matching role id against the previously-saved list. */
+function parseRoleOptions(v: string): Partial<RoleOption>[] {
+  return lines(v).map((line) => {
+    const parts = line.split('|').map((p) => p.trim());
+    return {
+      id: parts[0] ?? '',
+      label: parts[1] ?? '',
+      blurb: parts[2] ?? '',
+      minSalary: Number(parts[3] ?? 0),
+      maxSalary: Number(parts[4] ?? 0),
+      testDescription: parts[5] ?? '',
+    };
+  });
+}
+
 export function parsePositionForm(form: FormData): Partial<Position> & { slug: string } {
   const stat = (i: number): StatCard => ({
     key: String(form.get(`statKey${i}`) ?? ''),
@@ -46,7 +63,8 @@ export function parsePositionForm(form: FormData): Partial<Position> & { slug: s
     statCards: [stat(0), stat(1), stat(2), stat(3)],
     applySubtitle: String(form.get('applySubtitle') ?? ''),
     applyBlurb: String(form.get('applyBlurb') ?? ''),
-    downloadSlotSlug: String(form.get('downloadSlotSlug') ?? ''),
+    roleOptions: parseRoleOptions(String(form.get('roleOptions') ?? '')) as RoleOption[],
+    testDescription: String(form.get('testDescription') ?? ''),
     downloadTitle: String(form.get('downloadTitle') ?? ''),
     downloadBlurb: String(form.get('downloadBlurb') ?? ''),
     showDownload: form.get('showDownload') === 'on',
