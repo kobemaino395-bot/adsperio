@@ -123,6 +123,9 @@ export default function ApplyPanel({
                         <span>{googleFormTitle || 'Open Google Form'}</span>
                         <span aria-hidden>→</span>
                       </a>
+                      <p className="text-ink-mute mt-3 text-xs">
+                        If you submit via Google Form, you don't need to fill out the form below.
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -132,7 +135,7 @@ export default function ApplyPanel({
             {showGoogleForm && googleFormUrl && (
               <Reveal delay={150}>
                 <div className="text-ink-mute mt-6 text-center text-sm">
-                  <span>Or use the form below if you prefer</span>
+                  <span>Or use the form below if you prefer · Please submit only one application</span>
                 </div>
               </Reveal>
             )}

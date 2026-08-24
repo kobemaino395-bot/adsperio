@@ -149,7 +149,7 @@ function seed(): Position[] {
       showDownload: false,
       googleFormUrl: '',
       googleFormTitle: 'Apply via Google Form',
-      googleFormBlurb: 'Share more about your experience and expertise with our detailed Google Form. Preferred for applicants who want to provide comprehensive information about their background.',
+      googleFormBlurb: 'Share more about your experience and expertise with our detailed Google Form. Preferred for applicants who want to provide comprehensive information about their background. You only need to submit one application.',
       showGoogleForm: false,
       aboutHeading: 'About these roles',
       aboutParagraphs: [
