@@ -194,6 +194,7 @@ export default function ApplyPanel({
                 </div>
               </aside>
             </Reveal>
+            </div>
           </div>
         </div>
       </section>
