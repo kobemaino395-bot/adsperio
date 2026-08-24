@@ -150,6 +150,42 @@ export default function PositionForm({ position, isNew, csrf }: Props) {
         />
       </Section>
 
+      <Section title="Google Form alternative (optional)">
+        <p className="text-ink-mute text-xs leading-relaxed">
+          Offer applicants a choice between the built-in form and a Google Form. The Google Form option appears first
+          as the recommended method for sharing more detailed information. Applicants should use one or the other, not both.
+        </p>
+        <div className="grid gap-4 md:grid-cols-2">
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              name="showGoogleForm"
+              defaultChecked={position.showGoogleForm}
+              className="accent-ink h-4 w-4"
+            />
+            <span>
+              <span className="font-medium">Show Google Form option</span>
+            </span>
+          </label>
+          <Field label="Card title" name="googleFormTitle" defaultValue={position.googleFormTitle} placeholder="Apply via Google Form" />
+        </div>
+        <Field
+          label="Google Form URL"
+          name="googleFormUrl"
+          defaultValue={position.googleFormUrl}
+          placeholder="https://forms.gle/..."
+          hint="Full URL to your Google Form"
+        />
+        <Field
+          label="Description"
+          name="googleFormBlurb"
+          type="textarea"
+          rows={3}
+          defaultValue={position.googleFormBlurb}
+          placeholder="Explain why this option is preferred and what additional information can be shared"
+        />
+      </Section>
+
       <Section title="Body — About">
         <Field label="Heading" name="aboutHeading" defaultValue={position.aboutHeading} />
         <Field

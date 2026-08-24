@@ -45,6 +45,11 @@ export type Position = {
   downloadTitle: string;
   downloadBlurb: string;
   showDownload: boolean;
+  /** Google Form URL for a more detailed application form. */
+  googleFormUrl: string;
+  googleFormTitle: string;
+  googleFormBlurb: string;
+  showGoogleForm: boolean;
   aboutHeading: string;
   aboutParagraphs: string[];
   responsibilitiesHeading: string;
@@ -142,6 +147,10 @@ function seed(): Position[] {
       downloadBlurb:
         'Download the take-home for your role and complete it within 2 days. PDF, DOCX, or ZIP accepted.',
       showDownload: false,
+      googleFormUrl: '',
+      googleFormTitle: 'Apply via Google Form',
+      googleFormBlurb: 'Share more about your experience and expertise with our detailed Google Form. Preferred for applicants who want to provide comprehensive information about their background.',
+      showGoogleForm: false,
       aboutHeading: 'About these roles',
       aboutParagraphs: [
         'AdsPerio manages paid media for ambitious brands across EdTech, FinTech, DTC, and healthcare. We are hiring across every channel — search, social, and the people who own the mix and the budget case — because they share one bar: you own the spend, and you are measured on incremental revenue, not on the number the platform reports.',
@@ -234,6 +243,10 @@ async function migrateRecord(raw: Position & { downloadSlotSlug?: string }): Pro
     roleOptions,
     testFileName: typeof raw.testFileName === 'string' ? raw.testFileName : '',
     testDescription: typeof raw.testDescription === 'string' ? raw.testDescription : '',
+    googleFormUrl: typeof raw.googleFormUrl === 'string' ? raw.googleFormUrl : '',
+    googleFormTitle: typeof raw.googleFormTitle === 'string' ? raw.googleFormTitle : '',
+    googleFormBlurb: typeof raw.googleFormBlurb === 'string' ? raw.googleFormBlurb : '',
+    showGoogleForm: typeof raw.showGoogleForm === 'boolean' ? raw.showGoogleForm : false,
   };
 }
 
@@ -309,6 +322,10 @@ function emptyPosition(slug: string): Position {
     downloadTitle: '',
     downloadBlurb: '',
     showDownload: false,
+    googleFormUrl: '',
+    googleFormTitle: '',
+    googleFormBlurb: '',
+    showGoogleForm: false,
     aboutHeading: 'About the role',
     aboutParagraphs: [''],
     responsibilitiesHeading: "What you'll do",
@@ -432,6 +449,10 @@ export function normalizePositionInput(slug: string, input: Partial<Position>): 
     downloadTitle: str(input.downloadTitle, 200),
     downloadBlurb: str(input.downloadBlurb, 1000),
     showDownload: !!input.showDownload,
+    googleFormUrl: str(input.googleFormUrl, 2000),
+    googleFormTitle: str(input.googleFormTitle, 200),
+    googleFormBlurb: str(input.googleFormBlurb, 1000),
+    showGoogleForm: !!input.showGoogleForm,
     aboutHeading: str(input.aboutHeading, 200) || base.aboutHeading,
     aboutParagraphs: strList(input.aboutParagraphs, 20, 4000),
     responsibilitiesHeading: str(input.responsibilitiesHeading, 200) || base.responsibilitiesHeading,

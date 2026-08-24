@@ -16,6 +16,10 @@ export type ApplyPanelProps = {
   downloadTitle: string;
   downloadBlurb: string;
   showDownload: boolean;
+  googleFormUrl: string;
+  googleFormTitle: string;
+  googleFormBlurb: string;
+  showGoogleForm: boolean;
   processHeading: string;
   processSteps: string[];
   processStepsNoDownload: string[];
@@ -44,6 +48,10 @@ export default function ApplyPanel({
   downloadTitle,
   downloadBlurb,
   showDownload,
+  googleFormUrl,
+  googleFormTitle,
+  googleFormBlurb,
+  showGoogleForm,
   processHeading,
   processSteps,
   processStepsNoDownload,
@@ -85,25 +93,66 @@ export default function ApplyPanel({
     <>
       <section id="apply" className="border-hairline bg-canvas border-b py-20 md:py-24">
         <div className="wrap">
-          <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[1.4fr_1fr]">
+          <div className="mx-auto max-w-6xl">
             <Reveal>
-              <div className="card shadow-lift-1 p-7 md:p-10">
-                <SectionLabel>{applySubtitle}</SectionLabel>
-                <h2 className="display-3 mt-3">Tell us about yourself.</h2>
-                {applyBlurb && <p className="text-ink-mute mt-3 max-w-xl leading-relaxed">{applyBlurb}</p>}
-                <div className="mt-8">
-                  <ApplicationForm
-                    roleOptions={roleOptions}
-                    selectedRole={selectedRole}
-                    onSelectRole={selectRole}
-                    positionSlug={positionSlug}
-                    showTestUpload={hasFile}
-                  />
-                </div>
-              </div>
+              <SectionLabel>{applySubtitle}</SectionLabel>
+              <h2 className="display-3 mt-3">Tell us about yourself.</h2>
+              {applyBlurb && <p className="text-ink-mute mt-3 max-w-xl leading-relaxed">{applyBlurb}</p>}
             </Reveal>
 
-            <Reveal delay={120}>
+            {showGoogleForm && googleFormUrl && (
+              <Reveal delay={100}>
+                <div className="card bg-canvas-soft mt-10 p-6">
+                  <div className="flex items-start justify-between gap-6">
+                    <div className="flex-1">
+                      <div className="text-ink flex items-center gap-2 text-[0.9375rem] font-medium">
+                        <span className="bg-indigo-text inline-block rounded-full px-2 py-0.5 text-xs font-medium text-white">
+                          Recommended
+                        </span>
+                        <span>{googleFormTitle || 'Apply via Google Form'}</span>
+                      </div>
+                      {googleFormBlurb && (
+                        <p className="text-ink-mute mt-2 leading-relaxed">{googleFormBlurb}</p>
+                      )}
+                      <a
+                        href={googleFormUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn btn-solid mt-5"
+                      >
+                        <span>{googleFormTitle || 'Open Google Form'}</span>
+                        <span aria-hidden>→</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </Reveal>
+            )}
+
+            {showGoogleForm && googleFormUrl && (
+              <Reveal delay={150}>
+                <div className="text-ink-mute mt-6 text-center text-sm">
+                  <span>Or use the form below if you prefer</span>
+                </div>
+              </Reveal>
+            )}
+
+            <div className="mt-10 grid gap-10 lg:grid-cols-[1.4fr_1fr]">
+              <Reveal delay={showGoogleForm && googleFormUrl ? 200 : 0}>
+                <div className="card shadow-lift-1 p-7 md:p-10">
+                  <div className="mt-8">
+                    <ApplicationForm
+                      roleOptions={roleOptions}
+                      selectedRole={selectedRole}
+                      onSelectRole={selectRole}
+                      positionSlug={positionSlug}
+                      showTestUpload={hasFile}
+                    />
+                  </div>
+                </div>
+              </Reveal>
+
+            <Reveal delay={showGoogleForm && googleFormUrl ? 250 : 120}>
               <aside className="space-y-5 lg:sticky lg:top-24 lg:self-start">
                 {hasFile && (
                   <div className="card bg-canvas-soft p-6">

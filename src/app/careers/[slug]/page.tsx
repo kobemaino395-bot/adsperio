@@ -204,6 +204,10 @@ export default async function PositionPage({ params }: { params: Params }) {
           downloadTitle={p.downloadTitle}
           downloadBlurb={p.downloadBlurb}
           showDownload={p.showDownload}
+          googleFormUrl={p.googleFormUrl}
+          googleFormTitle={p.googleFormTitle}
+          googleFormBlurb={p.googleFormBlurb}
+          showGoogleForm={p.showGoogleForm}
           processHeading={p.processHeading}
           processSteps={p.processSteps}
           processStepsNoDownload={p.processStepsNoDownload}
